@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const mongoose = require('mongoose');
 const hbs = require('hbs');
+const bodyParser = require('body-parser')
 mongoose.connect('mongodb://127.0.0.1:27017/juco_berry')
 // view engine setup
 
@@ -27,6 +28,8 @@ app.set('view engine', 'hbs');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:true}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 

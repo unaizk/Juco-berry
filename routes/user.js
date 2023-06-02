@@ -9,4 +9,6 @@ router.get('/',userController.indexPage);
 /*Get signup page */
 router.get('/signup',userController.loadSignup);
 
+router.post('/signup',userController.insertUser)
+
 module.exports = router;

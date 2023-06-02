@@ -30,6 +30,10 @@
               <input type="submit" value="Login">
             </div>
             <div class="signup-link">Not a member? <a href="">Signup now</a></div>
+            {{#if message}}
+                <p><span style="font-family: Arial, sans-serif; color: green;">{{message}}</span></p>
+
+          {{/if}}
           </form>
           <form action="#" method="post" class="signup">
             <div class="field">
@@ -48,10 +52,17 @@
               <div class="btn-layer"></div>
               <input type="submit" value="Signup">
             </div>
+            
+
           </form>
+         {{!-- Check if the "message" variable is defined --}}
+        
+
         </div>
       </div>
     </div>
+    
+    
      <!-- Google Map -->
   <script>
     const loginText = document.querySelector(".title-text .login");
