@@ -1,5 +1,6 @@
 const User = require('../models/userModel')
 const bcrypt = require('bcrypt');
+const nodemailer = require('nodemailer')
 
 const securePassword = async(password)=>{
     try {
@@ -25,10 +26,41 @@ const indexPage = async (req, res) => {
         console.log(error.message);
     }
 };
+//for send Mail//
+
+const sendVerifyMail = async(name,email,user_id)=>{
+      try {
+        const transporter = nodemailer.createTransport({
+            host:'smtp.ethereal.email',
+            port:587,
+            secure:false,
+            requireTLS:true,
+            auth:{
+                user:'delmer52@ethereal.email',
+                pass:'9VxCU9m62bSutpdXjK'
+            }
+        });
+        const mailOption={
+            from:'unais5676@gmail.com',
+            to:email,
+            subject:'To verify mail',
+            html:'<p> Hi'+name+', please click here to <a href="http://localhost:3000/verify?id='+user_id+'">verify</a>your mail.</p>'
+        }
+        transporter.sendMail(mailOption,function(error,info){
+            if(error){
+                console.log(error);
+            }else{
+                console.log("Your email has been send succefully",info.response);
+            }
+        })
+      } catch (error) {
+        console.log(error.message);
+      }
+}
 
 const insertUser = async(req,res)=>{
     try {
-
+        
         const spassword = await securePassword(req.body.password)
         const user = new User({
             name:req.body.name,
@@ -38,7 +70,7 @@ const insertUser = async(req,res)=>{
             is_admin:0
         })
         const userData = await user.save();
-
+        sendVerifyMail(req.body.name,req.body.email,userData._id)
         if(userData){
             res.render('users/signup',{message:"Your registration has been successfull, Please verify your email"})
         }else{
@@ -50,9 +82,22 @@ const insertUser = async(req,res)=>{
     }
 }
 
+// verifying email//
+
+const verifyEmail = async(req,res)=>{
+    try {
+       const updateInfo = await User.updateOne({_id:req.query.id},{$set:{is_verified:1}}) 
+       console.log(updateInfo);
+       res.render('users/email-verified')
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 
 module.exports={
     loadSignup,
     indexPage,
-    insertUser
+    insertUser,
+    verifyEmail
 }
