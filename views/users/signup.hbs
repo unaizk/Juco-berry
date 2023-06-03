@@ -17,7 +17,7 @@
           <div class="slider-tab"></div>
         </div>
         <div class="form-inner">
-          <form action="#" method="post" class="login">
+          <form action="/login" method="post" class="login">
             <div class="field">
               <input type="email" name="email" placeholder="Email Address" required>
             </div>
@@ -29,13 +29,13 @@
               <div class="btn-layer"></div>
               <input type="submit" value="Login">
             </div>
-            <div class="signup-link">Not a member? <a href="">Signup now</a></div>
+            <div class="signup-link">Not a member? <a href="/signup">Signup now</a></div>
             {{#if message}}
                 <p><span style="font-family: Arial, sans-serif; color: green;">{{message}}</span></p>
 
           {{/if}}
           </form>
-          <form action="#" method="post" class="signup">
+          <form action="/signup" method="post" class="signup">
             <div class="field">
               <input type="text" name="name" placeholder="Enter a name" required>
             </div>

@@ -29,6 +29,8 @@ const indexPage = async (req, res) => {
 //for send Mail//
 
 const sendVerifyMail = async(name,email,user_id)=>{
+
+    const verificationId = await bcrypt.hash(email,10)
       try {
         const transporter = nodemailer.createTransport({
             host:'smtp.ethereal.email',
@@ -44,7 +46,8 @@ const sendVerifyMail = async(name,email,user_id)=>{
             from:'unais5676@gmail.com',
             to:email,
             subject:'To verify mail',
-            html:'<p> Hi'+name+', please click here to <a href="http://localhost:3000/verify?id='+user_id+'">verify</a>your mail.</p>'
+            
+            html:'<p> Hi'+name+', please click here to <a href="http://localhost:3000/verify?id='+verificationId+'&email='+email+'">verify</a>your mail.</p>'
         }
         transporter.sendMail(mailOption,function(error,info){
             if(error){
@@ -85,12 +88,20 @@ const insertUser = async(req,res)=>{
 // verifying email//
 
 const verifyEmail = async(req,res)=>{
-    try {
-       const updateInfo = await User.updateOne({_id:req.query.id},{$set:{is_verified:1}}) 
-       console.log(updateInfo);
-       res.render('users/email-verified')
-    } catch (error) {
-        console.log(error.message);
+
+    console.log(req.query.email,req.query.id);
+
+    const verificationStatus = await bcrypt.compare(req.query.email,req.query.id)
+    if(verificationStatus){
+        try {
+            const updateInfo = await User.updateOne({email:req.query.email},{$set:{is_verified:1}}) 
+            console.log(updateInfo);
+            res.render('users/email-verified')
+         } catch (error) {
+             console.log(error.message);
+         }
+    }else{
+        console.log("password comparison failed");
     }
 }
 
