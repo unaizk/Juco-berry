@@ -13,8 +13,9 @@ const securePassword = async(password)=>{
 // signup user method
 const loadSignup = async(req,res)=>{
     try {
-        // console.log('load signup function is called');
+        y// console.log('load signup function is called');
         res.render('users/signup&login')
+        
     } catch (error) {
         console.log(error.message);
     }
@@ -143,7 +144,7 @@ const verifyLogin = async(req,res)=>{
 }
 const loadHome = async(req,res)=>{
     try {
-        res.render('users/home')
+        res.render('users/home',{ layout: "layouts/user-layout" })
     } catch (error) {
         console.log(error.message);
     }

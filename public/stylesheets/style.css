@@ -1,10 +1,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&family=Open+Sans:wght@400;600;700&display=swap");
 body {
   font-family: "Open Sans", sans-serif;
-  color: #000000;
+  color: #0c0c0c;
   background-color: #ffffff;
   overflow-x: hidden;
-  
+}
+.header-logo{
+  width: 125px;
 }
 
 .layout_padding {
@@ -55,10 +57,6 @@ h2 {
   font-size: 2.5rem;
   font-weight: bold;
 }
-.logo{
-    width: 120px;
-    
-}
 
 .heading_container h2 span {
   color: #ffbe33;
@@ -85,9 +83,6 @@ a:focus {
 a:hover,
 a:focus {
   color: initial;
-}
-.header-icon{
-  width: 53px;
 }
 
 .btn,
@@ -211,9 +206,6 @@ a:focus {
 
 .user_option a {
   margin: 0 10px;
-}
-.custom_nav-container .navbar-nav {
-  padding-left: 20%;
 }
 
 .user_option .user_link {
@@ -509,7 +501,7 @@ a:focus {
 }
 
 .food_section .filters_menu li.active {
-  background-color: #000000;
+  background-color: #222831;
   color: #ffffff;
 }
 
@@ -687,7 +679,7 @@ a:focus {
   height: 50px;
   margin-bottom: 25px;
   padding-left: 25px;
-  border: 1px solid #383737;
+  border: 1px solid #0c0c0c;
   outline: none;
   color: #000000;
   border-radius: 5px;
@@ -798,7 +790,7 @@ a:focus {
 }
 
 .client_section .box .detail-box {
-  background-color: #000000;
+  background-color: #1c1d1d;
   color: #ffffff;
   padding: 25px 25px 15px 25px;
   border-radius: 5px;
@@ -988,7 +980,7 @@ a:focus {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
-  color: #000000;
+  color: #222831;
   width: 30px;
   height: 30px;
   border-radius: 100%;
