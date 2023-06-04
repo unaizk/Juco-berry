@@ -16,7 +16,12 @@
           <label for="signup" class="slide signup">Signup</label>
           <div class="slider-tab"></div>
         </div>
+         {{#if messages}}
+                <p><span id="login-message" style="font-family: Arial, sans-serif; color: rgb(3, 3, 3);">{{messages}}</span></p>
+
+          {{/if}} 
         <div class="form-inner">
+         
           <form action="/login" method="post" class="login">
             <div class="field">
               <input type="email" name="email" placeholder="Email Address" required>
@@ -55,7 +60,7 @@
             
 
           </form>
-         {{!-- Check if the "message" variable is defined --}}
+         
         
 
         </div>
@@ -82,6 +87,19 @@ signupLink.onclick = (()=>{
   signupBtn.click();
   return false;
 });
+
+  
+  function hideMessage() {
+    var messageElement = document.getElementById("login-message");
+    if (messageElement) {
+      messageElement.style.display = "none";
+    }
+  }
+
+  // Set a timeout of 3000 milliseconds (3 seconds)
+    setTimeout(hideMessage, 2000);
+
+
   </script>
 {{>footer}}
 

@@ -6,18 +6,22 @@ var logger = require('morgan');
 const mongoose = require('mongoose');
 const hbs = require('hbs');
 const bodyParser = require('body-parser')
+const session = require('express-session')
+
 mongoose.connect('mongodb://127.0.0.1:27017/juco_berry')
 // view engine setup
 
 
 var userRouter = require('./routes/user');
 var adminRouter = require('./routes/admin');
+const config = require('./config/config')
 
 var app = express();
 hbs.registerPartials(__dirname + '/views/layouts');
 app.set('views', [
   path.join(__dirname, 'views'),
   path.join(__dirname, 'views', 'layouts')
+ 
 ]);
 app.set('view engine', 'hbs');
 
@@ -31,6 +35,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(cookieParser());
+app.use(session({secret:config.sessionSecret}))
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', userRouter);

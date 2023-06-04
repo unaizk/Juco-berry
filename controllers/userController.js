@@ -10,22 +10,30 @@ const securePassword = async(password)=>{
         console.log(error.message);
     }
 }
-
+// signup user method
 const loadSignup = async(req,res)=>{
     try {
-        console.log('load signup function is called');
-        res.render('users/signup')
+        // console.log('load signup function is called');
+        res.render('users/signup&login')
     } catch (error) {
         console.log(error.message);
     }
 }
-const indexPage = async (req, res) => {
+// login user method
+const loadLogin = async(req,res)=>{
     try {
-        res.render('index', { title: 'Juco berry' });
+        res.render('users/signup&login')
     } catch (error) {
         console.log(error.message);
     }
-};
+}
+// const indexPage = async (req, res) => {
+//     try {
+//         res.render('index');
+//     } catch (error) {
+//         console.log(error.message);
+//     }
+// };
 //for send Mail//
 
 const sendVerifyMail = async(name,email,user_id)=>{
@@ -75,9 +83,9 @@ const insertUser = async(req,res)=>{
         const userData = await user.save();
         sendVerifyMail(req.body.name,req.body.email,userData._id)
         if(userData){
-            res.render('users/signup',{message:"Your registration has been successfull, Please verify your email"})
+            res.render('users/signup&login',{message:"Your registration has been successfull, Please verify your email"})
         }else{
-            res.render('users/signup',{message:"Your registration has been failed"})
+            res.render('users/signup&login',{message:"Your registration has been failed"})
         }
 
     } catch (error) {
@@ -91,10 +99,10 @@ const verifyEmail = async(req,res)=>{
 
     console.log(req.query.email,req.query.id);
 
-    const verificationStatus = await bcrypt.compare(req.query.email,req.query.id)
+    const verificationStatus = await bcrypt.compare(req.query.email, req.query.id)
     if(verificationStatus){
         try {
-            const updateInfo = await User.updateOne({email:req.query.email},{$set:{is_verified:1}}) 
+            const updateInfo = await User.updateOne({email:req.query.email},{$set:{is_verified:true}}) 
             console.log(updateInfo);
             res.render('users/email-verified')
          } catch (error) {
@@ -105,10 +113,48 @@ const verifyEmail = async(req,res)=>{
     }
 }
 
+//verify login
+
+const verifyLogin = async(req,res)=>{
+    try {
+        const email = req.body.email;
+        const password = req.body.password
+       const userData = await User.findOne({email:email});
+       if(userData){
+        const passwordMatch = await bcrypt.compare(password,userData.password)
+        console.log(passwordMatch);
+        console.log(userData);
+          if(passwordMatch){
+            if(userData.is_verified === false){
+                res.render('users/signup&login',{messages:"please verify your mail"})
+            }else{
+                req.session.user_id = userData._id
+                res.redirect('/home')
+            }
+          }else{
+            res.render('users/signup&login',{messages:"password is incorrect"})
+          }
+       }else{
+        res.render('users/signup&login',{messages:"Email and password is incorrect"})
+       }
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+const loadHome = async(req,res)=>{
+    try {
+        res.render('users/home')
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 
 module.exports={
     loadSignup,
-    indexPage,
     insertUser,
-    verifyEmail
+    verifyEmail,
+    loadLogin,
+    verifyLogin,
+    loadHome
 }
