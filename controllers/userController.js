@@ -130,6 +130,7 @@ const verifyLogin = async(req,res)=>{
                 res.render('users/signup&login',{messages:"please verify your mail"})
             }else{
                 req.session.user_id = userData._id
+                
                 res.redirect('/home')
             }
           }else{
@@ -151,11 +152,22 @@ const loadHome = async(req,res)=>{
 }
 
 
+const userLogout = async(req,res)=>{
+    try {
+        req.session.destroy();
+        res.redirect('/')
+    } catch (error) {
+        console.log(error.mssage);
+    }
+}
+
+
 module.exports={
     loadSignup,
     insertUser,
     verifyEmail,
     loadLogin,
     verifyLogin,
-    loadHome
+    loadHome,
+    userLogout
 }

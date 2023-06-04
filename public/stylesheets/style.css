@@ -239,7 +239,7 @@ a:focus {
   fill: #ffbe33;
 }
 
-.user_option .order_online {
+.user_option .logout {
   display: inline-block;
   padding: 8px 30px;
   background-color: #ffbe33;
@@ -250,7 +250,7 @@ a:focus {
   border: none;
 }
 
-.user_option .order_online:hover {
+.user_option .logout:hover {
   background-color: #e69c00;
 }
 

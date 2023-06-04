@@ -15,6 +15,7 @@ router.post('/signup',userController.insertUser);
 
 router.get('/verify', userController.verifyEmail);
 router.get('/home',auth.isLogin, userController.loadHome);
+router.get('/logout',auth.isLogin,userController.userLogout)
 
 
 module.exports = router;
