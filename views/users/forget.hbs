@@ -1,0 +1,34 @@
+
+<link href="/stylesheets/signup.css" rel="stylesheet" />
+<style>
+  .forget-logo{
+     width: 81px;
+    margin-left: 98px;
+  }
+ </style>
+<div class="wrapper">
+  <img class="forget-logo" src="/images/download.png" alt="">
+      <div class="title-text">
+        <div class="title reset-password">Reset password</div>
+        
+      </div>
+ <div class="form-inner">
+         
+          <form action="/forget" method="post" class="login">
+            <div class="field">
+              <input type="email" name="email" placeholder="Email Address" required>
+            </div>
+            
+            
+            <div class="field btn">
+              <div class="btn-layer"></div>
+              <input type="submit" value="Send reset link">
+            </div>
+            
+            {{#if message}}
+                <p><span style="font-family: Arial, sans-serif; color: green;">{{message}}</span></p>
+
+          {{/if}}
+          </form>     
+</div>      
+</div>

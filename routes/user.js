@@ -15,7 +15,11 @@ router.post('/signup',userController.insertUser);
 
 router.get('/verify', userController.verifyEmail);
 router.get('/home',auth.isLogin, userController.loadHome);
-router.get('/logout',auth.isLogin,userController.userLogout)
+router.get('/logout',auth.isLogin,userController.userLogout);
+router.get('/forget',auth.isLogout,userController.forgetLoad);
+router.post('/forget',userController.forgetVerify);
+router.get('/forget-password',auth.isLogout,userController.forgetPasswordLoad);
+router.post('/forget-password',userController.resetPassword)
 
 
 module.exports = router;

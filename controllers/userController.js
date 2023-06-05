@@ -1,6 +1,11 @@
 const User = require('../models/userModel')
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer')
+const config = require('../config/config')
+const randomstring = require("randomstring")
+
+
+
 
 const securePassword = async(password)=>{
     try {
@@ -28,14 +33,7 @@ const loadLogin = async(req,res)=>{
         console.log(error.message);
     }
 }
-// const indexPage = async (req, res) => {
-//     try {
-//         res.render('index');
-//     } catch (error) {
-//         console.log(error.message);
-//     }
-// };
-//for send Mail//
+
 
 const sendVerifyMail = async(name,email,user_id)=>{
 
@@ -47,8 +45,8 @@ const sendVerifyMail = async(name,email,user_id)=>{
             secure:false,
             requireTLS:true,
             auth:{
-                user:'delmer52@ethereal.email',
-                pass:'9VxCU9m62bSutpdXjK'
+                user:config.emailUser,
+                pass:config.emailPassword
             }
         });
         const mailOption={
@@ -56,7 +54,7 @@ const sendVerifyMail = async(name,email,user_id)=>{
             to:email,
             subject:'To verify mail',
             
-            html:'<p> Hi'+name+', please click here to <a href="http://localhost:3000/verify?id='+verificationId+'&email='+email+'">verify</a>your mail.</p>'
+            html:'<p> Hi '+name+', please click here to <a href="http://localhost:3000/verify?id='+verificationId+'&email='+email+'">verify</a>your mail.</p>'
         }
         transporter.sendMail(mailOption,function(error,info){
             if(error){
@@ -92,6 +90,39 @@ const insertUser = async(req,res)=>{
     } catch (error) {
         console.log(error.message);
     }
+}
+//for reset password 
+const sendResetPasswordMail = async(name,email,token)=>{
+
+    
+      try {
+        const transporter = nodemailer.createTransport({
+            host:'smtp.ethereal.email',
+            port:587,
+            secure:false,
+            requireTLS:true,
+            auth:{
+                user:config.emailUser,
+                pass:config.emailPassword
+            }
+        });
+        const mailOption={
+            from:'unais5676@gmail.com',
+            to:email,
+            subject:'To Reset password',
+            
+            html:'<p> Hi ' +name+', please click here to <a href="http://localhost:3000/forget-password?token='+token+'">Reset </a>your password.</p>'
+        }
+        transporter.sendMail(mailOption,function(error,info){
+            if(error){
+                console.log(error);
+            }else{
+                console.log("Your email has been send succefully",info.response);
+            }
+        })
+      } catch (error) {
+        console.log(error.message);
+      }
 }
 
 // verifying email//
@@ -161,6 +192,61 @@ const userLogout = async(req,res)=>{
     }
 }
 
+//forget password
+
+const forgetLoad = async(req,res)=>{
+    try {
+        res.render('users/forget')
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+const forgetVerify = async(req,res)=>{
+    try {
+        const email = req.body.email;
+        const userData = await User.findOne({email:email})
+        if(userData){
+            if(userData.is_verified===false){
+                res.render('users/forget',{message:'please verify your email'})
+            }else{
+                const randomString = randomstring.generate();
+                const updatedData = await User.updateOne({email:email},{$set:{token:randomString}});
+                sendResetPasswordMail(userData.name,userData.email,randomString);
+                res.render('users/forget',{message:"Please check your mail to reset your password"})
+            }
+        }else{
+            res.render('users/forget',{message:"User email is incorrect"})
+        }
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const forgetPasswordLoad = async(req,res)=>{
+    try {
+        const token = req.query.token;
+       const tokenData = await User.findOne({token:token})
+       if(tokenData){
+        res.render('users/forget-password',{user_id:tokenData._id})
+       }else{
+        res.render('users/404',{message:"Your token is invalid"})
+       }
+
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+const resetPassword = async(req,res)=>{
+    try {
+        const password = req.body.password;
+        const user_id = req.body.user_id
+        const secure_password =await securePassword(password);
+       const updatedData = await User.findByIdAndUpdate({_id:user_id},{$set:{password:secure_password,token:''}})
+        res.redirect('/login')
+    } catch (error) {
+        console.log(error.message);
+    }
+}
 
 module.exports={
     loadSignup,
@@ -169,5 +255,9 @@ module.exports={
     loadLogin,
     verifyLogin,
     loadHome,
-    userLogout
+    userLogout,
+    forgetLoad,
+    forgetVerify,
+    forgetPasswordLoad,
+    resetPassword
 }
