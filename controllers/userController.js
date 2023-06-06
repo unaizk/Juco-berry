@@ -1,12 +1,14 @@
-const User = require('../models/userModel')
+
+
+// Load User model and other dependencies
+const User = require('../models/userModel');
 const bcrypt = require('bcrypt');
-const nodemailer = require('nodemailer')
-const config = require('../config/config')
-const randomstring = require("randomstring")// Download the helper library from https://www.twilio.com/docs/node/install
-// Set environment variables for your credentials
-// Read more at http://twil.io/secure
+const nodemailer = require('nodemailer');
+const config = require('../config/config');
+const randomstring = require("randomstring");
+
 const accountSid = "AC5b08749806fb17d29e70c46231045f1a";
-const authToken = "e4b367231ec75aa71c27e5782ab29f61";
+const authToken = "ecaedf1547d64a557e100f9ecb08113b";
 const verifySid = "VA881219022be56f5c9c40f5b2b336e929";
 const twilio = require("twilio")(accountSid, authToken);
 
@@ -256,6 +258,7 @@ const resetPassword = async(req,res)=>{
 }
 //otp verification
 
+// Load OTP form
 const loadOtp = async(req,res)=>{
     try {
         res.render('users/otp');
@@ -305,7 +308,7 @@ const sendOtp = async(req,res)=>{
     }
 }
 
-const LoadverifyOtp = async(req,res)=>{
+const loadVerifyOtp = async(req,res)=>{
     try {
         res.render('users/verify-otp')
     } catch (error) {
@@ -344,22 +347,7 @@ const verifyOtp = async(req,res)=>{
     }
 }
     
-            
-            
-//            
-//             client.verify.v2
-//             .services(verifySid)
-//             .verificationChecks.create({ to: "+917907844545", code: otpCode })
-//             .then((verification_check) => console.log(verification_check.status))
-//             .then(() => readline.close());
-//             });
-//             });
-
-//         }
-//     } catch (error) {
-//        console.log(error.message); 
-//     }
-// }
+        
 
 module.exports={
     loadSignup,
@@ -375,6 +363,6 @@ module.exports={
     resetPassword,
     loadOtp,
     sendOtp,
-    LoadverifyOtp,
+    loadVerifyOtp,
     verifyOtp
 }

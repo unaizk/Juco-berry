@@ -20,7 +20,7 @@ router.get('/forget-password',auth.isLogout,userController.forgetPasswordLoad);
 router.post('/forget-password',userController.resetPassword);
 router.get('/otp',auth.isLogout,userController.loadOtp);
 router.post('/otp',userController.sendOtp);
-router.get('/verify-otp',auth.isLogout,userController.LoadverifyOtp);
+router.get('/verify-otp',auth.isLogout,userController.loadVerifyOtp);
 router.post('/verify-otp',userController.verifyOtp);
 
 
