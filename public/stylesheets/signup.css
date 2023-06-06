@@ -7,7 +7,17 @@
 }
 .login-logo {
     width: 81px;
-    margin-left: 122px;
+    display: block;
+    margin: 0 auto;
+}
+.otp{
+  text-decoration: none;
+  color: rgb(43, 42, 41);
+}
+.login-link {
+  text-align: center;
+  
+  
 }
 
 html,body{
@@ -22,7 +32,13 @@ html,body{
   background: #272727;
   color: #fff;
 }
+.img-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .wrapper{
+  
   overflow: hidden;
   max-width: 390px;
   background: #fff;
@@ -151,7 +167,8 @@ form .field input:focus::placeholder{
   text-decoration: none;
 }
 .form-inner form .pass-link a:hover,
-.form-inner form .signup-link a:hover{
+.form-inner form .signup-link a:hover,
+.form-inner form .login-link a:hover{
   text-decoration: underline;
 }
 form .btn{

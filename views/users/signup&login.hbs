@@ -4,7 +4,8 @@
  <link href="/stylesheets/signup.css" rel="stylesheet" />
  
  <div class="wrapper">
-  <img class="login-logo" src="/images/download.png" alt="">
+  <div class="img-container"><img class="login-logo" src="/images/download.png" alt=""></div>
+  
       <div class="title-text">
         <div class="title login">Login Form</div>
         <div class="title signup">Signup Form</div>
@@ -36,6 +37,9 @@
               <input type="submit" value="Login">
             </div>
             <div class="signup-link">Not a member? <a href="/signup">Signup now</a></div>
+            <div class="login-link">
+                  <a class="otp" href="/otp">Login with OTP</a>
+            </div>
             {{#if message}}
                 <p><span style="font-family: Arial, sans-serif; color: green;">{{message}}</span></p>
 

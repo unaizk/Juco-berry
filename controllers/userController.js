@@ -2,7 +2,14 @@ const User = require('../models/userModel')
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer')
 const config = require('../config/config')
-const randomstring = require("randomstring")
+const randomstring = require("randomstring")// Download the helper library from https://www.twilio.com/docs/node/install
+// Set environment variables for your credentials
+// Read more at http://twil.io/secure
+const accountSid = "AC5b08749806fb17d29e70c46231045f1a";
+const authToken = "e4b367231ec75aa71c27e5782ab29f61";
+const verifySid = "VA881219022be56f5c9c40f5b2b336e929";
+const twilio = require("twilio")(accountSid, authToken);
+
 
 
 
@@ -247,6 +254,112 @@ const resetPassword = async(req,res)=>{
         console.log(error.message);
     }
 }
+//otp verification
+
+const loadOtp = async(req,res)=>{
+    try {
+        res.render('users/otp');
+    } catch (error) {
+       console.log(error.message); 
+    }
+}
+
+
+
+
+const sendOtp = async(req,res)=>{
+    try {
+
+       console.log(req.body.mobile);
+        let mobile = req.body.mobile;
+        
+        console.log(mobile);
+        
+        req.session.userMobileForOtp = req.body.mobile;
+        const userData = await User.findOne({mobile:mobile})
+        console.log(userData);
+        if(userData){
+            if(userData.is_verified===true){
+                const userMobile = "+91"+mobile;
+                twilio.verify.v2
+                .services(verifySid)
+                .verifications.create({ to: userMobile, channel: "sms" })
+                .then((verification) =>{
+                    if(verification.status === "pending"){
+                      
+                        res.render('users/verify-otp')
+                        
+                    }else{
+                        res.render('users/otp',{message:"OTP sending failed"})
+                    }  
+                })
+            }else{
+                res.render('users/otp',{message:"You have to verify email before OTP login"})
+            }
+           
+        }else{
+            res.render('users/otp',{message:"You have to signup before OTP login"})
+        }
+    }catch(error){
+        console.log(error.message);
+    }
+}
+
+const LoadverifyOtp = async(req,res)=>{
+    try {
+        res.render('users/verify-otp')
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const verifyOtp = async(req,res)=>{
+    try {
+        const userMobile = "+91"+req.session.userMobileForOtp
+        console.log(userMobile);
+        const otp = req.body.otp;
+        twilio.verify.v2
+            .services(verifySid)
+            .verificationChecks.create({ to: userMobile, code: otp })
+            .then(async(verification_check) =>{
+                if(verification_check.status === 'approved'){
+                    console.log(verification_check.status)
+                let user = await User.findOne({mobile:req.session.userMobileForOtp})
+
+                req.session.user_id = user._id;
+
+                console.log(req.session.user_id);
+
+                res.redirect('/home');
+                }else{
+                    res.render('users/verify-otp',{message:"invalid OTP"})
+                }
+                
+            }) 
+            
+            }
+
+     catch (error) {
+        console.log(error.message);
+    }
+}
+    
+            
+            
+//            
+//             client.verify.v2
+//             .services(verifySid)
+//             .verificationChecks.create({ to: "+917907844545", code: otpCode })
+//             .then((verification_check) => console.log(verification_check.status))
+//             .then(() => readline.close());
+//             });
+//             });
+
+//         }
+//     } catch (error) {
+//        console.log(error.message); 
+//     }
+// }
 
 module.exports={
     loadSignup,
@@ -259,5 +372,9 @@ module.exports={
     forgetLoad,
     forgetVerify,
     forgetPasswordLoad,
-    resetPassword
+    resetPassword,
+    loadOtp,
+    sendOtp,
+    LoadverifyOtp,
+    verifyOtp
 }

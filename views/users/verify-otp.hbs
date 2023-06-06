@@ -1,37 +1,36 @@
-
 <link href="/stylesheets/signup.css" rel="stylesheet" />
 <style>
   
-  .forget-container{
+  .otp-container{
      display: flex;
       justify-content: center;
       align-items: center;
       
   }
-  .forget-logo{
+  .otp-logo{
     display: block;
       margin: 0 auto;
       max-height: 81px;
   }
  </style>
 <div class="wrapper">
-  <div class="forget-container"><img class="forget-logo" src="/images/download.png" alt=""></div>
+  <div class="otp-container"><img class="otp-logo" src="/images/download.png" alt=""></div>
   
       <div class="title-text">
-        <div class="title reset-password">Reset password</div>
+        <div class="title reset-password">Enter OTP</div>
         
       </div>
  <div class="form-inner">
          
-          <form action="/forget" method="post" class="login">
+          <form action="/verify-otp" method="post" class="login">
             <div class="field">
-              <input type="email" name="email" placeholder="Email Address" required>
+              <input type="number" name="otp" placeholder="Enter OTP" required>
             </div>
             
             
             <div class="field btn">
               <div class="btn-layer"></div>
-              <input type="submit" value="Send reset link">
+              <input type="submit" value="Verify OTP">
             </div>
             
             {{#if message}}
