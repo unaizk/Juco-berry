@@ -1,0 +1,29 @@
+ <link href="/stylesheets/admin-login.css" rel="stylesheet" />
+ 
+ <div class="wrapper">
+  <div class="img-container"><img class="login-logo" src="/images/193459649_3002820016668094_11705685645653455_n.jpg" alt=""></div>
+  
+      <div class="title-text">
+        <div class="admin-login">Admin Login</div>
+      </div>
+       {{#if message}}
+                <p><span id="login-message" style="font-family: Arial, sans-serif; color: rgb(255, 0, 0);">{{message}}</span></p>
+
+          {{/if}} 
+        <div class="form-inner">
+         
+            <form action="/admin" method="post" class="login">
+                <div class="field">
+                    <input type="email" name="email" placeholder="Email Address" required>
+                </div>
+                <div class="field">
+                    <input type="password" name="password" placeholder="Password" required>
+                </div>
+                <div class="pass-link"><a href="/forget">Forgot password?</a></div>
+                <div class="field btn">
+                    <div class="btn-layer"></div>
+                    <input type="submit" value="Login">
+                </div>
+            </form>
+        </div>
+</div>
