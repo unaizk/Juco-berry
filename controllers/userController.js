@@ -27,7 +27,7 @@ const securePassword = async(password)=>{
 // signup user method
 const loadSignup = async(req,res)=>{
     try {
-        y// console.log('load signup function is called');
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
         res.render('users/signup&login')
         
     } catch (error) {
@@ -37,6 +37,7 @@ const loadSignup = async(req,res)=>{
 // login user method
 const loadLogin = async(req,res)=>{
     try {
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
         res.render('users/signup&login')
     } catch (error) {
         console.log(error.message);
@@ -170,7 +171,7 @@ const verifyLogin = async(req,res)=>{
                 res.render('users/signup&login',{messages:"please verify your mail"})
             }else{
                 req.session.user_id = userData._id
-                
+                res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
                 res.redirect('/home')
             }
           }else{
@@ -185,6 +186,7 @@ const verifyLogin = async(req,res)=>{
 }
 const loadHome = async(req,res)=>{
     try {
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
         res.render('users/home',{ layout: "layouts/user-layout" })
     } catch (error) {
         console.log(error.message);
