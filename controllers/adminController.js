@@ -53,7 +53,7 @@ const sendResetPasswordMail = async(name,email,token)=>{
 const loadLogin = async(req,res)=>{
     try {
         res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-        res.render('admin/admin-login')
+        res.render('admin/admin-login',{layout:'admin-layout'})
     } catch (error) {
         console.log(error.message);
     }
@@ -72,7 +72,7 @@ const verifyLogin = async(req,res)=>{
         
         if(passwordMatch){
             if(userData.is_admin === false){
-                res.render('admin/admin-login',{message:"Your are not admin"})
+                res.render('admin/admin-login',{layout:'admin-layout'})
             }else{
                 req.session.user_id = userData._id;
                 req.session.is_admin = userData.is_admin
@@ -80,10 +80,10 @@ const verifyLogin = async(req,res)=>{
                 res.redirect('admin/admin-home')
             }
         }else{
-            res.render('admin/admin-login',{message:"Your password is incorrect"})
+            res.render('admin/admin-login',{message:"Your password is incorrect"},{layout:'admin-layout'})
         }
        }else{
-        res.render('admin/admin-login',{message:"Your email is incorrect"})
+        res.render('admin/admin-login',{message:"Your email is incorrect"},{layout:'admin-layout'})
        }
     } catch (error) {
         console.log(error.message);
@@ -93,7 +93,7 @@ const verifyLogin = async(req,res)=>{
 const loadDashboard = async(req,res)=>{
     try {
         
-        res.render('admin/admin-home',{ layout: "layouts/admin-layout" })
+        res.render('admin/admin-home',{layout:'admin-layout'})
     } catch (error) {
        console.log(error.message); 
     }
@@ -110,7 +110,7 @@ const logout = async(req,res)=>{
 
 const forgetLoad = async(req,res)=>{
     try {
-        res.render('admin/admin-forget')
+        res.render('admin/admin-forget',{layout:'admin-layout'})
     } catch (error) {
        console.log(error.message); 
     }
@@ -122,15 +122,15 @@ const forgetVerify = async(req,res)=>{
         const userData = await User.findOne({email:email});
         if(userData){
             if(userData.is_admin === false){
-                res.render('admin/admin-forget',{messages:"You are not admin"})
+                res.render('admin/admin-forget',{messages:"You are not admin"},{layout:'admin-layout'})
             }else{
                 const randomString = randomstring.generate()
                 const updatedData = await User.updateOne({email:email},{$set:{token:randomString}})
                 sendResetPasswordMail(userData.name,userData.email,randomString);
-                res.render('admin/admin-forget',{message:"Please check your mail to reset password"})
+                res.render('admin/admin-forget',{message:"Please check your mail to reset password"},{layout:'admin-layout'})
             }
         }else{
-            res.render('admin/admin-forget',{messages:"Your email is incorrect"})
+            res.render('admin/admin-forget',{messages:"Your email is incorrect"},{layout:'admin-layout'})
         }
 
     } catch (error) {

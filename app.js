@@ -4,7 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const mongoose = require('mongoose');
-const hbs = require('hbs');
+const hbs = require('express-handlebars');
 const bodyParser = require('body-parser')
 const session = require('express-session')
 
@@ -17,13 +17,17 @@ var adminRouter = require('./routes/admin');
 const config = require('./config/config')
 
 var app = express();
-hbs.registerPartials(__dirname + '/views/layouts');
-app.set('views', [
-  path.join(__dirname, 'views'),
-  path.join(__dirname, 'views', 'layouts')
- 
-]);
+
+
+
+app.set('views',path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
+app.engine('hbs',hbs.engine({extname:'hbs',layoutsDir:__dirname+'/views/layout',partialsDir:__dirname+'/views/partials/'}))
+
+console.log(path.join(__dirname, 'views', 'partials'));
+
+
+
 
 
 
