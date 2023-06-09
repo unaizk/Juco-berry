@@ -1,4 +1,5 @@
 const User = require('../models/userModel');
+
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const config = require('../config/config');
@@ -64,7 +65,7 @@ const verifyLogin = async(req,res)=>{
         const password = req.body.password;
         
 
-       userData = await User.findOne({email:email})
+        userData = await User.findOne({email:email})
        
        if(userData){
         
@@ -72,7 +73,7 @@ const verifyLogin = async(req,res)=>{
         
         if(passwordMatch){
             if(userData.is_admin === false){
-                res.render('admin/admin-login',{layout:'admin-layout'})
+                res.render('admin/admin-login',{layout:'admin-layout',message:'You are not admin'})
             }else{
                 req.session.user_id = userData._id;
                 req.session.is_admin = userData.is_admin
@@ -80,10 +81,10 @@ const verifyLogin = async(req,res)=>{
                 res.redirect('admin/admin-home')
             }
         }else{
-            res.render('admin/admin-login',{message:"Your password is incorrect"},{layout:'admin-layout'})
+            res.render('admin/admin-login',{message:"Your password is incorrect",layout:'admin-layout'})
         }
        }else{
-        res.render('admin/admin-login',{message:"Your email is incorrect"},{layout:'admin-layout'})
+        res.render('admin/admin-login',{message:"Your email is incorrect",layout:'admin-layout'})
        }
     } catch (error) {
         console.log(error.message);
@@ -122,15 +123,15 @@ const forgetVerify = async(req,res)=>{
         const userData = await User.findOne({email:email});
         if(userData){
             if(userData.is_admin === false){
-                res.render('admin/admin-forget',{messages:"You are not admin"},{layout:'admin-layout'})
+                res.render('admin/admin-forget',{messages:"You are not admin",layout:'admin-layout'})
             }else{
                 const randomString = randomstring.generate()
                 const updatedData = await User.updateOne({email:email},{$set:{token:randomString}})
                 sendResetPasswordMail(userData.name,userData.email,randomString);
-                res.render('admin/admin-forget',{message:"Please check your mail to reset password"},{layout:'admin-layout'})
+                res.render('admin/admin-forget',{message:"Please check your mail to reset password",layout:'admin-layout'})
             }
         }else{
-            res.render('admin/admin-forget',{messages:"Your email is incorrect"},{layout:'admin-layout'})
+            res.render('admin/admin-forget',{messages:"Your email is incorrect",layout:'admin-layout'})
         }
 
     } catch (error) {
@@ -164,6 +165,30 @@ const forgetPasswordVerify = async(req,res)=>{
     }
 }
 
+// const usersList = async(req,res)=>{
+//     try {
+//       const userData = await User.find({is_admin:false}).lean()
+//             console.log(userData);
+//         res.render('admin/admin-users',{layout:"admin-layout",users:userData})
+//     } catch (error) {
+//         console.log(error.message);
+//     }
+// }
+const usersList = async (req, res) => {
+    try {
+        const userData = await User.find({ is_admin: false }).lean();
+        const usersWithSerialNumber = userData.map((user, index) => ({
+            ...user,
+            serialNumber: index + 1
+        }));
+        console.log(usersWithSerialNumber);
+        res.render('admin/admin-users', { layout: "admin-layout", users: usersWithSerialNumber });
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+
 module.exports = {
     loadLogin,
     verifyLogin,
@@ -172,5 +197,6 @@ module.exports = {
     forgetLoad,
     forgetVerify,
     forgetPasswordLoad,
-    forgetPasswordVerify
+    forgetPasswordVerify,
+    usersList
 }
