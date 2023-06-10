@@ -165,18 +165,9 @@ const forgetPasswordVerify = async(req,res)=>{
     }
 }
 
-// const usersList = async(req,res)=>{
-//     try {
-//       const userData = await User.find({is_admin:false}).lean()
-//             console.log(userData);
-//         res.render('admin/admin-users',{layout:"admin-layout",users:userData})
-//     } catch (error) {
-//         console.log(error.message);
-//     }
-// }
 const usersList = async (req, res) => {
     try {
-        const userData = await User.find({ is_admin: false }).lean();
+        const userData = await User.find({ is_admin: false,blocked:false}).lean();
         const usersWithSerialNumber = userData.map((user, index) => ({
             ...user,
             serialNumber: index + 1
@@ -219,6 +210,45 @@ const updateUser = async(req,res)=>{
 }
 
 
+
+const blockingUser = async (req, res) => {
+    try {
+      const id = req.query.id;
+      const userData = await User.findByIdAndUpdate({ _id: id }, {$set:{ blocked: true }});
+      // Redirect to the admin-users page
+      res.redirect('/admin/admin-users');
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const blockedUsers = async(req,res)=>{
+    try {
+        const blockedUserData = await User.find({ is_admin: false,blocked:true}).lean();
+        const usersWithSerialNumber = blockedUserData.map((user, index) => ({
+            ...user,
+            serialNumber: index + 1
+        }));
+        console.log(usersWithSerialNumber);
+        res.render('admin/blocked-users', { layout: "admin-layout", users: usersWithSerialNumber });
+    } catch (error) {
+        console.log(error.message);
+    }
+  }
+  const unblockingUser = async (req, res) => {
+    try {
+      const id = req.query.id;
+      const userData = await User.findByIdAndUpdate({ _id: id }, {$set:{ blocked: false }});
+      // Redirect to the admin-users page
+      res.redirect('/admin/blocked-users');
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  
+  
+
 module.exports = {
     loadLogin,
     verifyLogin,
@@ -230,5 +260,9 @@ module.exports = {
     forgetPasswordVerify,
     usersList,
     editUserLoad,
-    updateUser
+    updateUser,
+    blockingUser,
+    usersList,
+    blockedUsers,
+    unblockingUser
 }

@@ -1,5 +1,5 @@
-{{>admin-header}}
 
+{{>admin-header}}
 <style>
     .align-middle {
         vertical-align: middle;
@@ -12,9 +12,9 @@
 
             <div class="bg-light rounded h-100 p-4">
                 
-                <div class="d-flex justify-content-between align-items-center">
-                    <h6 class="mb-4" style="font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 1.2em; margin-bottom: 0;">Users List</h6>
-                    <a href="/admin/blocked-users" class="btn btn-outline-danger m-2">Blocked Users</a>
+               
+                <div >
+                    <h6 class="mb-4" style="font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 1.2em;">Blocked users</h6>
                 </div>
 
                 <div class="table-responsive">
@@ -27,7 +27,7 @@
                                 <th scope="col">Mobile</th>
                                 <th scope="col">Verification</th>
                                 <th scope="col">Action</th>
-                                <th scope="col">Action</th>
+                                
                             </tr>
                         </thead>
 
@@ -43,12 +43,12 @@
                                 {{else}}
                                 <td class="align-middle">Not verified</td>
                                 {{/if}}
-                                <td class="align-middle">
-                                    <a href="/admin/edit-user?id={{_id}}" class="btn btn-primary m-2">Edit</a>
-                                </td>
+                                
                                 
                                 <td class="align-middle">
-                                    <a href="/admin/block-user?id={{this._id}}" class="btn btn-danger" onclick="return confirm('Are you sure you want to block {{this.name}}?')">Block</a>
+                                   
+                                      <a href="/admin/unblock-user?id={{this._id}}" class="btn btn-success" onclick="return confirm('Are you sure you want to block {{this.name}}?')">Unblock</a>
+            
                                 </td>
                             </tr>
                             {{/each}}
@@ -61,7 +61,5 @@
     </div>
 </div>
 
-<!-- Table End -->
 {{>admin-footer}}
-
 

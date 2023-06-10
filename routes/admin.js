@@ -12,11 +12,23 @@ router.get('/admin-forget',adminAuth.isLogout,adminController.forgetLoad)
 router.post('/admin-forget',adminController.forgetVerify);
 router.get('/admin-forget-password',adminAuth.isLogout,adminController.forgetPasswordLoad)
 router.post('/admin-forget-password',adminController.forgetPasswordVerify);
-router.get('/admin-users',adminAuth.isLogin,adminController.usersList)
-router.get('/edit-user',adminAuth.isLogin,adminController.editUserLoad)
-router.post('/edit-user',adminController.updateUser)
+// Route for blocking a user
+router.get('/block-user', adminAuth.isLogin, adminController.blockingUser);
 
+// Route for rendering the admin users page
+router.get('/admin-users', adminAuth.isLogin, adminController.usersList);
 
+// Route for rendering the blocked users page
+router.get('/blocked-users', adminAuth.isLogin, adminController.blockedUsers);
+
+// Route for unblocking a user
+router.get('/unblock-user', adminAuth.isLogin, adminController.unblockingUser);
+
+// Route for editing user (load)
+router.get('/edit-user', adminAuth.isLogin, adminController.editUserLoad);
+
+// Route for updating user
+router.post('/edit-user', adminController.updateUser);
 
 
 

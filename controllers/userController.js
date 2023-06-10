@@ -169,6 +169,8 @@ const verifyLogin = async(req,res)=>{
           if(passwordMatch){
             if(userData.is_verified === false){
                 res.render('users/signup&login',{messages:"please verify your mail",layout:'user-layout'})
+            }else if(userData.blocked === true){
+                res.render('users/signup&login',{messages:"User has blocked",layout:'user-layout'})
             }else{
                 req.session.user_id = userData._id
                 res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
