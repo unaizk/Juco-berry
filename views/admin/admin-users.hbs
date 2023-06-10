@@ -1,10 +1,16 @@
- {{>admin-header}}
- 
+{{>admin-header}}
+
+<style>
+    .align-middle {
+        vertical-align: middle;
+    }
+</style>
 <!-- Table Start -->
 <div class="container-fluid pt-4 px-4">
     <div class="row g-4">
         <div class="col-12">
             <div class="bg-light rounded h-100 p-4">
+                
                 <h6 class="mb-4">Users list</h6>
                 <div class="table-responsive">
                     <table class="table">
@@ -15,28 +21,29 @@
                                 <th scope="col">Email</th>
                                 <th scope="col">Mobile</th>
                                 <th scope="col">Verification</th>
+                                <th scope="col">Action</th>
                             </tr>
                         </thead>
-                        
+
                         <tbody>
-                          
                             {{#each users}}
                             <tr>
-                                <th scope="row">{{serialNumber}}</th>
-                                <td>{{name}}</td>
-                                <td>{{email}}</td>
-                                <td>{{mobile}}</td>
+                                <th class="align-middle" scope="row">{{serialNumber}}</th>
+                                <td class="align-middle">{{name}}</td>
+                                <td class="align-middle">{{email}}</td>
+                                <td class="align-middle">{{mobile}}</td>
                                 {{#if is_verified}}
-                                <td>Verified</td>
+                                <td class="align-middle">Verified</td>
                                 {{else}}
-                                <td>Not verified</td>
+                                <td class="align-middle">Not verified</td>
                                 {{/if}}
+                                <td class="align-middle"><a href="/admin/edit-user?id={{_id}}" class="btn btn-primary m-2">Edit</a></td>
                             </tr>
                             {{/each}}
                         </tbody>
                     </table>
-                    
                 </div>
+
             </div>
         </div>
     </div>

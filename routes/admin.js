@@ -13,6 +13,8 @@ router.post('/admin-forget',adminController.forgetVerify);
 router.get('/admin-forget-password',adminAuth.isLogout,adminController.forgetPasswordLoad)
 router.post('/admin-forget-password',adminController.forgetPasswordVerify);
 router.get('/admin-users',adminAuth.isLogin,adminController.usersList)
+router.get('/edit-user',adminAuth.isLogin,adminController.editUserLoad)
+router.post('/edit-user',adminController.updateUser)
 
 
 

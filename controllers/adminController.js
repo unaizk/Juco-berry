@@ -188,6 +188,36 @@ const usersList = async (req, res) => {
     }
 }
 
+const editUserLoad = async (req, res) => {
+    try {
+        const id = req.query.id;
+        console.log('ID:', id);
+
+        const userData = await User.findById({_id: id}).lean();
+        console.log('User Data:', userData);
+
+        if (userData) {
+            res.render('admin/edit-user', {users: userData, layout:'admin-layout'});
+        } else {
+            console.log('User not found');
+            res.redirect('/admin/admin-users');
+        }
+    } catch (error) {
+        console.log('Error:', error.message);
+    }
+};
+
+const updateUser = async(req,res)=>{
+    try {
+        const id = req.body.id
+        
+       const userData = await User.findByIdAndUpdate({_id:id},{$set:{name:req.body.name,email:req.body.email,mobile:req.body.mobile,is_verified:req.body.verify}})
+       res.redirect('/admin/admin-users')
+    } catch (error) {
+       console.log(error.message); 
+    }
+}
+
 
 module.exports = {
     loadLogin,
@@ -198,5 +228,7 @@ module.exports = {
     forgetVerify,
     forgetPasswordLoad,
     forgetPasswordVerify,
-    usersList
+    usersList,
+    editUserLoad,
+    updateUser
 }

@@ -8,7 +8,7 @@ const config = require('../config/config');
 const randomstring = require("randomstring");
 
 const accountSid = "AC5b08749806fb17d29e70c46231045f1a";
-const authToken = "ecaedf1547d64a557e100f9ecb08113b";
+const authToken = "524284ec82c67ab3d82fd72ddd53a2f7";
 const verifySid = "VA881219022be56f5c9c40f5b2b336e929";
 const twilio = require("twilio")(accountSid, authToken);
 
@@ -92,9 +92,9 @@ const insertUser = async(req,res)=>{
         const userData = await user.save();
         sendVerifyMail(req.body.name,req.body.email,userData._id)
         if(userData){
-            res.render('users/signup&login',{message:"Your registration has been successfull, Please verify your email"},{layout:'user-layout'})
+            res.render('users/signup&login',{message:"Your registration has been successfull, Please verify your email",layout:'user-layout'})
         }else{
-            res.render('users/signup&login',{message:"Your registration has been failed"},{layout:'user-layout'})
+            res.render('users/signup&login',{message:"Your registration has been failed",layout:'user-layout'})
         }
 
     } catch (error) {
@@ -146,7 +146,7 @@ const verifyEmail = async(req,res)=>{
         try {
             const updateInfo = await User.updateOne({email:req.query.email},{$set:{is_verified:true}}) 
             console.log(updateInfo);
-            res.render('users/email-verified')
+            res.render('users/email-verified',{layout:'user-layout'})
          } catch (error) {
              console.log(error.message);
          }
@@ -168,17 +168,17 @@ const verifyLogin = async(req,res)=>{
         console.log(userData);
           if(passwordMatch){
             if(userData.is_verified === false){
-                res.render('users/signup&login',{messages:"please verify your mail"},{layout:'user-layout'})
+                res.render('users/signup&login',{messages:"please verify your mail",layout:'user-layout'})
             }else{
                 req.session.user_id = userData._id
                 res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
                 res.redirect('/home')
             }
           }else{
-            res.render('users/signup&login',{messages:"password is incorrect"},{layout:'user-layout'})
+            res.render('users/signup&login',{messages:"password is incorrect",layout:'user-layout'})
           }
        }else{
-        res.render('users/signup&login',{messages:"Email and password is incorrect"},{layout:'user-layout'})
+        res.render('users/signup&login',{messages:"Email and password is incorrect",layout:'user-layout'})
        }
     } catch (error) {
         console.log(error.message);
@@ -207,7 +207,7 @@ const userLogout = async(req,res)=>{
 
 const forgetLoad = async(req,res)=>{
     try {
-        res.render('users/forget')
+        res.render('users/forget',{layout:'user-layout'})
     } catch (error) {
         console.log(error.message);
     }
@@ -218,15 +218,15 @@ const forgetVerify = async(req,res)=>{
         const userData = await User.findOne({email:email})
         if(userData){
             if(userData.is_verified===false){
-                res.render('users/forget',{message:'please verify your email'},{layout:'user-layout'})
+                res.render('users/forget',{message:'please verify your email',layout:'user-layout'})
             }else{
                 const randomString = randomstring.generate();
                 const updatedData = await User.updateOne({email:email},{$set:{token:randomString}});
                 sendResetPasswordMail(userData.name,userData.email,randomString);
-                res.render('users/forget',{message:"Please check your mail to reset your password"})
+                res.render('users/forget',{message:"Please check your mail to reset your password",layout:'user-layout'})
             }
         }else{
-            res.render('users/forget',{message:"User email is incorrect"},{layout:'user-layout'})
+            res.render('users/forget',{message:"User email is incorrect",layout:'user-layout'})
         }
     } catch (error) {
         console.log(error.message);
@@ -295,15 +295,15 @@ const sendOtp = async(req,res)=>{
                         res.render('users/verify-otp',{layout:'user-layout'})
                         
                     }else{
-                        res.render('users/otp',{message:"OTP sending failed"},{layout:'user-layout'})
+                        res.render('users/otp',{message:"OTP sending failed",layout:'user-layout'})
                     }  
                 })
             }else{
-                res.render('users/otp',{message:"You have to verify email before OTP login"},{layout:'user-layout'})
+                res.render('users/otp',{message:"You have to verify email before OTP login",layout:'user-layout'})
             }
            
         }else{
-            res.render('users/otp',{message:"You have to signup before OTP login"},{layout:'user-layout'})
+            res.render('users/otp',{message:"You have to signup before OTP login",layout:'user-layout'})
         }
     }catch(error){
         console.log(error.message);

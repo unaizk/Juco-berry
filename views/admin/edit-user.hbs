@@ -1,0 +1,56 @@
+{{> admin-header}}
+<div class="container-fluid pt-4 px-4">
+    <div class="row g-4">
+        <div class="col-sm-12 col-xl-7 mx-auto">
+            <div class="bg-light rounded h-100 p-4">
+                <div class="text-center">
+                    <h6 class="mb-4">Edit User</h6>
+                </div>
+                {{#with users}}
+                <form action="/admin/edit-user" method="post">
+                    <div class="row mb-3">
+                        <label for="inputEmail3" class="col-sm-2 col-form-label">Name</label>
+                        <div class="col-sm-10">
+                            <input type="name" name="name" class="form-control" id="inputEmail3" value="{{this.name}}" required>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="inputEmail3" class="col-sm-2 col-form-label">Email</label>
+                        <div class="col-sm-10">
+                            <input type="email" name="email" class="form-control" id="inputEmail3" value="{{this.email}}" required>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="inputPassword3" class="col-sm-2 col-form-label">Mobile</label>
+                        <div class="col-sm-10">
+                            <input type="number" name="mobile" class="form-control" id="inputPassword3" value="{{this.mobile}}" required>
+                        </div>
+                    </div>
+                    <fieldset class="row mb-3">
+                        <legend class="col-form-label col-sm-2 pt-0 mr-4">Verification</legend>
+                        <div class="col-sm-10">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="verify" id="gridRadios1" value="true"{{#if this.is_verified}}checked{{/if}} >
+                                <label class="form-check-label" for="gridRadios1">
+                                    Verified
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="verify" id="gridRadios2" value="false" {{#unless this.is_verified}}checked{{/unless}}>
+                                <label class="form-check-label" for="gridRadios2">
+                                    Not verified
+                                </label>
+                            </div>
+                        </div>
+                        <input class="form-check-input" type="hidden" name="id" value="{{this._id}}">
+                    </fieldset>
+                  
+                    <button type="submit" class="btn btn-primary">Update</button>
+                    <a href="/admin/admin-users" class="btn btn-danger">Cancel</a>
+                </form>
+                {{/with}}
+            </div>
+        </div>
+    </div>
+</div>
+{{> admin-footer}}
