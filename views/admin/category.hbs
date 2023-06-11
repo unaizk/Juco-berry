@@ -1,0 +1,91 @@
+<style>
+    .align-middle {
+        vertical-align: middle;
+    }
+</style>
+{{>admin-header}}
+
+<div class="container-fluid pt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="text-right mb-3">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#exampleModalCenter">
+                    Add Category
+                </button>
+            </div>
+
+            <div class="bg-light rounded p-4">
+                <h6 class="mb-4">CATEGORY LIST</h6>
+                <div class="table-responsive">
+                    <table class="table w-100">
+                        <thead>
+                            <tr>
+                                <th scope="col">SL NO</th>
+                                <th scope="col">ID</th>
+                                <th scope="col">CATEGORY</th>
+                                <th scope="col">ACTION</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each category}}
+                            <tr>
+                                <th class="align-middle" scope="row">{{serialNumber}}</th>
+                                <td class="align-middle">{{_id}}</td>
+                                <td class="align-middle">{{category}}</td>
+                                 <td class="align-middle">
+                                    <a href="/admin/remove-category?id={{_id}}" class="btn btn-danger m-2">Remove</a>
+                                </td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Add Category</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/admin/category" method="post">
+                <div class="modal-body">
+                   {{#if error}}
+                  <div class="alert alert-danger" role="alert">
+                    {{error}}
+                  </div>
+                  <script>
+                    // Show the error message in an alert box
+                    window.onload = function() {
+                      setTimeout(function() {
+                        alert("{{error}}");
+                      }, 100);
+                    }
+                  </script>
+                {{/if}}
+                    <div class="mb-3">
+                        <input type="text" name="category" class="form-control">
+                    </div>
+                </div>
+                
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{{>admin-footer}}

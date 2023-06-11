@@ -31,6 +31,10 @@ router.get('/edit-user', adminAuth.isLogin, adminController.editUserLoad);
 router.post('/edit-user', adminController.updateUser);
 
 
+router.get('/category',adminAuth.isLogin,adminController.loadCategory)
+router.post('/category',adminController.addCategory)
+router.get('/remove-category',adminAuth.isLogin,adminController.removeCategory)
+
 
 
 

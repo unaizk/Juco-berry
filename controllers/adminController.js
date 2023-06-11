@@ -1,4 +1,5 @@
 const User = require('../models/userModel');
+const Category = require('../models/categoryModel');
 
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
@@ -246,7 +247,66 @@ const blockingUser = async (req, res) => {
     }
   };
 
+  const loadCategory = async (req, res) => {
+    try {
+      const updatedCategories = await Category.find().lean();
+      const categoryWithSerialNumber = updatedCategories.map((category, index) => ({
+        ...category,
+        serialNumber: index + 1
+      }));
+      res.render('admin/category', { layout: "admin-layout", category: categoryWithSerialNumber });
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
   
+
+  const addCategory = async (req, res) => {
+    try {
+      const category = req.body.category.toUpperCase()
+  
+      // Check if a category with the same name (case-insensitive) already exists
+      const existingCategory = await Category.findOne({
+        category: { $regex: new RegExp('^' + category + '$', 'i') }
+      });
+  
+      if (existingCategory) {
+        const errorMessage = 'Category already exists.';
+        const updatedCategories = await Category.find().lean();
+        const categoryWithSerialNumber = updatedCategories.map((category, index) => ({
+            ...category,
+            serialNumber: index + 1,
+          }));
+  
+        return res.render('admin/category', {
+          layout: "admin-layout",
+          category: categoryWithSerialNumber,
+          error: errorMessage
+        });
+      }
+  
+      const newCategory = new Category({
+        category: category
+      });
+      await newCategory.save();
+  
+      // Redirect to the category page on successful addition
+      return res.redirect('/admin/category');
+    } catch (error) {
+      console.log(error.message);
+      // Handle other errors here
+    }
+  };
+
+  const removeCategory = async(req,res)=>{
+    try {
+        const id = req.query.id;
+        const category = await Category.deleteOne({_id:id})
+        res.redirect('/admin/category')
+    } catch (error) {
+        console.log(error.message);
+    }
+  }
   
 
 module.exports = {
@@ -264,5 +324,8 @@ module.exports = {
     blockingUser,
     usersList,
     blockedUsers,
-    unblockingUser
+    unblockingUser,
+    loadCategory,
+    addCategory,
+    removeCategory
 }
