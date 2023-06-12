@@ -2,6 +2,20 @@ var express = require('express');
 var router = express.Router();
 const adminController = require('../controllers/adminController')
 const adminAuth = require('../middleware/adminAuth')
+const multer = require('multer')
+const path = require('path'); 
+
+const storage = multer.diskStorage({
+    destination:(req,file,cb)=>{
+      cb(null,path.join(__dirname,'../public/productImages'))
+    },
+    filename:(req,file,cb)=>{
+      const name = Date.now()+'-'+file.originalname;
+      cb(null,name)
+    }
+  })
+  
+  const upload = multer({storage:storage})
 
 
 router.get('/',adminAuth.isLogout,adminController.loadLogin)
@@ -34,7 +48,8 @@ router.post('/edit-user', adminController.updateUser);
 router.get('/category',adminAuth.isLogin,adminController.loadCategory)
 router.post('/category',adminController.addCategory)
 router.get('/remove-category',adminAuth.isLogin,adminController.removeCategory)
-
+router.get('/products',adminAuth.isLogin,adminController.loadProducts);
+router.post('/products',upload.single('image'),adminController.insertProducts)
 
 
 

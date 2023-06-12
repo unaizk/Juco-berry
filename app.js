@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const hbs = require('express-handlebars');
 const bodyParser = require('body-parser')
 const session = require('express-session')
+const multer = require('multer')
 
 mongoose.connect('mongodb://127.0.0.1:27017/juco_berry')
 // view engine setup
@@ -20,9 +21,10 @@ var app = express();
 
 
 
+
 app.set('views',path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
-app.engine('hbs',hbs.engine({extname:'hbs',layoutsDir:__dirname+'/views/layout',partialsDir:__dirname+'/views/partials/'}))
+app.engine('hbs',hbs.engine({extname:'hbs',layoutsDir:__dirname+'/views/layout/',partialsDir:__dirname+'/views/partials/'}))
 
 console.log(path.join(__dirname, 'views', 'partials'));
 

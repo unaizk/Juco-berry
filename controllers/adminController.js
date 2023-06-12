@@ -1,6 +1,7 @@
 const User = require('../models/userModel');
 const Category = require('../models/categoryModel');
-
+const Product = require('../models/productsModel');
+const multer = require('multer')
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const config = require('../config/config');
@@ -288,7 +289,8 @@ const blockingUser = async (req, res) => {
       const newCategory = new Category({
         category: category
       });
-      await newCategory.save();
+      const categories = await newCategory.save();
+      
   
       // Redirect to the category page on successful addition
       return res.redirect('/admin/category');
@@ -307,6 +309,56 @@ const blockingUser = async (req, res) => {
         console.log(error.message);
     }
   }
+
+  const loadProducts = async(req,res)=>{
+    try {
+        const updatedproducts = await Product.find().lean();
+      const productWithSerialNumber = updatedproducts.map((products, index) => ({
+        ...products,
+        serialNumber: index + 1,
+        
+      }));
+      const categories = await Category.find().lean()
+      res.render('admin/products',{layout:"admin-layout",products: productWithSerialNumber,categories:categories });
+    } catch (error) {
+        console.log(error.message);
+    }
+  }
+
+  const insertProducts = async(req,res)=>{
+    try {
+        const product = new Product({
+            image:req.file.filename,
+            name:req.body.name,
+            category:req.body.category,
+            description:req.body.description,
+            price:req.body.price
+        })
+
+        const addProduct = await product.save()
+        
+        if(addProduct){
+             // Update categories collection with the product ID
+                await Category.updateOne(
+                { category: req.body.category },
+                { $push: { products: product._id } }
+                );
+            const updatedProducts = await Product.find().lean();
+            const productWithSerialNumber = updatedProducts.map((product, index) => ({
+            ...product,
+            serialNumber: index + 1
+        }));
+       
+        const categories = await Category.find().lean();
+        res.render('admin/products', { layout: "admin-layout", products: productWithSerialNumber,categories:categories });
+        }
+     
+    } catch (error) {
+        console.log(error.message);
+    }
+  }
+
+  
   
 
 module.exports = {
@@ -327,5 +379,7 @@ module.exports = {
     unblockingUser,
     loadCategory,
     addCategory,
-    removeCategory
+    removeCategory,
+    loadProducts,
+    insertProducts
 }
