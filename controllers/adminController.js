@@ -308,15 +308,14 @@ const blockingUser = async (req, res) => {
       // Find the category to be removed
       const category = await Category.findById(id).lean();
       const products = category.products;
+
+      // Delete the products belonging to the category
+    await Product.deleteMany({ _id: { $in: products } });
   
       // Remove the category
       await Category.deleteOne({ _id: id });
   
-      // Remove the category from the products' category field
-      await Product.updateMany(
-        { _id: { $in: products } },
-        { $unset: { category: "" } }
-      );
+      
   
       res.redirect('/admin/category');
     } catch (error) {
