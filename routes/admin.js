@@ -50,7 +50,7 @@ router.post('/category',adminController.addCategory)
 router.get('/remove-category',adminAuth.isLogin,adminController.removeCategory)
 router.get('/products',adminAuth.isLogin,adminController.loadProducts);
 router.post('/products',upload.single('image'),adminController.insertProducts)
-
+router.get('/delete-product',adminAuth.isLogin,adminController.deleteProduct)
 
 
 router.get('*',(req,res)=>{

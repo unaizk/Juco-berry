@@ -6,7 +6,8 @@ const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const config = require('../config/config');
 const randomstring = require("randomstring");
-
+var path = require('path');
+const fs = require('fs')
 
 
 
@@ -300,13 +301,26 @@ const blockingUser = async (req, res) => {
     }
   };
 
-  const removeCategory = async(req,res)=>{
+  const removeCategory = async (req, res) => {
     try {
-        const id = req.query.id;
-        const category = await Category.deleteOne({_id:id})
-        res.redirect('/admin/category')
+      const id = req.query.id;
+  
+      // Find the category to be removed
+      const category = await Category.findById(id).lean();
+      const products = category.products;
+  
+      // Remove the category
+      await Category.deleteOne({ _id: id });
+  
+      // Remove the category from the products' category field
+      await Product.updateMany(
+        { _id: { $in: products } },
+        { $unset: { category: "" } }
+      );
+  
+      res.redirect('/admin/category');
     } catch (error) {
-        console.log(error.message);
+      console.log(error.message);
     }
   }
 
@@ -358,6 +372,52 @@ const blockingUser = async (req, res) => {
     }
   }
 
+  const deleteProduct = async (req, res) => {
+    try {
+      const id = req.query.id;
+  
+      // Find the category of the product
+      const product = await Product.findById(id).lean();
+      const category = product.category;
+
+      // Remove the product image from the public folder
+        const imagePath = path.join(__dirname, '../public/productImages', product.image);
+        fs.unlinkSync(imagePath);
+  
+      // Delete the product
+      await Product.findByIdAndDelete(id);
+  
+      // Remove the product ID from the category's products array
+      await Category.updateOne(
+        { category: category },
+        { $pull: { products: id } }
+      );
+  
+      // Retrieve the updated product list
+      const updatedProducts = await Product.find().lean();
+      const productWithSerialNumber = updatedProducts.map((product, index) => ({
+        ...product,
+        serialNumber: index + 1,
+      }));
+  
+      const categories = await Category.find().lean();
+  
+      // Update the categories with the updated products
+      for (const category of categories) {
+        const updatedProducts = category.products.filter((productId) =>
+          String(productId) !== id
+        );
+        await Category.findByIdAndUpdate(category._id, { products: updatedProducts });
+      }
+  
+      // Pass the updated product list and categories to the view
+      res.render('admin/products', { layout: 'admin-layout', products: productWithSerialNumber, categories: categories });
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+  
+  
   
   
 
@@ -381,5 +441,6 @@ module.exports = {
     addCategory,
     removeCategory,
     loadProducts,
-    insertProducts
+    insertProducts,
+    deleteProduct
 }
