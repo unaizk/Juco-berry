@@ -240,9 +240,9 @@ const forgetPasswordLoad = async(req,res)=>{
         const token = req.query.token;
        const tokenData = await User.findOne({token:token})
        if(tokenData){
-        res.render('users/forget-password',{user_id:tokenData._id})
+        res.render('users/forget-password',{user_id:tokenData._id,layout:"user-layout"})
        }else{
-        res.render('users/404',{message:"Your token is invalid"})
+        res.render('users/404',{message:"Your token is invalid",layout:"user-layout"})
        }
 
     } catch (error) {
