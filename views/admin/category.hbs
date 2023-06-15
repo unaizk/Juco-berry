@@ -28,6 +28,7 @@
                                 <th scope="col">ID</th>
                                 <th scope="col">CATEGORY</th>
                                 <th scope="col">ACTION</th>
+                                 <th scope="col">ACTION</th>
 
                             </tr>
                         </thead>
@@ -37,6 +38,9 @@
                                 <th class="align-middle" scope="row">{{serialNumber}}</th>
                                 <td class="align-middle">{{_id}}</td>
                                 <td class="align-middle">{{category}}</td>
+                                 <td class="align-middle">
+                                    <a href="/admin/edit-category?id={{_id}}" class="btn btn-primary m-2">Edit</a>
+                                </td>
                                  <td class="align-middle">
                                     <a href="/admin/unlist-category?id={{this._id}}" class="btn btn-danger" onclick="return confirm('Are you sure you want to Unlist {{this.name}}?')">Unlist</a>
                                 </td>

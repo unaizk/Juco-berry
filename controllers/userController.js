@@ -18,27 +18,27 @@ const twilio = require("twilio")(accountSid, authToken);
 
 
 // signup user method
-const loadSignup = async(req,res)=>{
+const loadSignup = async (req, res) => {
     try {
-      await userHelpers.loadingSignup(req,res)
-        
+        await userHelpers.loadingSignup(req, res)
+
     } catch (error) {
         console.log(error.message);
     }
 }
 // login user method
-const loadLogin = async(req,res)=>{
+const loadLogin = async (req, res) => {
     try {
-       await userHelpers.loadingLogin(req,res)
+        await userHelpers.loadingLogin(req, res)
     } catch (error) {
         console.log(error.message);
     }
 }
 
 
-const insertUser = async(req,res)=>{
+const insertUser = async (req, res) => {
     try {
-        await userHelpers.insertingUser(req,res)
+        await userHelpers.insertingUser(req, res)
     } catch (error) {
         console.log(error.message);
     }
@@ -47,36 +47,36 @@ const insertUser = async(req,res)=>{
 
 // verifying email//
 
-const verifyEmail = async(req,res)=>{
+const verifyEmail = async (req, res) => {
     try {
-        console.log(req.query.email,req.query.id);
-        await userHelpers.verifyingEmail(req,res)
+        console.log(req.query.email, req.query.id);
+        await userHelpers.verifyingEmail(req, res)
     } catch (error) {
         console.log(error.message);
-    }   
+    }
 }
 
 //verify login
 
-const verifyLogin = async(req,res)=>{
+const verifyLogin = async (req, res) => {
     try {
-       await userHelpers.verifyingToLogin(req,res);
+        await userHelpers.verifyingToLogin(req, res);
     } catch (error) {
         console.log(error.message);
     }
 }
-const loadHome = async(req,res)=>{
+const loadHome = async (req, res) => {
     try {
-      userHelpers.loadingHome(req,res)
+        userHelpers.loadingHome(req, res)
     } catch (error) {
         console.log(error.message);
     }
 }
 
 
-const userLogout = async(req,res)=>{
+const userLogout = async (req, res) => {
     try {
-      userHelpers.userLoggedOut(req,res);
+        userHelpers.userLoggedOut(req, res);
     } catch (error) {
         console.log(error.mssage);
     }
@@ -84,32 +84,32 @@ const userLogout = async(req,res)=>{
 
 //forget password
 
-const forgetLoad = async(req,res)=>{
+const forgetLoad = async (req, res) => {
     try {
-        userHelpers.loadingForget(req,res);
+        userHelpers.loadingForget(req, res);
     } catch (error) {
         console.log(error.message);
     }
 }
-const forgetVerify = async(req,res)=>{
+const forgetVerify = async (req, res) => {
     try {
-       await userHelpers.forgetPasswordVerify(req,res);
+        await userHelpers.forgetPasswordVerify(req, res);
     } catch (error) {
         console.log(error.message);
     }
 }
 
-const forgetPasswordLoad = async(req,res)=>{
+const forgetPasswordLoad = async (req, res) => {
     try {
-       await userHelpers.forgetPasswordLoad(req,res);
+        await userHelpers.forgetPasswordLoad(req, res);
 
     } catch (error) {
         console.log(error.message);
     }
 }
-const resetPassword = async(req,res)=>{
+const resetPassword = async (req, res) => {
     try {
-       await userHelpers.resettingPassword(req,res);
+        await userHelpers.resettingPassword(req, res);
     } catch (error) {
         console.log(error.message);
     }
@@ -117,42 +117,42 @@ const resetPassword = async(req,res)=>{
 //otp verification
 
 // Load OTP form
-const loadOtp = async(req,res)=>{
+const loadOtp = async (req, res) => {
     try {
-       userHelpers.loadingOTP(req,res);
-    } catch (error) {
-       console.log(error.message); 
-    }
-}
-
-const sendOtp = async(req,res)=>{
-    try {
-         await userHelpers.sendingOTP(req,res);
-    }catch(error){
-         console.log(error.message);
-    }
-}
-
-const loadVerifyOtp = async(req,res)=>{
-    try {
-        userHelpers.loadingVerifyOTP(req,res);
+        userHelpers.loadingOTP(req, res);
     } catch (error) {
         console.log(error.message);
     }
 }
 
-const verifyOtp = async(req,res)=>{
+const sendOtp = async (req, res) => {
     try {
-       await userHelpers.verifyingOtp(req,res);     
-    }
-     catch (error) {
+        await userHelpers.sendingOTP(req, res);
+    } catch (error) {
         console.log(error.message);
     }
 }
-    
-        
 
-module.exports={
+const loadVerifyOtp = async (req, res) => {
+    try {
+        userHelpers.loadingVerifyOTP(req, res);
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const verifyOtp = async (req, res) => {
+    try {
+        await userHelpers.verifyingOtp(req, res);
+    }
+    catch (error) {
+        console.log(error.message);
+    }
+}
+
+
+
+module.exports = {
     loadSignup,
     insertUser,
     verifyEmail,

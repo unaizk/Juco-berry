@@ -3,29 +3,30 @@ var router = express.Router();
 const adminController = require('../controllers/adminController')
 const adminAuth = require('../middleware/adminAuth')
 const multer = require('multer')
-const path = require('path'); 
+const path = require('path');
+const categoryHelpers = require('../helpers/categoryHelpers');
 
 const storage = multer.diskStorage({
-    destination:(req,file,cb)=>{
-      cb(null,path.join(__dirname,'../public/productImages'))
-    },
-    filename:(req,file,cb)=>{
-      const name = Date.now()+'-'+file.originalname;
-      cb(null,name)
-    }
-  })
-  
-  const upload = multer({storage:storage})
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, '../public/productImages'))
+  },
+  filename: (req, file, cb) => {
+    const name = Date.now() + '-' + file.originalname;
+    cb(null, name)
+  }
+})
+
+const upload = multer({ storage: storage })
 
 
-router.get('/',adminAuth.isLogout,adminController.loadLogin)
-router.post('/',adminController.verifyLogin)
-router.get('/admin-home',adminAuth.isLogin,adminController.loadDashboard);
-router.get('/logout',adminAuth.isLogin,adminController.logout);
-router.get('/admin-forget',adminAuth.isLogout,adminController.forgetLoad)
-router.post('/admin-forget',adminController.forgetVerify);
-router.get('/admin-forget-password',adminAuth.isLogout,adminController.forgetPasswordLoad)
-router.post('/admin-forget-password',adminController.forgetPasswordVerify);
+router.get('/', adminAuth.isLogout, adminController.loadLogin)
+router.post('/', adminController.verifyLogin)
+router.get('/admin-home', adminAuth.isLogin, adminController.loadDashboard);
+router.get('/logout', adminAuth.isLogin, adminController.logout);
+router.get('/admin-forget', adminAuth.isLogout, adminController.forgetLoad)
+router.post('/admin-forget', adminController.forgetVerify);
+router.get('/admin-forget-password', adminAuth.isLogout, adminController.forgetPasswordLoad)
+router.post('/admin-forget-password', adminController.forgetPasswordVerify);
 // Route for blocking a user
 router.get('/block-user', adminAuth.isLogin, adminController.blockingUser);
 
@@ -45,19 +46,21 @@ router.get('/edit-user', adminAuth.isLogin, adminController.editUserLoad);
 router.post('/edit-user', adminController.updateUser);
 
 
-router.get('/category',adminAuth.isLogin,adminController.loadCategory)
-router.post('/category',adminController.addCategory)
-router.get('/unlist-category',adminAuth.isLogin,adminController.unlistCategory)
-router.get('/unlisted-category',adminAuth.isLogin,adminController.unlistedCategory)
-router.get('/list-category',adminAuth.isLogin,adminController.listCategory)
-router.get('/products',adminAuth.isLogin,adminController.loadProducts);
-router.post('/products',upload.single('image'),adminController.insertProducts)
-router.get('/unlist-products',adminAuth.isLogin,adminController.unlistProduct)
-router.get('/unlisted-products',adminAuth.isLogin,adminController.unlistedProducts)
-router.get('/list-products',adminAuth.isLogin,adminController.listProducts)
+router.get('/category', adminAuth.isLogin, adminController.loadCategory)
+router.post('/category', adminController.addCategory)
+router.get('/unlist-category', adminAuth.isLogin, adminController.unlistCategory)
+router.get('/unlisted-category', adminAuth.isLogin, adminController.unlistedCategory)
+router.get('/list-category', adminAuth.isLogin, adminController.listCategory)
+router.get('/products', adminAuth.isLogin, adminController.loadProducts);
+router.post('/products', upload.single('image'), adminController.insertProducts)
+router.get('/unlist-products', adminAuth.isLogin, adminController.unlistProduct)
+router.get('/unlisted-products', adminAuth.isLogin, adminController.unlistedProducts)
+router.get('/list-products', adminAuth.isLogin, adminController.listProducts);
+router.get('/edit-category',adminAuth.isLogin,adminController.editCategoryLoad);
+router.post('/edit-category',adminController.updateCategory)
 
-router.get('*',(req,res)=>{
-    res.redirect('/admin')
+router.get('*', (req, res) => {
+  res.redirect('/admin')
 });
 
 module.exports = router;

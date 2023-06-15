@@ -12,7 +12,7 @@ const fs = require('fs')
 module.exports = {
     loadingCategory: async (req, res) => {
         try {
-            const updatedCategories = await Category.find({unlist:false}).lean();
+            const updatedCategories = await Category.find({ unlist: false }).lean();
             const categoryWithSerialNumber = updatedCategories.map((category, index) => ({
                 ...category,
                 serialNumber: index + 1
@@ -60,34 +60,34 @@ module.exports = {
         }
     },
 
-   
 
-    unlistingCategory: async(req,res)=>{
+
+    unlistingCategory: async (req, res) => {
         try {
             const id = req.query.id;
-              // Find the category to be unlist
-              const category = await Category.findById(id).lean();
-              const products = category.products;
-  
-              // unlist the products belonging to the category
-              await Product.updateMany(
+            // Find the category to be unlist
+            const category = await Category.findById(id).lean();
+            const products = category.products;
+
+            // unlist the products belonging to the category
+            await Product.updateMany(
                 { _id: { $in: products } }, // Filter products using their IDs
                 { $set: { unlist: true } } // Set unlist field to true
-              );
-  
-              // unlist the category
-              await Category.findByIdAndUpdate({ _id: id },{$set:{unlist:true}});
-  
-  
-  
-              res.redirect('/admin/category');
+            );
+
+            // unlist the category
+            await Category.findByIdAndUpdate({ _id: id }, { $set: { unlist: true } });
+
+
+
+            res.redirect('/admin/category');
 
         } catch (error) {
             throw new Error(error.message);
         }
     },
 
-    unlistedCategoryList : async(req,res)=>{
+    unlistedCategoryList: async (req, res) => {
         try {
             const unlistedCategoryData = await Category.find({ unlist: true }).lean();
             const categoryWithSerialNumber = unlistedCategoryData.map((category, index) => ({
@@ -102,7 +102,7 @@ module.exports = {
         }
     },
 
-    listingCategory : async(req,res)=>{
+    listingCategory: async (req, res) => {
         try {
             const id = req.query.id;
             const category = await Category.findById(id).lean();
@@ -110,14 +110,67 @@ module.exports = {
 
             // unlist the products belonging to the category
             await Product.updateMany(
-              { _id: { $in: products } }, // Filter products using their IDs
-              { $set: { unlist: false } } // Set unlist field to false
+                { _id: { $in: products } }, // Filter products using their IDs
+                { $set: { unlist: false } } // Set unlist field to false
             );
-            await Category.findByIdAndUpdate({ _id: id },{$set:{unlist:false}});
+            await Category.findByIdAndUpdate({ _id: id }, { $set: { unlist: false } });
             return res.redirect('/admin/unlisted-category');
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    },
+
+    editingCategoryPageLoad: async(req,res)=>{
+        try {
+            const id = req.query.id;
+            console.log('ID:', id);
+
+            const categoryData = await Category.findById({ _id: id }).lean();
+            console.log('Category Data:', categoryData);
+
+            if (categoryData) {
+                res.render('admin/edit-category', { category: categoryData, layout: 'admin-layout' });
+            } else {
+                console.log('User not found');
+                res.redirect('/admin/category');
+            }
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    },
+
+    updatingCategory: async (req, res) => {
+        try {
+            const { id, category } = req.body;
+    
+            // Check if a category with the same name (case-insensitive) already exists
+            const existingCategory = await Category.findOne({
+                _id: { $ne: id }, // Exclude the current category from the check
+                category: { $regex: new RegExp('^' + category + '$', 'i') }
+            });
+    
+            if (existingCategory) {
+                const errorMessage = 'Category already exists.';
+                const updatedCategories = await Category.find().lean();
+                const categoryWithSerialNumber = updatedCategories.map((category, index) => ({
+                    ...category,
+                    serialNumber: index + 1,
+                }));
+    
+                return res.render('admin/category', {
+                    layout: "admin-layout",
+                    category: categoryWithSerialNumber,
+                    error: errorMessage
+                });
+            }
+    
+            // Update the category with the new name
+            await Category.findByIdAndUpdate(id, { category: category.toUpperCase() });
+            res.redirect('/admin/category');
         } catch (error) {
             throw new Error(error.message);
         }
     }
     
+
 }

@@ -1,0 +1,27 @@
+{{> admin-header}}
+<div class="container-fluid pt-4 px-4">
+    <div class="row g-4">
+        <div class="col-sm-12 col-xl-7 mx-auto">
+            <div class="bg-light rounded h-100 p-4">
+                <div class="text-center">
+                    <h6 class="mb-4" style="font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 1.2em;">Edit Category</h6>
+                </div>
+                {{#with category}}
+                <form action="/admin/edit-category" method="post">
+                    <div class="row mb-3">
+                        <label for="inputEmail3" class="col-sm-2 col-form-label">Category</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="category" class="form-control" id="inputEmail3" value="{{this.category}}" required>
+                        </div>
+                    </div>
+                     <input class="form-check-input" type="hidden" name="id" value="{{this._id}}">
+                  
+                    <button type="submit" class="btn btn-primary">Update</button>
+                    <a href="/admin/category" class="btn btn-danger">Cancel</a>
+                </form>
+                {{/with}}
+            </div>
+        </div>
+    </div>
+</div>
+{{> admin-footer}}

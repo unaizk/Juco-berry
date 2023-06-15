@@ -52,7 +52,7 @@ module.exports = {
                     serialNumber: index + 1
                 }));
 
-                const categories = await Category.find({unlist:false}).lean();
+                const categories = await Category.find({ unlist: false }).lean();
                 res.render('admin/products', { layout: "admin-layout", products: productWithSerialNumber, categories: categories });
             }
         } catch (error) {
