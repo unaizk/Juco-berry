@@ -1,0 +1,59 @@
+
+{{>admin-header}}
+<style>
+    .align-middle {
+        vertical-align: middle;
+    }
+</style>
+<!-- Table Start -->
+<div class="container-fluid pt-4 px-4">
+    <div class="row g-4">
+        <div class="col-12">
+
+            <div class="bg-light rounded h-100 p-4">
+                
+               
+                <div >
+                    <h6 class="mb-4" style="font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 1.2em;">Unlisted products</h6>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                 <th scope="col">SL NO</th>
+                                <th scope="col">IMAGE</th>
+                                <th scope="col">NAME</th>
+                                <th scope="col">CATEGORY</th>
+                                <th scope="col">DESCRIPTION</th>
+                                <th scope="col">PRICE</th>
+                                <th scope="col">ACTION</th>
+                                
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                             {{#each product}}
+                            <tr>
+                                <th class="align-middle" scope="row">{{serialNumber}}</th>
+                                <td class="align-middle"><img src="/productImages/{{image}}" alt="{{image}}" width="50px" height="50px"></td>
+                                <td class="align-middle">{{name}}</td>
+                                <td class="align-middle">{{category}}</td>
+                                <td class="align-middle">{{description}}</td>
+                                <td class="align-middle">{{price}}</td>
+                                  <td class="align-middle">
+                                    <a href="/admin/list-products?id={{this._id}}" class="btn btn-primary" onclick="return confirm('Are you sure you want to list {{this.name}}?')">list</a>
+                                </td>
+                                </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{{>admin-footer}}
+

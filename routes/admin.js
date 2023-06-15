@@ -47,11 +47,14 @@ router.post('/edit-user', adminController.updateUser);
 
 router.get('/category',adminAuth.isLogin,adminController.loadCategory)
 router.post('/category',adminController.addCategory)
-router.get('/remove-category',adminAuth.isLogin,adminController.removeCategory)
+router.get('/unlist-category',adminAuth.isLogin,adminController.unlistCategory)
+router.get('/unlisted-category',adminAuth.isLogin,adminController.unlistedCategory)
+router.get('/list-category',adminAuth.isLogin,adminController.listCategory)
 router.get('/products',adminAuth.isLogin,adminController.loadProducts);
 router.post('/products',upload.single('image'),adminController.insertProducts)
-router.get('/delete-product',adminAuth.isLogin,adminController.deleteProduct)
-
+router.get('/unlist-products',adminAuth.isLogin,adminController.unlistProduct)
+router.get('/unlisted-products',adminAuth.isLogin,adminController.unlistedProducts)
+router.get('/list-products',adminAuth.isLogin,adminController.listProducts)
 
 router.get('*',(req,res)=>{
     res.redirect('/admin')

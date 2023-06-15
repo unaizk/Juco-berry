@@ -20,7 +20,12 @@ const productsSchema = new mongoose.Schema({
     description:{
         type:String,
         require:true
+    },
+    unlist : {
+        type:Boolean,
+        default:false
     }
+
 })
 
 module.exports = mongoose.model('Product',productsSchema)

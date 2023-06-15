@@ -8,6 +8,10 @@ const categorySchema = new mongoose.Schema({
     products:{
         type:Array,
         
+    },
+    unlist : {
+        type:Boolean,
+        default : false
     }
     
 })

@@ -145,9 +145,24 @@ const blockingUser = async (req, res) => {
     }
   };
 
-  const removeCategory = async (req, res) => {
+  const unlistCategory = async (req, res) => {
     try {
-      await categoryHelpers.removingCategory(req,res);
+      await categoryHelpers.unlistingCategory(req,res);
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+  const unlistedCategory = async(req,res)=>{
+    try {
+      await categoryHelpers.unlistedCategoryList(req,res);
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
+  const listCategory = async(req,res)=>{
+    try {
+      await categoryHelpers.listingCategory(req,res);
     } catch (error) {
       console.log(error.message);
     }
@@ -170,15 +185,29 @@ const blockingUser = async (req, res) => {
     }
   }
 
-  const deleteProduct = async (req, res) => {
+  const unlistProduct = async (req, res) => {
     try {
-      await productHelpers.deletingProduct(req,res);
+      await productHelpers.unlistingProducts(req,res);
     } catch (error) {
       console.log(error.message);
     }
   }
   
-  
+  const unlistedProducts = async(req,res)=>{
+    try {
+      await productHelpers.unlistedProductsList(req,res);
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
+  const listProducts = async(req,res)=>{
+    try {
+      await productHelpers.listingProducts(req,res)
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
   
   
 
@@ -200,8 +229,12 @@ module.exports = {
     unblockingUser,
     loadCategory,
     addCategory,
-    removeCategory,
+    unlistCategory,
     loadProducts,
     insertProducts,
-    deleteProduct
+    unlistProduct,
+    unlistedProducts,
+    listProducts,
+    unlistedCategory,
+    listCategory
 }
