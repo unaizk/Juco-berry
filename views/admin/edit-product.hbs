@@ -1,0 +1,134 @@
+{{> admin-header}}
+<div class="container-fluid pt-4 px-4">
+    <div class="row g-4">
+        <div class="col-sm-12 col-xl-8 mx-auto">
+            <div class="bg-light rounded h-100 p-4">
+                <div class="text-center">
+                    <h6 class="mb-4"
+                        style="font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 1.2em;">Edit
+                        Products</h6>
+                </div>
+
+{{categories}}
+
+                <form action="/admin/edit-product?id={{product._id}}" method="post" enctype="multipart/form-data">
+                   <div class="row mb-3">
+                        <label for="image" class="col-sm-2 col-form-label">IMAGE</label>
+                        <div class="col-sm-10">
+                           <input type="file" name="image" id="image" class="form-control" multiple onchange="editimageView(event)">
+
+                        </div>
+                         <div class="mt-4">
+                            {{#each product.image}}
+                            <img src="/productImages/{{this}}" alt="" style="width: 50px;height: 50px;"
+                                class="imagepreview">
+                            <a href="" class="delete-image" data-image="{{this}}" data-index="{{@index}}"><i
+                                class="bi bi-x-lg"></i></a>
+                            {{/each}}
+                            <input type="text" value="{{products._id}}" hidden id="idForserver">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="inputEmail3" class="col-sm-2 col-form-label">NAME</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="name" class="form-control" id="inputEmail3"
+                                value="{{product.name}}" required>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="category" class="col-sm-2 col-form-label">CATEGORY</label>
+                        <div class="col-sm-10">
+                            <select name="category" class="form-control" required>
+                                <option selected>{{product.category}}</option>
+                                {{#each categories}}
+                                <option value="{{this._id}}">{{this.category}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="inputEmail3" class="col-sm-2 col-form-label">DESCRIPTION</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="description" class="form-control" id="inputEmail3"
+                                value="{{product.description}}" required>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="inputEmail3" class="col-sm-2 col-form-label">PRICE</label>
+                        <div class="col-sm-10">
+                            <input type="number" name="price" class="form-control" id="inputEmail3"
+                                value="{{product.price}}" required>
+                        </div>
+                       
+                    </div>
+                    
+
+                    <button type="submit" class="btn btn-primary">Update</button>
+                    <a href="/admin/products" class="btn btn-danger">Cancel</a>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+{{> admin-footer}}
+
+<script>
+      function editimageView(event) {
+        const preview = document.getElementsByClassName('imagepreview');
+
+        for (let i = 0; i < event.target.files.length; i++) {
+          const file = event.target.files[i];
+          const reader = new FileReader();
+
+          reader.onload = function (e) {
+            preview[i].src = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+    </script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const deleteButtons = document.querySelectorAll('.delete-image');
+        const productId = document.getElementById('idForserver').value
+
+        deleteButtons.forEach(function (button) {
+          button.addEventListener('click', deleteImage);
+        });
+
+        function deleteImage(event) {
+          event.preventDefault();
+
+          const image = this.getAttribute('data-image');
+          const index = this.getAttribute('data-index');
+          const button = this;
+
+          console.log(image);
+
+          fetch('/admin/deleteImage', {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ image, index, productId }),
+          })
+            .then(function (response) {
+              if (response.ok) {
+                // Handle successful image deletion
+                console.log('Image deleted successfully');
+                // Remove the deleted image and button from the DOM
+                button.parentNode.removeChild(button.previousElementSibling);
+                button.parentNode.removeChild(button);
+              } else {
+                // Handle image deletion error
+                console.log('Failed to delete image');
+              }
+            })
+            .catch(function (error) {
+              console.log('Error occurred while deleting image', error);
+            });
+        }
+      });
+    </script>

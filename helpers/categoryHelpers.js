@@ -66,14 +66,7 @@ module.exports = {
         try {
             const id = req.query.id;
             // Find the category to be unlist
-            const category = await Category.findById(id).lean();
-            const products = category.products;
-
-            // unlist the products belonging to the category
-            await Product.updateMany(
-                { _id: { $in: products } }, // Filter products using their IDs
-                { $set: { unlist: true } } // Set unlist field to true
-            );
+          
 
             // unlist the category
             await Category.findByIdAndUpdate({ _id: id }, { $set: { unlist: true } });
@@ -105,14 +98,7 @@ module.exports = {
     listingCategory: async (req, res) => {
         try {
             const id = req.query.id;
-            const category = await Category.findById(id).lean();
-            const products = category.products;
-
-            // unlist the products belonging to the category
-            await Product.updateMany(
-                { _id: { $in: products } }, // Filter products using their IDs
-                { $set: { unlist: false } } // Set unlist field to false
-            );
+           
             await Category.findByIdAndUpdate({ _id: id }, { $set: { unlist: false } });
             return res.redirect('/admin/unlisted-category');
         } catch (error) {
@@ -170,7 +156,9 @@ module.exports = {
         } catch (error) {
             throw new Error(error.message);
         }
-    }
+    },
+
+   
     
 
 }

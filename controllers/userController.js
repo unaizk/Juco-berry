@@ -150,6 +150,14 @@ const verifyOtp = async (req, res) => {
     }
 }
 
+const listProductByCategory = async(req,res)=>{
+    try {
+        await productHelpers.listProductsByUsingCategory(req,res)
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 
 
 module.exports = {
@@ -167,5 +175,6 @@ module.exports = {
     loadOtp,
     sendOtp,
     loadVerifyOtp,
-    verifyOtp
+    verifyOtp,
+    listProductByCategory
 }

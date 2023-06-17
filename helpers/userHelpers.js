@@ -1,4 +1,6 @@
 const User = require('../models/userModel');
+const Category = require('../models/categoryModel')
+const Product = require('../models/productsModel')
 const multer = require('multer')
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
@@ -146,8 +148,10 @@ module.exports = {
 
     loadingHome: async (req, res) => {
         try {
+            const productData = await Product.find({unlist:false}).lean();
+            const categories = await Category.find({unlist:false}).lean()
             res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-            res.render('users/home', { layout: 'user-layout' })
+            res.render('users/home', { layout: 'user-layout' , products:productData,categories:categories})
         } catch (error) {
             throw new Error(error.message);
         }

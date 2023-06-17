@@ -22,6 +22,7 @@ router.get('/otp',auth.isLogout,userController.loadOtp);
 router.post('/otp',userController.sendOtp);
 router.get('/verify-otp',auth.isLogout,userController.loadVerifyOtp);
 router.post('/verify-otp',userController.verifyOtp);
+router.get('/categoryProduct',auth.isLogin,userController.listProductByCategory)
 
 
 module.exports = router;

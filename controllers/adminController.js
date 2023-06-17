@@ -225,6 +225,22 @@ const updateCategory = async(req,res)=>{
   }
 }
 
+const editProductLoad = async(req,res)=>{
+  try {
+    await productHelpers.editingProductPageLoad(req,res);
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+const updateProduct = async(req,res)=>{
+  try {
+    await productHelpers.updatingProducts(req,res);
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
 
 
 module.exports = {
@@ -254,5 +270,7 @@ module.exports = {
   unlistedCategory,
   listCategory,
   editCategoryLoad,
-  updateCategory
+  updateCategory,
+  editProductLoad,
+  updateProduct
 }

@@ -5,10 +5,7 @@ const categorySchema = new mongoose.Schema({
         type: String,
         require: true
     },
-    products: {
-        type: Array,
 
-    },
     unlist: {
         type: Boolean,
         default: false

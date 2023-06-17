@@ -8,6 +8,7 @@ const hbs = require('express-handlebars');
 const bodyParser = require('body-parser')
 const session = require('express-session')
 const multer = require('multer')
+const handlebars = require('handlebars');
 
 mongoose.connect('mongodb://127.0.0.1:27017/juco_berry')
 // view engine setup

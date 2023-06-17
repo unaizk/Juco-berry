@@ -31,17 +31,21 @@
                                 <th scope="col">DESCRIPTION</th>
                                 <th scope="col">PRICE</th>
                                 <th scope="col">ACTION</th>
+                                <th scope="col">ACTION</th>
                             </tr>
                         </thead>
                         <tbody>
                             {{#each products}}
                             <tr>
                                 <th class="align-middle" scope="row">{{serialNumber}}</th>
-                                <td class="align-middle"><img src="/productImages/{{image}}" alt="{{image}}" width="50px" height="50px"></td>
+                                <td class="align-middle"><img src="/productImages/{{image.[0]}}" alt="{{image}}" width="50px" height="50px"></td>
                                 <td class="align-middle">{{name}}</td>
                                 <td class="align-middle">{{category}}</td>
                                 <td class="align-middle">{{description}}</td>
                                 <td class="align-middle">{{price}}</td>
+                                  <td class="align-middle">
+                                    <a href="/admin/edit-product?id={{_id}}" class="btn btn-primary m-2">Edit</a>
+                                </td>
                                 <td class="align-middle">
                                     <a href="/admin/unlist-products?id={{this._id}}" class="btn btn-danger" onclick="return confirm('Are you sure you want to Unlist {{this.name}}?')">Unlist</a>
                                 </td>
@@ -70,7 +74,7 @@
                 <div class="modal-body">
                     <div class="mb-3">
                          <label for="image" class="form-label">Image</label>
-                        <input type="file" name="image" class="form-control" required>
+                        <input type="file" name="image" class="form-control" multiple required>
                     </div>
                      <div class="mb-3">
                          <label for="name" class="form-label">Name</label>
@@ -83,7 +87,7 @@
                                 {{#if unlist}}
                                     {{!-- Skip rendering the option for unlisted categories --}}
                                 {{else}}
-                                    <option value="{{category}}">{{category}}</option>
+                                    <option value="{{_id}}">{{category}}</option>
                                 {{/if}}
                             {{/each}}
                         </select>
