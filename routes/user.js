@@ -22,7 +22,9 @@ router.get('/otp',auth.isLogout,userController.loadOtp);
 router.post('/otp',userController.sendOtp);
 router.get('/verify-otp',auth.isLogout,userController.loadVerifyOtp);
 router.post('/verify-otp',userController.verifyOtp);
-router.get('/categoryProduct',auth.isLogin,userController.listProductByCategory)
+router.get('/view-product',auth.isLogin,userController.viewProduct)
+router.post('/addtocart',userController.addToCart);
+router.get('/cart',auth.isLogin,userController.loadCart)
 
 
 module.exports = router;

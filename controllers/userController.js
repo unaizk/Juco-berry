@@ -150,9 +150,25 @@ const verifyOtp = async (req, res) => {
     }
 }
 
-const listProductByCategory = async(req,res)=>{
+const viewProduct = async(req,res)=>{
     try {
-        await productHelpers.listProductsByUsingCategory(req,res)
+        await userHelpers.viewProductDetails(req,res);
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const addToCart = async(req,res)=>{
+    try {
+        await userHelpers.addingToCart(req,res)
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const loadCart = async(req,res)=>{
+    try {
+        await userHelpers.loadingCartPage(req,res);
     } catch (error) {
         console.log(error.message);
     }
@@ -176,5 +192,7 @@ module.exports = {
     sendOtp,
     loadVerifyOtp,
     verifyOtp,
-    listProductByCategory
+    viewProduct,
+    addToCart,
+    loadCart
 }

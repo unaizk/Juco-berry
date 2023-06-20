@@ -8,7 +8,7 @@ const randomstring = require("randomstring");
 var path = require('path');
 const fs = require('fs')
 const mongoose = require('mongoose')
-
+const ObjectId = mongoose.Types.ObjectId;
 
 
 module.exports = {
@@ -201,7 +201,7 @@ module.exports = {
             name: req.body.name,
             price: req.body.price,
             description: req.body.description,
-            category: req.body.category,
+            category:new mongoose.Types.ObjectId(req.body.category),
             image: product.image, // Use the previous image data as the starting point
           };
       
@@ -218,7 +218,7 @@ module.exports = {
       },
       
 
-
+ 
 
     
        

@@ -1,0 +1,148 @@
+{{>user-header}}
+<style>
+  .btn.btn-success {
+    background-color: black;
+    color: white;
+    transition: background-color 0.3s;
+    border: none; /* Remove the button border */
+  }
+
+  .btn.btn-success:hover {
+    background-color: gold;
+    color: white;
+  }
+
+  .btn.btn-success:hover span {
+    color: white;
+  }
+
+  .product-image {
+    display: flex;
+    justify-content: center; /* Align image horizontally */
+    align-items: center; /* Align image vertically */
+    position: relative;
+    overflow: hidden;
+    border-radius: 40px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+  .product-image img {
+    transition: transform 0.3s;
+  }
+
+  .product-image:hover img {
+    transform: scale(1.1);
+  }
+
+  .rating-stars {
+    color: gold;
+  }
+   .card {
+    border-radius: 25px; /* Add round edges to the card */
+  }
+</style>
+
+<section class="product-view">
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6 col-xl-4">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body">
+            <div class="product-image mb-4">
+              <img src="/productImages/{{products.image}}" class="img-fluid" alt="Product Image" width="250px" height="250px">
+            </div>
+            <div class="product-details mb-4">
+              <h2 class="product-name mb-2"><a href="#!" class="text-dark fw-bold">{{products.name}}</a></h2>
+              <p class="product-description mb-3 text-muted">{{products.description}}</p>
+              <div class="product-rating mb-3">
+                <span class="rating-stars">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                </span>
+                <span class="rating-value">Rated 5.0/5</span>
+              </div>
+              <p class="product-price mb-2">₹{{products.price}}</p>
+              <p class="product-availability text-muted">VISA Platinum</p>
+            </div>
+            <div class="product-actions">
+              <div class="row">
+                <div class="col-sm-6 mb-2">
+                  <a href="/home" class="btn btn-dark btn-block" style="color: white;">Cancel</a>
+                </div>
+                
+                   <div class="col-sm-6 mb-2">
+                  <a href="#"><button type="button" class="btn btn-success btn-block" onclick="addToCart('{{products._id}}', event); showSweetAlert();"> 
+                    <i class="fas fa-shopping-cart"></i> <!-- Add cart icon -->
+                    <span>Add to Cart</span>
+                  </button></a>
+                </div>
+                
+               
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{{>user-footer}}
+ <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+ 
+ <script>
+  function smoothScroll(target) {
+    $('html, body').animate({
+      scrollTop: $(target).offset().top
+    }, 800);
+  }
+</script>
+
+<script>
+function addToCart(productId, event) {
+  event.preventDefault(); // Prevent the default behavior of the <a> tag
+
+  // Send an AJAX request to the server
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', '/addtocart', true);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+      // Handle the server response here (if needed)
+      swal("Success", "Product added to cart!", "success");
+    }
+  };
+  xhr.send(JSON.stringify({ productId: productId }));
+}
+</script>
+<script>
+function showSweetAlert() {
+  Swal.fire({
+    title: "Success",
+    text: "Product added to cart!",
+    icon: "success",
+    showCancelButton: false,
+    confirmButtonColor: "#ffbf00",
+    confirmButtonText: "OK",
+    customClass: {
+      container: "swal-container",
+      title: "swal-title",
+      content: "swal-text",
+      confirmButton: "swal-button"
+    },
+    onOpen: () => {
+      // Set the text color to white
+      const swalContainer = document.querySelector(".swal-container");
+      swalContainer.style.color = "white";
+
+      // Remove the border from the OK button
+      const okButton = document.querySelector(".swal-button");
+      okButton.style.border = "none";
+    }
+  });
+}
+</script>

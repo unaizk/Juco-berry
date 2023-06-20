@@ -1,0 +1,312 @@
+{{>user-header}}
+
+<style>
+  /* Add this CSS to create space between the footer and the cart */
+  .cart-section {
+    margin-bottom: 100px;
+    /* Adjust the value as needed */
+  }
+
+
+  @media (min-width: 1025px) {
+    .h-custom {
+      height: 100vh !important;
+    }
+  }
+
+  .card-registration .select-input.form-control[readonly]:not([disabled]) {
+    font-size: 1rem;
+    line-height: 2.15;
+    padding-left: .75em;
+    padding-right: .75em;
+  }
+
+  .card-registration .select-arrow {
+    top: 13px;
+  }
+
+  .bg-grey {
+    background-color: #000;
+  }
+
+  @media (min-width: 992px) {
+    .card-registration-2 .bg-grey {
+      border-top-right-radius: 16px;
+      border-bottom-right-radius: 16px;
+    }
+  }
+
+  @media (max-width: 991px) {
+    .card-registration-2 .bg-grey {
+      border-bottom-left-radius: 16px;
+      border-bottom-right-radius: 16px;
+    }
+  }
+
+  /* Apply black and white theme to the cart section */
+  .cart-section {
+    background-color: #f8f9fa;
+    /* Change background color to light grey */
+  }
+
+  .cart-section .card-registration-2 {
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .cart-section h1,
+  .cart-section h5,
+  .cart-section h6 {
+    color: #000;
+  }
+
+  .cart-section .btn-primary {
+    background-color: #fff;
+    color: #000;
+    transition: transform 0.5s;
+    /* Slower transition for zoom effect */
+  }
+
+  .cart-section .btn-primary:hover {
+    background-color: #ffbf00;
+    /* Changed to gold color on hover */
+    color: #fff;
+    /* Changed text color to white on hover */
+    transform: scale(1.1);
+    /* Added zoom in effect on hover */
+  }
+
+  /* Apply zoom in effect on product list on hover */
+  .cart-section .mb-4:hover {
+    transform: scale(1.05);
+    /* Adjust the scale value for desired zoom in effect */
+    transition: transform 0.3s ease-in-out;
+    background-color: #f8f9fa;
+    /* Light grey background color on hover */
+  }
+
+  .cart-section .text-muted {
+    color: #777;
+  }
+
+  .cart-section .text-black {
+    color: #000;
+  }
+
+  .cart-section .img-fluid {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Apply black gradient background and white text to the right side */
+  .cart-section .summary-section {
+    background: linear-gradient(to bottom, #000, #111);
+    /* Modified to gradient black background */
+    color: #fff;
+  }
+
+  /* Set the summary text to white */
+  .summary-section h1,
+  .summary-section h5,
+  .summary-section h6 {
+    color: #fff;
+  }
+
+  /* Set all text on the right side to white */
+  .cart-section .bg-grey {
+    color: #fff;
+  }
+
+  /* Remove blue border and blue color */
+  .cart-section .form-control,
+  .cart-section .btn-primary {
+    border-color: #000;
+    color: #000;
+  }
+
+  .cart-section .form-control:focus,
+  .cart-section .btn-primary:focus {
+    box-shadow: none;
+    border-color: #000;
+    color: #000;
+  }
+
+  .cart-section .form-control::placeholder {
+    color: #777;
+  }
+
+  .cart-section .form-control:disabled,
+  .cart-section .form-control[readonly] {
+    background-color: #fff;
+    opacity: 1;
+  }
+
+  .cart-section .form-control[disabled]::placeholder,
+  .cart-section .form-control[readonly]::placeholder {
+    color: #777;
+  }
+
+  /* Remove all borders */
+  .cart-section .card-registration-2 {
+    border: none;
+  }
+
+  .cart-section .summary-section,
+  .cart-section .summary-section button {
+    border-color: transparent;
+  }
+
+  .summary-section h1:hover {
+    background-color: transparent !important;
+    color: #fff !important;
+  }
+
+  /* Add this CSS to create space between the footer and the cart */
+  .cart-section {
+    margin-bottom: 100px;
+    /* Adjust the value as needed */
+  }
+
+  /* Add animation to the empty cart message */
+  .empty-cart-animation {
+    animation: empty-cart-animation 1s ease-in-out infinite;
+    text-align: center;
+  }
+
+  @keyframes empty-cart-animation {
+    0% {
+      transform: scale(1);
+    }
+
+    50% {
+      transform: scale(1.1);
+    }
+
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  .empty-cart-animation h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+
+  .empty-cart-animation p {
+    font-size: 16px;
+    color: #777;
+  }
+  .cart-section .delete-product-btn i {
+  color: black;
+  transition: color 0.3s;
+}
+
+/* Add this CSS to change the color to red and apply zoom effect on hover */
+.cart-section .delete-product-btn:hover i {
+  color: red;
+  transform: scale(1.2);
+}
+</style>
+{{#if products}}
+
+<section class="cart-section">
+  <section class="h-100 h-custom" style="background-color: #d2c9ff;">
+    <div class="container py-5 h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-12">
+          <div class="card card-registration card-registration-2" style="border-radius: 15px;">
+            <div class="card-body p-0">
+              <div class="row g-0">
+                <div class="col-lg-8">
+                  <div class="p-5">
+                    <div class="d-flex justify-content-between align-items-center mb-5">
+                      <h1 class="fw-bold mb-0 text-black"> Cart</h1>
+                      <h6 class="mb-0 text-muted">{{this.totalCount}} Items</h6>
+                    </div>
+
+                    {{#each products}}
+                    <div class="row d-flex align-items-center mb-4">
+                      <div class="col-md-2 col-lg-2 col-xl-2">
+                        <img src="/productImages/{{this.image}}" class="img-fluid" alt="Product Image" />
+                      </div>
+                      <div class="col-md-4 col-lg-4 col-xl-4">
+                        <h5 class="mb-0">{{this.name}}</h5>
+                        <span class="text-muted">Category: {{this.category}}</span>
+                      </div>
+                      <div class="col-md-2 col-lg-2 col-xl-2">
+                        <input type="number" class="form-control" value="{{this.quantity}}" min="1" />
+                      </div>
+                      <div class="col-md-2 col-lg-2 col-xl-2">
+                        <div class="text-black">₹{{this.price}}</div>
+                      </div>
+
+                      <div class="col-md-1 col-lg-1 col-xl-1">
+                        <button type="button" class="btn btn-link delete-product-btn">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+                    {{/each}}
+                    <!-- Add more rows for additional items -->
+                  </div>
+                </div>
+                <div class="col-lg-4 bg-grey">
+                  <div class="p-5 summary-section">
+                    <div>
+                      <h1 class="fw-bold mb-4">Summary</h1>
+                    </div>
+                    <hr class="my-4">
+                    <div class="d-flex justify-content-between">
+                      <h6 class="text-white">Subtotal:</h6>
+                      <h6 class="text-white">₹{{this.finalAmount}}</h6>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                      <h6 class="text-white">Shipping:</h6>
+                      <h6 class="text-white">Free</h6>
+                    </div>
+                    <hr class="my-4">
+                    <div class="d-flex justify-content-between">
+                      <h5 class="fw-bold">Total:</h5>
+                      <h5 class="fw-bold">₹{{this.total}}</h5>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-block mt-4"
+                      style="background-color: #ffbf00; color: #fff;">Checkout</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</section>
+
+{{else}}
+<section class="cart-section">
+  <section class="h-100 h-custom" style="background-color: #d2c9ff;">
+    <div class="container py-5 h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-12">
+          <div class="card card-registration card-registration-2" style="border-radius: 15px;">
+            <div class="card-body p-0">
+              <div class="row g-0">
+                <div class="col-lg-12">
+                  <div class="p-5">
+                    <div class="text-center mb-4 empty-cart-animation">
+                      <h3>Your cart is empty</h3>
+                      <p>Add some products to continue shopping</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</section>
+
+{{/if}}
+
+{{>user-footer}}

@@ -12,6 +12,10 @@ const accountSid = "AC5b08749806fb17d29e70c46231045f1a";
 const authToken = "6244609fd966dac7f208bf06003da851";
 const verifySid = "VA881219022be56f5c9c40f5b2b336e929";
 const twilio = require("twilio")(accountSid, authToken);
+const mongoose = require('mongoose');
+const { Console } = require('console');
+const ObjectId = mongoose.Types.ObjectId;
+const Cart = require('../models/cartModel')
 
 module.exports = {
     passwordHash: async (password) => {
@@ -301,8 +305,117 @@ module.exports = {
         } catch (error) {
             throw new Error(error.message);
         }
-    }
+    },
+    viewProductDetails: async (req, res) => {
+        try {
+          const id = new mongoose.Types.ObjectId(req.query.id);
+          const product = await Product.findById(id).lean()
+          console.log(id);
+          console.log(product);
+          res.render('users/view-product', { layout: 'user-layout', products: product });
+        } catch (error) {
+          throw new Error(error.message);
+        }
+      },
 
+      addingToCart: async (req, res) => {
+        try {
+          const proId = req.body.productId;
+          console.log(proId, "id is coming");
+      
+          let cart = await Cart.findOne({ user_id: req.session.user_id });
+      
+          if (!cart) {
+            let newCart = new Cart({ user_id: req.session.user_id, products: [] });
+            await newCart.save();
+            cart = newCart;
+          }
+      
+          const existingProductIndex = cart.products.findIndex((product) => {
+            return product.productId.toString() === proId;
+          });
+      
+          if (existingProductIndex === -1) {
+            const product = await Product.findById(proId).lean();
+            cart.products.push({
+              productId: proId,
+              quantity: 1,
+              total: product.price, // Set the initial total to the price of the product
+            });
+          } else {
+            cart.products[existingProductIndex].quantity += 1;
+            const product = await Product.findById(proId).lean();
+            cart.products[existingProductIndex].total += product.price; // Update the total by adding the price of the product
+          }
+      
+          await cart.save();
+          console.log(cart);
+      
+          // Send a response indicating success or any other relevant data
+          res.status(200).json({ message: 'Product added to cart successfully' });
+        } catch (error) {
+          // Handle any errors that occurred during the process
+          res.status(500).json({ error: error.message });
+        }
+      },
+      
+     
+
+      loadingCartPage: async (req, res) => {
+        try {
+          const check = await Cart.findOne({ user_id: req.session.user_id });
+          if (check) {
+            const cart = await Cart.findOne({ user_id: req.session.user_id })
+              .populate({
+                path: 'products.productId',
+                populate: { path: 'category', select: 'category' },
+              })
+              .lean()
+              .exec();
+      
+            const products = cart.products.map((product) => {
+              const total =
+                Number(product.quantity) * Number(product.productId.price);
+              return {
+                _id: product.productId._id.toString(),
+                name: product.productId.name,
+                category: product.productId.category.category, // Access the category field directly
+                image: product.productId.image,
+                price: product.productId.price,
+                description: product.productId.description,
+                quantity: product.quantity,
+                total,
+              };
+            });
+      
+            const total = products.reduce(
+              (sum, product) => sum + Number(product.total),
+              0
+            );
+            const finalAmount = total;
+            // Get the total count of products
+            const totalCount = products.length;
+            res.render('users/cart', {
+              layout: 'user-layout',
+              products,
+              total,
+              totalCount,
+              subtotal: total,
+              finalAmount,
+            });
+          } else {
+            res.render('users/cart', {
+              message: 'Your cart is empty',
+              layout: 'user-layout',
+            });
+          }
+        } catch (error) {
+          throw new Error(error.message);
+        }
+      }
+      
+      
+     
 
 
 };
