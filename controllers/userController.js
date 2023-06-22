@@ -183,6 +183,15 @@ const changeQuantity = async(req,res)=>{
     }
 }
 
+const deleteProduct = async(req,res)=>{
+    try {
+        const response = await userHelpers.deleteProductFromCart(req,res);
+        res.send(response)
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 
 
 module.exports = {
@@ -204,5 +213,6 @@ module.exports = {
     viewProduct,
     addToCart,
     loadCart,
-    changeQuantity
+    changeQuantity,
+    deleteProduct
 }

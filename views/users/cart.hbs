@@ -275,7 +275,7 @@
                           <div class="text-black">₹{{this.price}}</div>
                         </div>
                         <div class="col-md-1 col-lg-1 col-xl-1">
-                          <button type="button" class="btn btn-link delete-product-btn">
+                          <button type="button" class="btn btn-link delete-product-btn" onclick="deleteproduct('{{this._id}}','{{this.user_id}}')">
                             <i class="fas fa-trash"></i>
                           </button>
                         </div>
@@ -344,8 +344,9 @@
 {{/if}}
 
 {{>user-footer}}
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 
 <script>
   function changeQuantity(proId, count, userId, quantity) {
@@ -382,4 +383,26 @@
     
     })
   }
+
+
+  function deleteproduct(proId,userId){
+      $.ajax({
+      url: "/delete-product-from-cart",
+      method: "post",
+      data: {
+        productId: proId,
+        userId: userId,
+      },
+    success: (response) => {
+      console.log(response,'ajax response')
+      if(response.deleteProductFromCart){
+         location.reload(); // Reload the page
+      }
+
+    }
+      })
+  
+  }
+
+ 
 </script>

@@ -26,6 +26,7 @@ router.get('/view-product',auth.isLogin,userController.viewProduct)
 router.post('/addtocart',userController.addToCart);
 router.get('/cart',auth.isLogin,userController.loadCart);
 router.post('/change-product-quantity',userController.changeQuantity)
+router.post('/delete-product-from-cart',userController.deleteProduct)
 
 
 
