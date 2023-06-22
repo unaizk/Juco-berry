@@ -361,7 +361,10 @@
         quantity: quantity,
       },
     success: (response) => {
-        console.log(response,'ajax response')
+       if(response.deleteProduct){
+          location.reload(); // Reload the page
+       }else{
+             console.log(response,'ajax response')
         const quantityInput = document.getElementById(`quantityInput_${proId}`);
         quantityInput.value = response.quantity;
 
@@ -370,7 +373,13 @@
 
         const summarySubtotal = document.getElementById(`summary-subtotal`);
         summarySubtotal.textContent = response.subtotal
-    }
+        
+       }
+     
+        
+      }
+       
+    
     })
   }
 </script>

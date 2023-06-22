@@ -447,8 +447,18 @@ module.exports = {
         // Update the total for the specific product in the cart
     const updatedProduct = cart.products.find(product => product.productId._id.equals(productId));
     updatedProduct.total = updatedProduct.productId.price * updatedProduct.quantity;
-
     await cart.save();
+
+    //   Check if the quantity is 0 or less
+      if (updatedProduct.quantity <= 0) {
+        // Remove the product from the cart
+        cart.products = cart.products.filter(product => !product.productId._id.equals(productId));
+        await cart.save();
+        const response = {deleteProduct : true}
+        return response
+      }
+  
+      
 
     // Calculate the new subtotal for all products in the cart
     const subtotal = cart.products.reduce((acc, product) => {
@@ -462,22 +472,10 @@ module.exports = {
     };
     console.log(response);
     return response
-
-        
-  
-            
-           
-                    
-            
-
-            res.status(200).json({ message: 'Quantity updated successfully.' });
-
-
-
-        } catch (error) {
-            console.log(error);
-            res.status(500).json({ error: error.message });
-        }
+    } catch (error) {
+      console.log(error);
+        res.status(500).json({ error: error.message });
+     }
     }
 }
 
