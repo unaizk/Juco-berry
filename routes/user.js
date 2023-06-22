@@ -24,7 +24,9 @@ router.get('/verify-otp',auth.isLogout,userController.loadVerifyOtp);
 router.post('/verify-otp',userController.verifyOtp);
 router.get('/view-product',auth.isLogin,userController.viewProduct)
 router.post('/addtocart',userController.addToCart);
-router.get('/cart',auth.isLogin,userController.loadCart)
+router.get('/cart',auth.isLogin,userController.loadCart);
+router.post('/change-product-quantity',userController.changeQuantity)
+
 
 
 module.exports = router;

@@ -174,6 +174,15 @@ const loadCart = async(req,res)=>{
     }
 }
 
+const changeQuantity = async(req,res)=>{
+    try {
+       const response = await userHelpers.changeProductQuantity(req,res);
+        res.send(response)
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 
 
 module.exports = {
@@ -194,5 +203,6 @@ module.exports = {
     verifyOtp,
     viewProduct,
     addToCart,
-    loadCart
+    loadCart,
+    changeQuantity
 }

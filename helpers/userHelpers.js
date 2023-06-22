@@ -152,10 +152,10 @@ module.exports = {
 
     loadingHome: async (req, res) => {
         try {
-            const productData = await Product.find({unlist:false}).lean();
-            const categories = await Category.find({unlist:false}).lean()
+            const productData = await Product.find({ unlist: false }).lean();
+            const categories = await Category.find({ unlist: false }).lean()
             res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-            res.render('users/home', { layout: 'user-layout' , products:productData,categories:categories})
+            res.render('users/home', { layout: 'user-layout', products: productData, categories: categories })
         } catch (error) {
             throw new Error(error.message);
         }
@@ -308,117 +308,178 @@ module.exports = {
     },
     viewProductDetails: async (req, res) => {
         try {
-          const id = new mongoose.Types.ObjectId(req.query.id);
-          const product = await Product.findById(id).lean()
-          console.log(id);
-          console.log(product);
-          res.render('users/view-product', { layout: 'user-layout', products: product });
+            const id = new mongoose.Types.ObjectId(req.query.id);
+            const product = await Product.findById(id).lean()
+            console.log(id);
+            console.log(product);
+            res.render('users/view-product', { layout: 'user-layout', products: product });
         } catch (error) {
-          throw new Error(error.message);
+            throw new Error(error.message);
         }
-      },
+    },
 
-      addingToCart: async (req, res) => {
+    addingToCart: async (req, res) => {
         try {
-          const proId = req.body.productId;
-          console.log(proId, "id is coming");
-      
-          let cart = await Cart.findOne({ user_id: req.session.user_id });
-      
-          if (!cart) {
-            let newCart = new Cart({ user_id: req.session.user_id, products: [] });
-            await newCart.save();
-            cart = newCart;
-          }
-      
-          const existingProductIndex = cart.products.findIndex((product) => {
-            return product.productId.toString() === proId;
-          });
-      
-          if (existingProductIndex === -1) {
-            const product = await Product.findById(proId).lean();
-            cart.products.push({
-              productId: proId,
-              quantity: 1,
-              total: product.price, // Set the initial total to the price of the product
-            });
-          } else {
-            cart.products[existingProductIndex].quantity += 1;
-            const product = await Product.findById(proId).lean();
-            cart.products[existingProductIndex].total += product.price; // Update the total by adding the price of the product
-          }
-      
-          await cart.save();
-          console.log(cart);
-      
-          // Send a response indicating success or any other relevant data
-          res.status(200).json({ message: 'Product added to cart successfully' });
-        } catch (error) {
-          // Handle any errors that occurred during the process
-          res.status(500).json({ error: error.message });
-        }
-      },
-      
-     
+            const proId = req.body.productId;
+            console.log(proId, "id is coming");
 
-      loadingCartPage: async (req, res) => {
+            let cart = await Cart.findOne({ user_id: req.session.user_id });
+
+            if (!cart) {
+                let newCart = new Cart({ user_id: req.session.user_id, products: [] });
+                await newCart.save();
+                cart = newCart;
+            }
+
+            const existingProductIndex = cart.products.findIndex((product) => {
+                return product.productId.toString() === proId;
+            });
+
+            if (existingProductIndex === -1) {
+                const product = await Product.findById(proId).lean();
+                const total = product.price; // Set the initial total to the price of the product
+                cart.products.push({
+                    productId: proId,
+                    quantity: 1,
+                    total, // Use the updated total value
+                });
+            } else {
+                cart.products[existingProductIndex].quantity += 1;
+                const product = await Product.findById(proId).lean();
+                cart.products[existingProductIndex].total += product.price; // Update the total by adding the price of the product
+            }
+
+            // Calculate the updated total amount for the cart
+            cart.total = cart.products.reduce((total, product) => {
+                return total + product.total;
+            }, 0);
+
+            await cart.save();
+            console.log(cart);
+
+            // Send a response indicating success or any other relevant data
+            res.status(200).json({ message: 'Product added to cart successfully' });
+        } catch (error) {
+            // Handle any errors that occurred during the process
+            res.status(500).json({ error: error.message });
+        }
+    },
+
+
+
+    loadingCartPage: async (req, res) => {
         try {
-          const check = await Cart.findOne({ user_id: req.session.user_id });
-          if (check) {
-            const cart = await Cart.findOne({ user_id: req.session.user_id })
-              .populate({
-                path: 'products.productId',
-                populate: { path: 'category', select: 'category' },
-              })
-              .lean()
-              .exec();
-      
-            const products = cart.products.map((product) => {
-              const total =
-                Number(product.quantity) * Number(product.productId.price);
-              return {
-                _id: product.productId._id.toString(),
-                name: product.productId.name,
-                category: product.productId.category.category, // Access the category field directly
-                image: product.productId.image,
-                price: product.productId.price,
-                description: product.productId.description,
-                quantity: product.quantity,
-                total,
-              };
-            });
-      
-            const total = products.reduce(
-              (sum, product) => sum + Number(product.total),
-              0
-            );
-            const finalAmount = total;
-            // Get the total count of products
-            const totalCount = products.length;
-            res.render('users/cart', {
-              layout: 'user-layout',
-              products,
-              total,
-              totalCount,
-              subtotal: total,
-              finalAmount,
-            });
-          } else {
-            res.render('users/cart', {
-              message: 'Your cart is empty',
-              layout: 'user-layout',
-            });
-          }
+            const check = await Cart.findOne({ user_id: req.session.user_id });
+            if (check) {
+                const cart = await Cart.findOne({ user_id: req.session.user_id })
+                    .populate({
+                        path: 'products.productId',
+                        populate: { path: 'category', select: 'category' },
+                    })
+                    .lean()
+                    .exec();
+
+                const products = cart.products.map((product) => {
+                    const total =
+                        Number(product.quantity) * Number(product.productId.price);
+                    return {
+                        _id: product.productId._id.toString(),
+                        name: product.productId.name,
+                        category: product.productId.category.category, // Access the category field directly
+                        image: product.productId.image,
+                        price: product.productId.price,
+                        description: product.productId.description,
+                        quantity: product.quantity,
+                        total,
+                        user_id: req.session.user_id,
+
+                    };
+                });
+
+                const total = products.reduce(
+                    (sum, product) => sum + Number(product.total),
+                    0
+                );
+                const finalAmount = total;
+                // Get the total count of products
+                const totalCount = products.length;
+                res.render('users/cart', {
+                    layout: 'user-layout',
+                    products,
+                    total,
+                    totalCount,
+                    subtotal: total,
+                    finalAmount,
+                });
+            } else {
+                res.render('users/cart', {
+                    message: 'Your cart is empty',
+                    layout: 'user-layout',
+                });
+            }
         } catch (error) {
-          throw new Error(error.message);
+            throw new Error(error.message);
         }
-      }
-      
-      
-     
+    },
+
+    changeProductQuantity: async (req, res) => {
+        try {
+            const userId = new mongoose.Types.ObjectId(req.body.userId);;
+            const productId = new mongoose.Types.ObjectId(req.body.productId);;
+            const quantity = req.body.quantity;
+            const cartFind = await Cart.findOne({ user_id: userId });
+            const cartId = cartFind._id;
+            const count = req.body.count;
+            console.log(userId,"userId");
+            console.log(productId,'productid');
+            console.log(quantity,'quantity');
+            console.log(cartId,'cartId');
+            console.log(count,'count');
+            
+           
+     // Find the cart for the given user and product
+     const cart = await Cart.findOneAndUpdate(
+        { user_id: userId, 'products.productId': productId },
+        { $inc: { 'products.$.quantity': count } },
+        { new: true }
+        ).populate('products.productId');
+  
+        // Update the total for the specific product in the cart
+    const updatedProduct = cart.products.find(product => product.productId._id.equals(productId));
+    updatedProduct.total = updatedProduct.productId.price * updatedProduct.quantity;
+
+    await cart.save();
+
+    // Calculate the new subtotal for all products in the cart
+    const subtotal = cart.products.reduce((acc, product) => {
+      return acc + product.total;
+    }, 0);
+
+    // Prepare the response object
+    const response = {
+      quantity: updatedProduct.quantity,
+      subtotal: subtotal
+    };
+    console.log(response);
+    return response
+
+        
+  
+            
+           
+                    
+            
+
+            res.status(200).json({ message: 'Quantity updated successfully.' });
 
 
-};
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ error: error.message });
+        }
+    }
+}
 
 
 

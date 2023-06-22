@@ -7,7 +7,6 @@
     /* Adjust the value as needed */
   }
 
-
   @media (min-width: 1025px) {
     .h-custom {
       height: 100vh !important;
@@ -52,6 +51,7 @@
   .cart-section .card-registration-2 {
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
   }
 
   .cart-section h1,
@@ -195,22 +195,54 @@
     font-size: 16px;
     color: #777;
   }
-  .cart-section .delete-product-btn i {
-  color: black;
-  transition: color 0.3s;
-}
 
-/* Add this CSS to change the color to red and apply zoom effect on hover */
-.cart-section .delete-product-btn:hover i {
-  color: red;
-  transform: scale(1.2);
-}
+  .cart-section .delete-product-btn i {
+    color: black;
+    transition: color 0.3s;
+  }
+
+  /* Add this CSS to change the color to red and apply zoom effect on hover */
+  .cart-section .delete-product-btn:hover i {
+    color: red;
+    transform: scale(1.2);
+  }
+
+  /* Adjust the size of the decrement and increment buttons */
+  .cart-section .decrement-btn,
+  .cart-section .increment-btn {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+
+  /* Increase the width of the cart template */
+  .cart-section .card-registration-2 {
+    width: 100%;
+  }
+   /* Add this CSS to make all product list heights the same */
+  .product-list {
+    display: flex;
+    align-items: stretch;
+  }
+
+  .product-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .product-image {
+    flex: 0 0 auto;
+  }
+
+  .product-details {
+    flex: 1 1 auto;
+  }
+</style>
 </style>
 {{#if products}}
-
 <section class="cart-section">
   <section class="h-100 h-custom" style="background-color: #d2c9ff;">
-    <div class="container py-5 h-100">
+    <div class="container-fluid py-5 h-100">
       <div class="row d-flex justify-content-center align-items-center h-100">
         <div class="col-12">
           <div class="card card-registration card-registration-2" style="border-radius: 15px;">
@@ -219,34 +251,39 @@
                 <div class="col-lg-8">
                   <div class="p-5">
                     <div class="d-flex justify-content-between align-items-center mb-5">
-                      <h1 class="fw-bold mb-0 text-black"> Cart</h1>
+                      <h1 class="fw-bold mb-0 text-black">Cart</h1>
                       <h6 class="mb-0 text-muted">{{this.totalCount}} Items</h6>
                     </div>
+                    <div>
+                      {{#each products}}
+                      <div class="row d-flex align-items-center mb-4">
+                        <div class="col-md-2 col-lg-2 col-xl-2">
+                          <img src="/productImages/{{this.image}}" class="img-fluid" alt="Product Image" />
+                        </div>
+                        <div class="col-md-4 col-lg-4 col-xl-4">
+                          <h5 class="mb-0">{{this.name}}</h5>
+                          <span class="text-muted">Category: {{this.category}}</span>
+                        </div>
+                        <div class="col-md-2 col-lg-2 col-xl-2">
+                          <div class="input-group">
+                            <button class="btn btn-outline-secondary decrement-btn" type="button" onclick="changeQuantity('{{this._id}}', -1, '{{this.user_id}}', {{this.quantity}})">-</button>
+                            <input id="quantityInput_{{this._id}}" type="number" class="form-control text-center quantity-input" value="{{this.quantity}}" min="1" readonly />
+                            <button class="btn btn-outline-secondary increment-btn" type="button" onclick="changeQuantity('{{this._id}}', 1, '{{this.user_id}}', {{this.quantity}})">+</button>
+                          </div>
+                        </div>
+                        <div class="col-md-2 col-lg-2 col-xl-2">
+                          <div class="text-black">₹{{this.price}}</div>
+                        </div>
+                        <div class="col-md-1 col-lg-1 col-xl-1">
+                          <button type="button" class="btn btn-link delete-product-btn">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                      {{/each}}
 
-                    {{#each products}}
-                    <div class="row d-flex align-items-center mb-4">
-                      <div class="col-md-2 col-lg-2 col-xl-2">
-                        <img src="/productImages/{{this.image}}" class="img-fluid" alt="Product Image" />
-                      </div>
-                      <div class="col-md-4 col-lg-4 col-xl-4">
-                        <h5 class="mb-0">{{this.name}}</h5>
-                        <span class="text-muted">Category: {{this.category}}</span>
-                      </div>
-                      <div class="col-md-2 col-lg-2 col-xl-2">
-                        <input type="number" class="form-control" value="{{this.quantity}}" min="1" />
-                      </div>
-                      <div class="col-md-2 col-lg-2 col-xl-2">
-                        <div class="text-black">₹{{this.price}}</div>
-                      </div>
-
-                      <div class="col-md-1 col-lg-1 col-xl-1">
-                        <button type="button" class="btn btn-link delete-product-btn">
-                          <i class="fas fa-trash"></i>
-                        </button>
-                      </div>
+                      <!-- Add more rows for additional items -->
                     </div>
-                    {{/each}}
-                    <!-- Add more rows for additional items -->
                   </div>
                 </div>
                 <div class="col-lg-4 bg-grey">
@@ -257,7 +294,7 @@
                     <hr class="my-4">
                     <div class="d-flex justify-content-between">
                       <h6 class="text-white">Subtotal:</h6>
-                      <h6 class="text-white">₹{{this.finalAmount}}</h6>
+                     <h6 id="summary" class="fw-bold">₹{{this.subtotal}}</h6>
                     </div>
                     <div class="d-flex justify-content-between">
                       <h6 class="text-white">Shipping:</h6>
@@ -266,10 +303,9 @@
                     <hr class="my-4">
                     <div class="d-flex justify-content-between">
                       <h5 class="fw-bold">Total:</h5>
-                      <h5 class="fw-bold">₹{{this.total}}</h5>
+                     <h6 id="summary-subtotal" class="fw-bold">₹{{this.subtotal}}</h6>
                     </div>
-                    <button type="button" class="btn btn-primary btn-block mt-4"
-                      style="background-color: #ffbf00; color: #fff;">Checkout</button>
+                    <button type="button" class="btn btn-primary btn-block mt-4" style="background-color: #ffbf00; color: #fff;">Checkout</button>
                   </div>
                 </div>
               </div>
@@ -280,7 +316,6 @@
     </div>
   </section>
 </section>
-
 {{else}}
 <section class="cart-section">
   <section class="h-100 h-custom" style="background-color: #d2c9ff;">
@@ -306,7 +341,36 @@
     </div>
   </section>
 </section>
-
 {{/if}}
 
 {{>user-footer}}
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+  function changeQuantity(proId, count, userId, quantity) {
+   
+
+    $.ajax({
+      url: "/change-product-quantity",
+      method: "post",
+      data: {
+        productId: proId,
+        count: count,
+        userId: userId,
+        quantity: quantity,
+      },
+    success: (response) => {
+        console.log(response,'ajax response')
+        const quantityInput = document.getElementById(`quantityInput_${proId}`);
+        quantityInput.value = response.quantity;
+
+        const subtotal = document.getElementById(`summary`);
+        subtotal.textContent = response.subtotal;
+
+        const summarySubtotal = document.getElementById(`summary-subtotal`);
+        summarySubtotal.textContent = response.subtotal
+    }
+    })
+  }
+</script>
