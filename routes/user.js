@@ -44,7 +44,8 @@ router.get('/user-profile',auth.isLogin,userController.userProfile);
 router.post('/edit-user',userUpload.single('image'),userController.editProfile);
 router.get('/address',auth.isLogin,userController.addressList)
 router.post('/address',userController.addAddress);
-router.get('/delete-address',auth.isLogin,userController.deleteAddress)
+router.get('/delete-address',auth.isLogin,userController.deleteAddress);
+router.post('/edit-address',userController.editAddress);
 
 
 

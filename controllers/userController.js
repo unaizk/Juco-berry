@@ -232,6 +232,14 @@ const deleteAddress = async(req,res)=>{
     }
 }
 
+const editAddress = async(req,res)=>{
+    try {
+        await userHelpers.editingAddress(req,res)
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 
 
 module.exports = {
@@ -259,5 +267,6 @@ module.exports = {
     editProfile,
     addressList,
     addAddress,
-    deleteAddress
+    deleteAddress,
+    editAddress
 }

@@ -584,17 +584,17 @@ module.exports = {
     addingAddress:async(req,res)=>{
         try {
               const userId =req.session.user_id
-              const { name, mobile, address, city, street, postalCode } = req.body;
+              const { name, mobile, homeAddress, city, street, postalCode } = req.body;
               console.log(name);
               console.log(mobile);
-              console.log(address);
+              
               console.log(city);
               console.log(street);
               console.log(postalCode);
               const newAddress = {
                 name:name,
                 mobile:mobile,
-                homeAddress: address,
+                homeAddress: homeAddress,
                 city:city,
                 street:street,
                 postalCode:postalCode,
@@ -640,7 +640,51 @@ module.exports = {
         } catch (error) {
             throw new Error(error.message);
         }
-    }
+    },
+
+    editingAddress: async (req, res) => {
+        try {
+          const userId = req.session.user_id;
+          const { _id, name, mobile, homeAddress, city, street, postalCode } = req.body;
+          console.log(_id, 'id');
+          console.log(name, 'name');
+          console.log(mobile, 'mobile');
+          console.log(homeAddress, 'homeAddress');
+          console.log(city, 'city');
+          console.log(street, 'street');
+          console.log(postalCode, 'postalCode');
+      
+          const updatedAddress = await Address.findOneAndUpdate(
+            { user_id: userId, 'address._id': _id },
+            {
+              $set: {
+                'address.$.name': name,
+                'address.$.mobile': mobile,
+                'address.$.homeAddress': homeAddress,
+                'address.$.city': city,
+                'address.$.street': street,
+                'address.$.postalCode': postalCode
+              }
+            },
+            { new: true }
+          );
+      
+          if (updatedAddress) {
+            console.log('Address updated successfully:', updatedAddress);
+            // Redirect or send a response indicating the update was successful
+            res.redirect('/address');
+          } else {
+            console.log('Address not found or not updated');
+            // Redirect or send a response indicating the address was not found or not updated
+            res.redirect('/address');
+          }
+        } catch (error) {
+          console.error('Error updating address:', error);
+          // Handle the error appropriately
+          res.redirect('/address');
+        }
+      }
+      
 }
 
 
