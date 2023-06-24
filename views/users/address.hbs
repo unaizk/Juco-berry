@@ -31,6 +31,7 @@
     padding: 8px 16px;
     margin-top: 10px;
     cursor: pointer;
+        margin-left: 9px;
     transition: transform 0.3s;
   }
 
@@ -61,15 +62,17 @@
     border: none;
     transform: scale(1.1);
   }
-  .add-button{
-     color: #ffffff;
+
+  .add-button {
+    color: #ffffff;
     background-color: #fbdd35;
     border: none;
     border-radius: 5px;
     transition: background-color 0.3s, color 0.3s;
   }
-  .add-button:hover{
- background-color: #ffd700;
+
+  .add-button:hover {
+    background-color: #ffd700;
     color: #000;
     border: none;
     transform: scale(1.1);
@@ -86,10 +89,27 @@
     from {
       opacity: 0;
     }
+
     to {
       opacity: 1;
     }
   }
+
+  .make-default-button {
+  margin-top: 9px;
+    background-color: black;
+    color: white;
+    transition: transform 0.3s;
+    border: none;
+    width: 194px;
+    height: 36px;
+}
+
+
+.make-default-button:hover {
+  transform: scale(1.1);
+  background-color: #000;
+}
 </style>
 
 {{> user-header}}
@@ -97,7 +117,8 @@
 <div class="container">
   <div class="row">
     <div class="col-md-4">
-      <button type="button" class="btn btn-primary add-address-button" data-toggle="modal" data-target="#exampleModalLong">
+      <button type="button" class="btn btn-primary add-address-button" data-toggle="modal"
+        data-target="#exampleModalLong">
         Add address
       </button>
     </div>
@@ -105,7 +126,8 @@
 </div>
 
 <!--Add address Modal -->
-<div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+<div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+  aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -152,7 +174,8 @@
 
 
 <!--Edit address Modal -->
-<div class="modal fade" id="editingAddress" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+<div class="modal fade" id="editingAddress" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+  aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -162,7 +185,7 @@
         </button>
       </div>
       <div class="modal-body">
-        
+
         <form action="/edit-address" method="post">
           <div class="form-group">
             <label for="edit-username">Name</label>
@@ -174,7 +197,8 @@
           </div>
           <div class="form-group">
             <label for="edit-phone">Address</label>
-            <input type="text" class="form-control" name="homeAddress" id="edit-homeAddress" value="{{this.homeAddress}}" required>
+            <input type="text" class="form-control" name="homeAddress" id="edit-homeAddress"
+              value="{{this.homeAddress}}" required>
           </div>
           <div class="form-group">
             <label for="edit-email">City</label>
@@ -186,65 +210,76 @@
           </div>
           <div class="form-group">
             <label for="edit-email">Postal code</label>
-            <input type="number" class="form-control" name="postalCode" id="edit-postalCode" value="{{this.postalCode}}" required>
+            <input type="number" class="form-control" name="postalCode" id="edit-postalCode" value="{{this.postalCode}}"
+              required>
           </div>
-            <input type="hidden" class="form-control" name="_id" id="edit-_id"  >
+          <input type="hidden" class="form-control" name="_id" id="edit-_id">
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             <button type="submit" class="btn btn-primary add-button">Edit</button>
           </div>
         </form>
-        
+
       </div>
     </div>
   </div>
 </div>
 
-<div class="container template-container">
-   {{#if addressDetails.length}}
+<div class="container template-container" >
+  {{#if addressDetails.length}}
   <div class="row">
-   
-      {{#each addressDetails}}
-      <div class="col-md-4 mb-4">
-        <div class="card mb-4">
-          <div class="card-header py-3">
-            <h5 class="mb-0">ADDRESS DETAILS</h5>
-          </div>
-          <div class="card-body">
-            <!-- User Address Details -->
-            <div class="address-details">
-              
-              <p class="address-value">{{this.name}}</p>
 
-            
-              <p class="address-value">{{this.mobile}}</p>
+    {{#each addressDetails}}
+    <div class="col-md-4 mb-4">
+      <div class="card mb-4">
+        <div class="card-header py-3">
+          <h5 class="mb-0">ADDRESS DETAILS</h5>
+        </div>
+        {{#if this.isDefault}}
+        <span class="badge badge-dark">Default  Address</span>
+        {{/if}}
+        <div class="card-body">
+          <!-- User Address Details -->
+          <div class="address-details">
 
-            
-              <p class="address-value">{{this.homeAddress}}</p>
+            <p class="address-value">{{this.name}}</p>
 
-          
-              <p class="address-value">{{this.city}}</p>
 
-           
-              <p class="address-value">{{this.street}}</p>
+            <p class="address-value">{{this.mobile}}</p>
 
-             
-              <p class="address-value">{{this.postalCode}}</p>
 
-              <div class="address-actions">
-                <button class="edit-button" data-toggle="modal" data-target="#editingAddress" data-name="{{this.name}}" data-mobile="{{this.mobile}}" data-homeAddress="{{this.homeAddress}}" data-city="{{this.city}}" data-street="{{this.street}}" data-postalCode="{{this.postalCode}}" data-_id ="{{this._id}}"><i class="fas fa-edit"></i> Edit</button>
-                <a href="/delete-address?id={{this._id}}" class="delete-button" ><i class="fas fa-trash"></i> Delete</a>
-                <div class="form-check mt-3">
-                  <input class="form-check-input" type="checkbox" id="defaultAddressCheckbox">
-                  <label class="form-check-label checkbox-label" for="defaultAddressCheckbox">Make as default address</label>
-                </div>
+            <p class="address-value">{{this.homeAddress}}</p>
+
+
+            <p class="address-value">{{this.city}}</p>
+
+
+            <p class="address-value">{{this.street}}</p>
+
+
+            <p class="address-value">{{this.postalCode}}</p>
+
+            <div class="address-actions">
+              <button class="edit-button" data-toggle="modal" data-target="#editingAddress" data-name="{{this.name}}"
+                data-mobile="{{this.mobile}}" data-homeAddress="{{this.homeAddress}}" data-city="{{this.city}}"
+                data-street="{{this.street}}" data-postalCode="{{this.postalCode}}" data-_id="{{this._id}}">
+                <i class="fas fa-edit"></i> Edit
+              </button>
+              <a href="/delete-address?id={{this._id}}" class="delete-button">
+                <i class="fas fa-trash"></i> Delete
+              </a>
+              {{#unless this.isDefault}}
+              <div >
+                  <button type="button" class="btn btn-primary btn-sm make-default-button" onclick="setAsDefault('{{this._id}}')">Make as default address</button>
               </div>
+              {{/unless}}
             </div>
           </div>
         </div>
       </div>
-      {{/each}}
-    
+    </div>
+    {{/each}}
+
   </div>
 </div>
 {{else}}
@@ -264,7 +299,8 @@
                       <p>Add a new address to continue</p>
                     </div>
                     <div class="text-center mt-4">
-                      <button type="button" class="btn btn-primary add-address-button" data-toggle="modal" data-target="#exampleModalLong">
+                      <button type="button" class="btn btn-primary add-address-button" data-toggle="modal"
+                        data-target="#exampleModalLong">
                         Add address
                       </button>
                     </div>
@@ -284,18 +320,18 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
-  $(document).ready(function() {
+  $(document).ready(function () {
     // Set the address details in the edit modal when the edit button is clicked
-    $('.edit-button').click(function() {
-      
+    $('.edit-button').click(function () {
+
       var name = $(this).data('name');
       var mobile = $(this).data('mobile');
       var homeAddress = $(this).data('homeaddress');
       var city = $(this).data('city');
       var street = $(this).data('street');
       var postalCode = $(this).data('postalcode');
-       var _id = $(this).data('_id');
-      
+      var _id = $(this).data('_id');
+
       $('#edit-name').val(name);
       $('#edit-mobile').val(mobile);
       $('#edit-homeAddress').val(homeAddress);
@@ -307,4 +343,23 @@
   });
 </script>
 
+<script>
+  function setAsDefault(addressId) {
+   
 
+    $.ajax({
+      url: "/set-as-default",
+      method: "post",
+      data: {
+        addressId: addressId,
+      },
+    success: (response) => {
+          if(response.setDefault){
+             location.reload();
+          }
+      }
+       
+    
+    })
+  }
+  </script>

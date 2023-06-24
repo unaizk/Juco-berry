@@ -46,6 +46,7 @@ router.get('/address',auth.isLogin,userController.addressList)
 router.post('/address',userController.addAddress);
 router.get('/delete-address',auth.isLogin,userController.deleteAddress);
 router.post('/edit-address',userController.editAddress);
+router.post('/set-as-default',userController.setAsDefault)
 
 
 

@@ -240,6 +240,16 @@ const editAddress = async(req,res)=>{
     }
 }
 
+const setAsDefault = async(req,res)=>{
+    try {
+        const response = await userHelpers.settingAsDefault(req,res)
+        
+        res.send(response)
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 
 
 module.exports = {
@@ -268,5 +278,6 @@ module.exports = {
     addressList,
     addAddress,
     deleteAddress,
-    editAddress
+    editAddress,
+    setAsDefault
 }

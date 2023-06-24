@@ -512,18 +512,24 @@ module.exports = {
         }
     },
 
-    loadUserProfile:async(req,res)=>{
+    loadUserProfile: async (req, res) => {
         try {
-            const userId =new mongoose.Types.ObjectId(req.session.user_id);
-            console.log(userId,'userId');
-            const userData = await User.findOne({_id:userId}).lean()
-          
-
-            res.render('users/user-profile',{layout:'user-layout',userData})
+          const userId = new mongoose.Types.ObjectId(req.session.user_id);
+          console.log(userId, 'userId');
+      
+          // Find the user data
+          const userData = await User.findOne({ _id: userId }).lean();
+      
+          // Find the default address for the user
+          const defaultAddress = await Address.findOne({ user_id: userId, 'address.isDefault': true }, { 'address.$': 1 }).lean();
+          console.log(defaultAddress,'defaultAddress');
+      
+          res.render('users/user-profile', { layout: 'user-layout', userData, defaultAddress: defaultAddress.address[0] });
         } catch (error) {
-            throw new Error(error.message);
+          throw new Error(error.message);
         }
-    },
+      },
+      
 
     editingUserProfile: async(req,res)=>{
         try {
@@ -559,6 +565,12 @@ module.exports = {
           const userAddress = await Address.findOne({ user_id: userId }).lean().exec();
       
           if (userAddress) {
+            // Check if there is only one address in the array
+            if (userAddress.address.length === 1) {
+              // If there is only one address, set it as the default
+              userAddress.address[0].isDefault = true;
+            }
+      
             const addressDetails = userAddress.address.map((address) => {
               return {
                 name: address.name,
@@ -567,12 +579,14 @@ module.exports = {
                 city: address.city,
                 street: address.street,
                 postalCode: address.postalCode,
-                _id:address._id
+                _id: address._id,
+                isDefault: address.isDefault
               };
             });
-            console.log(addressDetails,'addressdetails');
+      
+            console.log(addressDetails, 'addressdetails');
             res.render('users/address', { layout: 'user-layout', addressDetails });
-          }else {
+          } else {
             res.render('users/address', { layout: 'user-layout', addressDetails: [] });
           }
         } catch (error) {
@@ -598,6 +612,7 @@ module.exports = {
                 city:city,
                 street:street,
                 postalCode:postalCode,
+                isDefault: false, // Set the default flag to false by default
               };
 
                 // Find the user's address document based on the user_id
@@ -605,10 +620,16 @@ module.exports = {
 
         if (!userAddress) {
         // If the user doesn't have any address, create a new document
+        newAddress.isDefault = true;
         userAddress = new Address({ user_id:userId, address: [newAddress] });
     } else {
       // If the user already has an address, push the new address to the array
       userAddress.address.push(newAddress);
+        // Check if there is only one address in the array
+        if (userAddress.address.length === 1) {
+            // If there is only one address, set it as the default
+            userAddress.address[0].isDefault = true;
+          }
     }
 
     await userAddress.save(); // Save the updated address document
@@ -621,26 +642,33 @@ module.exports = {
         }
     },
 
-    deletingAddress:async(req,res)=>{
+    deletingAddress: async (req, res) => {
         try {
-            const id = req.query.id;
-            const userId = req.session.user_id
-            console.log(id,'address id');
-
-              // Find the address with the specified address ID 
-              const address = await Address.findOneAndUpdate(
-                { user_id: userId },
-                { $pull: { address: { _id: id } } },
-                { new: true } // To return the updated Address document
-              );
-              await address.save()
-                res.redirect('/address')
-
-
+          const id = req.query.id;
+          const userId = req.session.user_id;
+      
+          // Find the address with the specified address ID
+          const address = await Address.findOneAndUpdate(
+            { user_id: userId },
+            { $pull: { address: { _id: id } } },
+            { new: true }
+          );
+      
+     // Check if the deleted address is the default address
+     const deletedAddress = address.address.find(addr => addr._id.toString() === id);
+     if (deletedAddress && deletedAddress.isDefault) {
+       // Find the next available address and set it as the new default
+       const remainingAddresses = address.address.filter(addr => addr._id.toString() !== id);
+       if (remainingAddresses.length > 1) {
+         remainingAddresses[0].isDefault = true;
+       }
+     }
+          await address.save();
+          res.redirect('/address');
         } catch (error) {
-            throw new Error(error.message);
+          throw new Error(error.message);
         }
-    },
+      },
 
     editingAddress: async (req, res) => {
         try {
@@ -683,7 +711,36 @@ module.exports = {
           // Handle the error appropriately
           res.redirect('/address');
         }
+      },
+
+      settingAsDefault: async (req, res) => {
+        try {
+          const addressId = req.body.addressId;
+          const userId = req.session.user_id;
+      
+          // Find the current default address and unset its "isDefault" flag
+          await Address.findOneAndUpdate(
+            { user_id: userId, 'address.isDefault': true },
+            { $set: { 'address.$.isDefault': false } }
+          );
+      
+          // Set the selected address as the new default address
+          const defaultAddress = await Address.findOneAndUpdate(
+            { user_id: userId, 'address._id': addressId },
+            { $set: { 'address.$.isDefault': true } }
+          );
+
+          const response = {
+            setDefault:true
+          }
+
+          return response
+        
+        } catch (error) {
+          res.status(500).json({ success: false, message: 'Failed to set address as default' });
+        }
       }
+      
       
 }
 

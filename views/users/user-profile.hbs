@@ -2164,7 +2164,7 @@ p {
                     <div class="col-md-12">
                       <div class="form-group focused">
                         <label class="form-control-label" for="input-address">Address</label>
-                        <input id="input-address" class="form-control form-control-alternative" placeholder="Home Address" value="" type="text" readonly>
+                        <input id="input-address" class="form-control form-control-alternative" placeholder="Home Address" value="{{defaultAddress.homeAddress}}" type="text" readonly>
                       </div>
                     </div>
                   </div>
@@ -2173,19 +2173,19 @@ p {
                     <div class="col-lg-4">
                       <div class="form-group focused">
                         <label class="form-control-label" for="input-city">City</label>
-                        <input type="text" id="input-city" class="form-control form-control-alternative" placeholder="City" value="" readonly>
+                        <input type="text" id="input-city" class="form-control form-control-alternative" placeholder="City" value="{{defaultAddress.city}}" readonly>
                       </div>
                     </div>
                     <div class="col-lg-4">
                       <div class="form-group focused">
                         <label class="form-control-label" for="input-country">street</label>
-                        <input type="text" id="input-country" class="form-control form-control-alternative" placeholder="street" value="" readonly>
+                        <input type="text" id="input-country" class="form-control form-control-alternative" placeholder="street" value="{{defaultAddress.street}}" readonly>
                       </div>
                     </div>
                     <div class="col-lg-4">
                       <div class="form-group">
                         <label class="form-control-label" for="input-country">Postal code</label>
-                        <input type="text" id="input-postal-code" class="form-control form-control-alternative" placeholder="Postal code" readonly>
+                        <input type="text" id="input-postal-code" class="form-control form-control-alternative" placeholder="Postal code" value="{{defaultAddress.postalCode}}" readonly>
                       </div>
                     </div>
                   </div>
