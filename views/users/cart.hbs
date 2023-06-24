@@ -1,6 +1,14 @@
 {{>user-header}}
 
 <style>
+
+   /* Add this CSS to change the font of the modal confirmation heading */
+  .modal-title {
+    font-family: inherit;
+    /* Use the same font as the "Cart" heading */
+  }
+
+  
   /* Add this CSS to create space between the footer and the cart */
   .cart-section {
     margin-bottom: 100px;
@@ -275,7 +283,7 @@
                           <div class="text-black">₹{{this.price}}</div>
                         </div>
                         <div class="col-md-1 col-lg-1 col-xl-1">
-                          <button type="button" class="btn btn-link delete-product-btn" onclick="deleteproduct('{{this._id}}','{{this.user_id}}')">
+                       <button type="button" class="btn btn-link delete-product-btn" onclick="showDeleteConfirmation('{{this._id}}','{{this.user_id}}','{{this.name}}')">
                             <i class="fas fa-trash"></i>
                           </button>
                         </div>
@@ -346,6 +354,27 @@
 {{>user-footer}}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- Add this modal code at the end of your HTML body -->
+<div class="modal" id="deleteConfirmationModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirmation</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+       <p>Are you sure you want to delete <span id="productName"></span>?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 
 <script>
@@ -385,24 +414,39 @@
   }
 
 
-  function deleteproduct(proId,userId){
-      $.ajax({
+   function showDeleteConfirmation(proId, userId,productName) {
+    // Show confirmation modal
+    $('#deleteConfirmationModal').modal('show');
+
+     // Set the product name in the modal
+  $('#productName').text(productName);
+
+    // Store the product ID and user ID in data attributes of the confirmation button
+    $('#confirmDeleteBtn').data('product-id', proId);
+    $('#confirmDeleteBtn').data('user-id', userId);
+  }
+
+  function deleteproduct() {
+    // Get the product ID and user ID from the data attributes of the confirmation button
+    const proId = $('#confirmDeleteBtn').data('product-id');
+    const userId = $('#confirmDeleteBtn').data('user-id');
+
+    $.ajax({
       url: "/delete-product-from-cart",
       method: "post",
       data: {
         productId: proId,
         userId: userId,
       },
-    success: (response) => {
-      console.log(response,'ajax response')
-      if(response.deleteProductFromCart){
-         location.reload(); // Reload the page
+      success: (response) => {
+        if (response.deleteProductFromCart) {
+          // Reload the page
+          location.reload();
+        }
       }
-
-    }
-      })
-  
+    });
   }
-
+ // Attach the deleteproduct function to the confirmation button click event
+  $('#confirmDeleteBtn').click(deleteproduct);
  
 </script>

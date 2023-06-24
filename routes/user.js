@@ -2,7 +2,20 @@ var express = require('express');
 var router = express.Router();
 const userController = require('../controllers/userController')
 const auth = require('../middleware/auth')
+const multer = require('multer')
+const path = require('path');
 
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, path.join(__dirname, '../public/userImage'))
+    },
+    filename: (req, file, cb) => {
+      const name = Date.now() + '-' + file.originalname;
+      cb(null, name)
+    }
+  })
+
+  const userUpload = multer({ storage: storage })
 /*Get login page */
 router.get('/',auth.isLogout,userController.loadLogin);
 router.get('/login',auth.isLogout,userController.loadLogin);
@@ -27,6 +40,11 @@ router.post('/addtocart',userController.addToCart);
 router.get('/cart',auth.isLogin,userController.loadCart);
 router.post('/change-product-quantity',userController.changeQuantity)
 router.post('/delete-product-from-cart',userController.deleteProduct)
+router.get('/user-profile',auth.isLogin,userController.userProfile);
+router.post('/edit-user',userUpload.single('image'),userController.editProfile);
+router.get('/address',auth.isLogin,userController.addressList)
+router.post('/address',userController.addAddress);
+router.get('/delete-address',auth.isLogin,userController.deleteAddress)
 
 
 

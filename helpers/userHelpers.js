@@ -16,6 +16,7 @@ const mongoose = require('mongoose');
 const { Console } = require('console');
 const ObjectId = mongoose.Types.ObjectId;
 const Cart = require('../models/cartModel')
+const Address = require('../models/addressModel');
 
 module.exports = {
     passwordHash: async (password) => {
@@ -508,6 +509,136 @@ module.exports = {
         } catch (error) {
             console.log(error);
             res.status(500).json({ error: error.message });
+        }
+    },
+
+    loadUserProfile:async(req,res)=>{
+        try {
+            const userId =new mongoose.Types.ObjectId(req.session.user_id);
+            console.log(userId,'userId');
+            const userData = await User.findOne({_id:userId}).lean()
+          
+
+            res.render('users/user-profile',{layout:'user-layout',userData})
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    },
+
+    editingUserProfile: async(req,res)=>{
+        try {
+            console.log(req.files, 'userimage');
+            const id = new mongoose.Types.ObjectId(req.session.user_id);
+            const userData = await User.findById({_id:id}).lean();
+
+            if (!userData) {
+                throw new Error('User data not found');
+              }
+
+            let updatedUserData = {
+                image:userData.image, // Use the previous image data as the starting point
+                name:req.body.name,
+                email:req.body.email,
+                mobile:req.body.mobile
+            };
+            if (req.file) {
+                // Check if a new image file is uploaded
+                updatedUserData.image = req.file.filename; // Update with the new image filename
+              }
+
+              const updatedUser = await User.findByIdAndUpdate({ _id: id }, { $set: updatedUserData },{ new: true });
+              res.redirect('/user-profile');
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    },
+
+    loadAddressList: async (req, res) => {
+        try {
+          const userId = req.session.user_id;
+          const userAddress = await Address.findOne({ user_id: userId }).lean().exec();
+      
+          if (userAddress) {
+            const addressDetails = userAddress.address.map((address) => {
+              return {
+                name: address.name,
+                mobile: address.mobile,
+                homeAddress: address.homeAddress,
+                city: address.city,
+                street: address.street,
+                postalCode: address.postalCode,
+                _id:address._id
+              };
+            });
+            console.log(addressDetails,'addressdetails');
+            res.render('users/address', { layout: 'user-layout', addressDetails });
+          }else {
+            res.render('users/address', { layout: 'user-layout', addressDetails: [] });
+          }
+        } catch (error) {
+          throw new Error(error.message);
+        }
+      },
+      
+
+    addingAddress:async(req,res)=>{
+        try {
+              const userId =req.session.user_id
+              const { name, mobile, address, city, street, postalCode } = req.body;
+              console.log(name);
+              console.log(mobile);
+              console.log(address);
+              console.log(city);
+              console.log(street);
+              console.log(postalCode);
+              const newAddress = {
+                name:name,
+                mobile:mobile,
+                homeAddress: address,
+                city:city,
+                street:street,
+                postalCode:postalCode,
+              };
+
+                // Find the user's address document based on the user_id
+        let userAddress = await Address.findOne({user_id:userId });
+
+        if (!userAddress) {
+        // If the user doesn't have any address, create a new document
+        userAddress = new Address({ user_id:userId, address: [newAddress] });
+    } else {
+      // If the user already has an address, push the new address to the array
+      userAddress.address.push(newAddress);
+    }
+
+    await userAddress.save(); // Save the updated address document
+    console.log(userAddress,'useraddress');
+
+    res.redirect('/address');
+            
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    },
+
+    deletingAddress:async(req,res)=>{
+        try {
+            const id = req.query.id;
+            const userId = req.session.user_id
+            console.log(id,'address id');
+
+              // Find the address with the specified address ID 
+              const address = await Address.findOneAndUpdate(
+                { user_id: userId },
+                { $pull: { address: { _id: id } } },
+                { new: true } // To return the updated Address document
+              );
+              await address.save()
+                res.redirect('/address')
+
+
+        } catch (error) {
+            throw new Error(error.message);
         }
     }
 }

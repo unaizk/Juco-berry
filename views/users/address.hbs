@@ -1,0 +1,233 @@
+<style>
+  .template-container {
+    margin-top: 50px;
+    margin-bottom: 50px;
+  }
+
+  .address-label {
+    font-weight: bold;
+  }
+
+  .edit-button {
+    color: #fff;
+    background-color: #000;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 16px;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: transform 0.3s;
+  }
+
+  .edit-button:hover {
+    transform: scale(1.1);
+  }
+
+  .delete-button {
+    color: #fff;
+    background-color: #f00;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 16px;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: transform 0.3s;
+  }
+
+  .delete-button:hover {
+    transform: scale(1.1);
+  }
+
+  .checkbox-label {
+    font-weight: normal;
+  }
+
+  .add-address-button {
+    color: #ffffff;
+    background-color: #fbdd35;
+    border: none;
+    border-radius: 5px;
+    padding: 6px 21px;
+    margin-bottom: -13px;
+    margin-left: 13px;
+    margin-top: 24px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  .add-address-button:hover {
+    background-color: #ffd700;
+    color: #000;
+    border: none;
+    transform: scale(1.1);
+  }
+  .add-button{
+     color: #ffffff;
+    background-color: #fbdd35;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  .add-button:hover{
+ background-color: #ffd700;
+    color: #000;
+    border: none;
+    transform: scale(1.1);
+  }
+
+  .no-address-message {
+    opacity: 0;
+    animation-name: fadeIn;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+</style>
+
+{{> user-header}}
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-4">
+      <button type="button" class="btn btn-primary add-address-button" data-toggle="modal" data-target="#exampleModalLong">
+        Add address
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Add address</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="/address" method="post">
+          <div class="form-group">
+            <label for="edit-username">Name</label>
+            <input type="text" class="form-control" name="name" id="edit-username">
+          </div>
+          <div class="form-group">
+            <label for="edit-email">Mobile</label>
+            <input type="text" class="form-control" name="mobile" id="edit-email">
+          </div>
+          <div class="form-group">
+            <label for="edit-phone">Address</label>
+            <input type="text" class="form-control" name="homeAddress" id="edit-phone">
+          </div>
+          <div class="form-group">
+            <label for="edit-email">City</label>
+            <input type="text" class="form-control" name="city" id="edit-email">
+          </div>
+          <div class="form-group">
+            <label for="edit-email">Street</label>
+            <input type="text" class="form-control" name="street" id="edit-email">
+          </div>
+          <div class="form-group">
+            <label for="edit-email">Postal code</label>
+            <input type="number" class="form-control" name="postalCode" id="edit-email">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary add-button">Add</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container template-container">
+   {{#if addressDetails.length}}
+  <div class="row">
+   
+      {{#each addressDetails}}
+      <div class="col-md-4 mb-4">
+        <div class="card mb-4">
+          <div class="card-header py-3">
+            <h5 class="mb-0">ADDRESS DETAILS</h5>
+          </div>
+          <div class="card-body">
+            <!-- User Address Details -->
+            <div class="address-details">
+              
+              <p class="address-value">{{this.name}}</p>
+
+            
+              <p class="address-value">{{this.mobile}}</p>
+
+            
+              <p class="address-value">{{this.homeAddress}}</p>
+
+          
+              <p class="address-value">{{this.city}}</p>
+
+           
+              <p class="address-value">{{this.street}}</p>
+
+             
+              <p class="address-value">{{this.postalCode}}</p>
+
+              <div class="address-actions">
+                <button class="edit-button"><i class="fas fa-edit"></i> Edit</button>
+                <a href="/delete-address?id={{this._id}}" class="delete-button" ><i class="fas fa-trash"></i> Delete</a>
+                <div class="form-check mt-3">
+                  <input class="form-check-input" type="checkbox" id="defaultAddressCheckbox">
+                  <label class="form-check-label checkbox-label" for="defaultAddressCheckbox">Make as default address</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {{/each}}
+    
+  </div>
+</div>
+{{else}}
+<section class="cart-section">
+  <section class="h-100 h-custom" style="background-color: #d2c9ff;">
+    <div class="container py-5 h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-12">
+          <div class="card card-registration card-registration-2" style="border-radius: 15px;">
+            <div class="card-body p-0">
+              <div class="row g-0">
+                <div class="col-lg-12">
+                  <div class="p-5">
+                    <div class="text-center mb-4 empty-cart-animation">
+                      <i class="bi bi-geo-alt-fill" style="font-size: 80px; color: #000;"></i>
+                      <h3>Add Address</h3>
+                      <p>Add a new address to continue</p>
+                    </div>
+                    <div class="text-center mt-4">
+                      <button type="button" class="btn btn-primary add-address-button" data-toggle="modal" data-target="#exampleModalLong">
+                        Add address
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</section>
+{{/if}}
+
+{{> user-footer}}

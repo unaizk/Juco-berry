@@ -192,6 +192,46 @@ const deleteProduct = async(req,res)=>{
     }
 }
 
+const userProfile = async(req,res)=>{
+    try {
+        await userHelpers.loadUserProfile(req,res);
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const editProfile = async(req,res)=>{
+    try {
+        await userHelpers.editingUserProfile(req,res);
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const addressList = async(req,res)=>{
+    try {
+        await userHelpers.loadAddressList(req,res);
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const addAddress = async(req,res)=>{
+    try {
+        await userHelpers.addingAddress(req,res);
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const deleteAddress = async(req,res)=>{
+    try {
+        await userHelpers.deletingAddress(req,res)
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 
 
 module.exports = {
@@ -214,5 +254,10 @@ module.exports = {
     addToCart,
     loadCart,
     changeQuantity,
-    deleteProduct
+    deleteProduct,
+    userProfile,
+    editProfile,
+    addressList,
+    addAddress,
+    deleteAddress
 }
