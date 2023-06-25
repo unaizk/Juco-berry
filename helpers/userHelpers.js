@@ -431,79 +431,79 @@ module.exports = {
             const cartFind = await Cart.findOne({ user_id: userId });
             const cartId = cartFind._id;
             const count = req.body.count;
-            console.log(userId,"userId");
-            console.log(productId,'productid');
-            console.log(quantity,'quantity');
-            console.log(cartId,'cartId');
-            console.log(count,'count');
-            
-           
-     // Find the cart for the given user and product
-     const cart = await Cart.findOneAndUpdate(
-        { user_id: userId, 'products.productId': productId },
-        { $inc: { 'products.$.quantity': count } },
-        { new: true }
-        ).populate('products.productId');
-  
-        // Update the total for the specific product in the cart
-    const updatedProduct = cart.products.find(product => product.productId._id.equals(productId));
-    updatedProduct.total = updatedProduct.productId.price * updatedProduct.quantity;
-    await cart.save();
+            console.log(userId, "userId");
+            console.log(productId, 'productid');
+            console.log(quantity, 'quantity');
+            console.log(cartId, 'cartId');
+            console.log(count, 'count');
 
-    //   Check if the quantity is 0 or less
-      if (updatedProduct.quantity <= 0) {
-        // Remove the product from the cart
-        cart.products = cart.products.filter(product => !product.productId._id.equals(productId));
-        await cart.save();
-        const response = {deleteProduct : true}
-        return response
-      }
-  
-      
 
-    // Calculate the new subtotal for all products in the cart
-    const subtotal = cart.products.reduce((acc, product) => {
-      return acc + product.total;
-    }, 0);
+            // Find the cart for the given user and product
+            const cart = await Cart.findOneAndUpdate(
+                { user_id: userId, 'products.productId': productId },
+                { $inc: { 'products.$.quantity': count } },
+                { new: true }
+            ).populate('products.productId');
 
-    // Prepare the response object
-    const response = {
-      quantity: updatedProduct.quantity,
-      subtotal: subtotal
-    };
-    console.log(response);
-    return response
-    } catch (error) {
-      console.log(error);
-        res.status(500).json({ error: error.message });
-     }
+            // Update the total for the specific product in the cart
+            const updatedProduct = cart.products.find(product => product.productId._id.equals(productId));
+            updatedProduct.total = updatedProduct.productId.price * updatedProduct.quantity;
+            await cart.save();
+
+            //   Check if the quantity is 0 or less
+            if (updatedProduct.quantity <= 0) {
+                // Remove the product from the cart
+                cart.products = cart.products.filter(product => !product.productId._id.equals(productId));
+                await cart.save();
+                const response = { deleteProduct: true }
+                return response
+            }
+
+
+
+            // Calculate the new subtotal for all products in the cart
+            const subtotal = cart.products.reduce((acc, product) => {
+                return acc + product.total;
+            }, 0);
+
+            // Prepare the response object
+            const response = {
+                quantity: updatedProduct.quantity,
+                subtotal: subtotal
+            };
+            console.log(response);
+            return response
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ error: error.message });
+        }
     },
 
 
-    deleteProductFromCart:async(req,res)=>{
+    deleteProductFromCart: async (req, res) => {
         try {
             const userId = new mongoose.Types.ObjectId(req.body.userId);
             const productId = new mongoose.Types.ObjectId(req.body.productId);
-            
+
             // Find the cart with the specified user ID and product ID
             const cart = await Cart.findOneAndUpdate(
-              { user_id: userId },
-              { $pull: { products: { productId: productId } } },
-              { new: true } // To return the updated cart document
+                { user_id: userId },
+                { $pull: { products: { productId: productId } } },
+                { new: true } // To return the updated cart document
             );
-            
+
             if (cart) {
-              console.log(cart, 'updated cart');
-            
-              // Product successfully removed from the cart
-              const response = { deleteProductFromCart: true };
-              console.log(response,'response from userhelper');
-              return response;
+                console.log(cart, 'updated cart');
+
+                // Product successfully removed from the cart
+                const response = { deleteProductFromCart: true };
+                console.log(response, 'response from userhelper');
+                return response;
             } else {
-              // Cart or product not found
-              const response = { deleteProductFromCart: false };
-              console.log(response,'response from userhelper');
-              return response;
+                // Cart or product not found
+                const response = { deleteProductFromCart: false };
+                console.log(response, 'response from userhelper');
+                return response;
             }
 
         } catch (error) {
@@ -514,46 +514,46 @@ module.exports = {
 
     loadUserProfile: async (req, res) => {
         try {
-          const userId = new mongoose.Types.ObjectId(req.session.user_id);
-          console.log(userId, 'userId');
-      
-          // Find the user data
-          const userData = await User.findOne({ _id: userId }).lean();
-      
-          // Find the default address for the user
-          const defaultAddress = await Address.findOne({ user_id: userId, 'address.isDefault': true }, { 'address.$': 1 }).lean();
-          console.log(defaultAddress,'defaultAddress');
-      
-          res.render('users/user-profile', { layout: 'user-layout', userData, defaultAddress: defaultAddress.address[0] });
-        } catch (error) {
-          throw new Error(error.message);
-        }
-      },
-      
+            const userId = new mongoose.Types.ObjectId(req.session.user_id);
+            console.log(userId, 'userId');
 
-    editingUserProfile: async(req,res)=>{
+            // Find the user data
+            const userData = await User.findOne({ _id: userId }).lean();
+
+            // Find the default address for the user
+            const defaultAddress = await Address.findOne({ user_id: userId, 'address.isDefault': true }, { 'address.$': 1 }).lean();
+            console.log(defaultAddress, 'defaultAddress');
+
+            res.render('users/user-profile', { layout: 'user-layout', userData, defaultAddress: defaultAddress.address[0] });
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    },
+
+
+    editingUserProfile: async (req, res) => {
         try {
             console.log(req.files, 'userimage');
             const id = new mongoose.Types.ObjectId(req.session.user_id);
-            const userData = await User.findById({_id:id}).lean();
+            const userData = await User.findById({ _id: id }).lean();
 
             if (!userData) {
                 throw new Error('User data not found');
-              }
+            }
 
             let updatedUserData = {
-                image:userData.image, // Use the previous image data as the starting point
-                name:req.body.name,
-                email:req.body.email,
-                mobile:req.body.mobile
+                image: userData.image, // Use the previous image data as the starting point
+                name: req.body.name,
+                email: req.body.email,
+                mobile: req.body.mobile
             };
             if (req.file) {
                 // Check if a new image file is uploaded
                 updatedUserData.image = req.file.filename; // Update with the new image filename
-              }
+            }
 
-              const updatedUser = await User.findByIdAndUpdate({ _id: id }, { $set: updatedUserData },{ new: true });
-              res.redirect('/user-profile');
+            const updatedUser = await User.findByIdAndUpdate({ _id: id }, { $set: updatedUserData }, { new: true });
+            res.redirect('/user-profile');
         } catch (error) {
             throw new Error(error.message);
         }
@@ -561,82 +561,82 @@ module.exports = {
 
     loadAddressList: async (req, res) => {
         try {
-          const userId = req.session.user_id;
-          const userAddress = await Address.findOne({ user_id: userId }).lean().exec();
-      
-          if (userAddress) {
-            // Check if there is only one address in the array
-            if (userAddress.address.length === 1) {
-              // If there is only one address, set it as the default
-              userAddress.address[0].isDefault = true;
+            const userId = req.session.user_id;
+            const userAddress = await Address.findOne({ user_id: userId }).lean().exec();
+
+            if (userAddress) {
+                // Check if there is only one address in the array
+                if (userAddress.address.length === 1) {
+                    // If there is only one address, set it as the default
+                    userAddress.address[0].isDefault = true;
+                }
+
+                const addressDetails = userAddress.address.map((address) => {
+                    return {
+                        name: address.name,
+                        mobile: address.mobile,
+                        homeAddress: address.homeAddress,
+                        city: address.city,
+                        street: address.street,
+                        postalCode: address.postalCode,
+                        _id: address._id,
+                        isDefault: address.isDefault
+                    };
+                });
+
+                console.log(addressDetails, 'addressdetails');
+                res.render('users/address', { layout: 'user-layout', addressDetails });
+            } else {
+                res.render('users/address', { layout: 'user-layout', addressDetails: [] });
             }
-      
-            const addressDetails = userAddress.address.map((address) => {
-              return {
-                name: address.name,
-                mobile: address.mobile,
-                homeAddress: address.homeAddress,
-                city: address.city,
-                street: address.street,
-                postalCode: address.postalCode,
-                _id: address._id,
-                isDefault: address.isDefault
-              };
-            });
-      
-            console.log(addressDetails, 'addressdetails');
-            res.render('users/address', { layout: 'user-layout', addressDetails });
-          } else {
-            res.render('users/address', { layout: 'user-layout', addressDetails: [] });
-          }
         } catch (error) {
-          throw new Error(error.message);
+            throw new Error(error.message);
         }
-      },
-      
+    },
 
-    addingAddress:async(req,res)=>{
+
+    addingAddress: async (req, res) => {
         try {
-              const userId =req.session.user_id
-              const { name, mobile, homeAddress, city, street, postalCode } = req.body;
-              console.log(name);
-              console.log(mobile);
-              
-              console.log(city);
-              console.log(street);
-              console.log(postalCode);
-              const newAddress = {
-                name:name,
-                mobile:mobile,
+            const userId = req.session.user_id
+            const { name, mobile, homeAddress, city, street, postalCode } = req.body;
+            console.log(name);
+            console.log(mobile);
+
+            console.log(city);
+            console.log(street);
+            console.log(postalCode);
+            const newAddress = {
+                name: name,
+                mobile: mobile,
                 homeAddress: homeAddress,
-                city:city,
-                street:street,
-                postalCode:postalCode,
+                city: city,
+                street: street,
+                postalCode: postalCode,
                 isDefault: false, // Set the default flag to false by default
-              };
+            };
 
-                // Find the user's address document based on the user_id
-        let userAddress = await Address.findOne({user_id:userId });
+            // Find the user's address document based on the user_id
+            let userAddress = await Address.findOne({ user_id: userId });
 
-        if (!userAddress) {
-        // If the user doesn't have any address, create a new document
-        newAddress.isDefault = true;
-        userAddress = new Address({ user_id:userId, address: [newAddress] });
-    } else {
-      // If the user already has an address, push the new address to the array
-      userAddress.address.push(newAddress);
-        // Check if there is only one address in the array
-        if (userAddress.address.length === 1) {
-            // If there is only one address, set it as the default
-            userAddress.address[0].isDefault = true;
-          }
-    }
+            if (!userAddress) {
+                // If the user doesn't have any address, create a new document
+                newAddress.isDefault = true;
+                userAddress = new Address({ user_id: userId, address: [newAddress] });
+            } else {
+                // If the user already has an address, push the new address to the array
+                userAddress.address.push(newAddress);
+                // Check if there is only one address in the array
+                if (userAddress.address.length === 1) {
+                    // If there is only one address, set it as the default
+                    userAddress.address[0].isDefault = true;
+                }
+            }
 
-    await userAddress.save(); // Save the updated address document
-    console.log(userAddress,'useraddress');
+            await userAddress.save(); // Save the updated address document
+            console.log(userAddress, 'useraddress');
 
-    res.redirect('/address');
-            
+            res.redirect('/address');
+
         } catch (error) {
             throw new Error(error.message);
         }
@@ -644,104 +644,111 @@ module.exports = {
 
     deletingAddress: async (req, res) => {
         try {
-          const id = req.query.id;
-          const userId = req.session.user_id;
-      
-          // Find the address with the specified address ID
-          const address = await Address.findOneAndUpdate(
-            { user_id: userId },
-            { $pull: { address: { _id: id } } },
-            { new: true }
-          );
-      
-     // Check if the deleted address is the default address
-     const deletedAddress = address.address.find(addr => addr._id.toString() === id);
-     if (deletedAddress && deletedAddress.isDefault) {
-       // Find the next available address and set it as the new default
-       const remainingAddresses = address.address.filter(addr => addr._id.toString() !== id);
-       if (remainingAddresses.length > 1) {
-         remainingAddresses[0].isDefault = true;
-       }
-     }
-          await address.save();
-          res.redirect('/address');
+            const id = req.query.id;
+            const userId = req.session.user_id;
+
+            // Find the address with the specified address ID
+            const address = await Address.findOne({ user_id: userId });
+
+            // Find the deleted address and check if it is the default address
+            const deletedAddress = address.address.find((addr) => addr._id.toString() === id);
+            console.log(deletedAddress, 'deletedAddress');
+            const isDefaultAddress = deletedAddress && deletedAddress.isDefault;
+            console.log(isDefaultAddress, 'isDefaultAddress');
+
+            // Remove the address with the specified ID from the address array
+            address.address = address.address.filter(addr => addr._id.toString() !== id);
+
+            // If the deleted address was the default address, set the next available address as the new default
+            if (isDefaultAddress && address.address.length > 0) {
+                // Find the first non-deleted address and set it as the new default
+                const newDefaultAddress = address.address.find(addr => addr._id.toString() !== id);
+                if (newDefaultAddress) {
+                    newDefaultAddress.isDefault = true;
+                }
+                console.log(newDefaultAddress, 'newDefaultAddress');
+            }
+
+            // Save the updated address
+            await address.save();
+            res.redirect('/address');
         } catch (error) {
-          throw new Error(error.message);
+            throw new Error(error.message);
         }
-      },
+    },
 
     editingAddress: async (req, res) => {
         try {
-          const userId = req.session.user_id;
-          const { _id, name, mobile, homeAddress, city, street, postalCode } = req.body;
-          console.log(_id, 'id');
-          console.log(name, 'name');
-          console.log(mobile, 'mobile');
-          console.log(homeAddress, 'homeAddress');
-          console.log(city, 'city');
-          console.log(street, 'street');
-          console.log(postalCode, 'postalCode');
-      
-          const updatedAddress = await Address.findOneAndUpdate(
-            { user_id: userId, 'address._id': _id },
-            {
-              $set: {
-                'address.$.name': name,
-                'address.$.mobile': mobile,
-                'address.$.homeAddress': homeAddress,
-                'address.$.city': city,
-                'address.$.street': street,
-                'address.$.postalCode': postalCode
-              }
-            },
-            { new: true }
-          );
-      
-          if (updatedAddress) {
-            console.log('Address updated successfully:', updatedAddress);
-            // Redirect or send a response indicating the update was successful
-            res.redirect('/address');
-          } else {
-            console.log('Address not found or not updated');
-            // Redirect or send a response indicating the address was not found or not updated
-            res.redirect('/address');
-          }
-        } catch (error) {
-          console.error('Error updating address:', error);
-          // Handle the error appropriately
-          res.redirect('/address');
-        }
-      },
+            const userId = req.session.user_id;
+            const { _id, name, mobile, homeAddress, city, street, postalCode } = req.body;
+            console.log(_id, 'id');
+            console.log(name, 'name');
+            console.log(mobile, 'mobile');
+            console.log(homeAddress, 'homeAddress');
+            console.log(city, 'city');
+            console.log(street, 'street');
+            console.log(postalCode, 'postalCode');
 
-      settingAsDefault: async (req, res) => {
+            const updatedAddress = await Address.findOneAndUpdate(
+                { user_id: userId, 'address._id': _id },
+                {
+                    $set: {
+                        'address.$.name': name,
+                        'address.$.mobile': mobile,
+                        'address.$.homeAddress': homeAddress,
+                        'address.$.city': city,
+                        'address.$.street': street,
+                        'address.$.postalCode': postalCode
+                    }
+                },
+                { new: true }
+            );
+
+            if (updatedAddress) {
+                console.log('Address updated successfully:', updatedAddress);
+                // Redirect or send a response indicating the update was successful
+                res.redirect('/address');
+            } else {
+                console.log('Address not found or not updated');
+                // Redirect or send a response indicating the address was not found or not updated
+                res.redirect('/address');
+            }
+        } catch (error) {
+            console.error('Error updating address:', error);
+            // Handle the error appropriately
+            res.redirect('/address');
+        }
+    },
+
+    settingAsDefault: async (req, res) => {
         try {
-          const addressId = req.body.addressId;
-          const userId = req.session.user_id;
-      
-          // Find the current default address and unset its "isDefault" flag
-          await Address.findOneAndUpdate(
-            { user_id: userId, 'address.isDefault': true },
-            { $set: { 'address.$.isDefault': false } }
-          );
-      
-          // Set the selected address as the new default address
-          const defaultAddress = await Address.findOneAndUpdate(
-            { user_id: userId, 'address._id': addressId },
-            { $set: { 'address.$.isDefault': true } }
-          );
+            const addressId = req.body.addressId;
+            const userId = req.session.user_id;
 
-          const response = {
-            setDefault:true
-          }
+            // Find the current default address and unset its "isDefault" flag
+            await Address.findOneAndUpdate(
+                { user_id: userId, 'address.isDefault': true },
+                { $set: { 'address.$.isDefault': false } }
+            );
 
-          return response
-        
+            // Set the selected address as the new default address
+            const defaultAddress = await Address.findOneAndUpdate(
+                { user_id: userId, 'address._id': addressId },
+                { $set: { 'address.$.isDefault': true } }
+            );
+
+            const response = {
+                setDefault: true
+            }
+
+            return response
+
         } catch (error) {
-          res.status(500).json({ success: false, message: 'Failed to set address as default' });
+            res.status(500).json({ success: false, message: 'Failed to set address as default' });
         }
-      }
-      
-      
+    }
+
+
 }
 
 
