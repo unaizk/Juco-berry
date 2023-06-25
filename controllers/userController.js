@@ -224,6 +224,14 @@ const addAddress = async(req,res)=>{
     }
 }
 
+const addNewAddress = async(req,res)=>{
+    try {
+        await userHelpers.addingNewAddress(req,res);
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 const deleteAddress = async(req,res)=>{
     try {
         await userHelpers.deletingAddress(req,res)
@@ -250,6 +258,21 @@ const setAsDefault = async(req,res)=>{
     }
 }
 
+const loadCheckout = async(req,res)=>{
+    try {
+        const response = await userHelpers.loadingCheckoutPage(req,res)
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const changeAddress = async(req,res)=>{
+    try {
+        await userHelpers.changingTheAddress(req,res)
+    } catch (error) {
+        console.log(error.message);
+    }
+}
 
 
 module.exports = {
@@ -279,5 +302,8 @@ module.exports = {
     addAddress,
     deleteAddress,
     editAddress,
-    setAsDefault
+    setAsDefault,
+    loadCheckout,
+    changeAddress,
+    addNewAddress
 }

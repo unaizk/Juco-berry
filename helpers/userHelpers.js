@@ -642,6 +642,53 @@ module.exports = {
         }
     },
 
+    addingNewAddress:async(req,res)=>{
+        try {
+            const userId = req.session.user_id
+            const { name, mobile, homeAddress, city, street, postalCode } = req.body;
+            console.log(name);
+            console.log(mobile);
+
+            console.log(city);
+            console.log(street);
+            console.log(postalCode);
+            const newAddress = {
+                name: name,
+                mobile: mobile,
+                homeAddress: homeAddress,
+                city: city,
+                street: street,
+                postalCode: postalCode,
+                isDefault: false, // Set the default flag to false by default
+            };
+
+            // Find the user's address document based on the user_id
+            let userAddress = await Address.findOne({ user_id: userId });
+
+            if (!userAddress) {
+                // If the user doesn't have any address, create a new document
+                newAddress.isDefault = true;
+                userAddress = new Address({ user_id: userId, address: [newAddress] });
+            } else {
+                // If the user already has an address, push the new address to the array
+                userAddress.address.push(newAddress);
+                // Check if there is only one address in the array
+                if (userAddress.address.length === 1) {
+                    // If there is only one address, set it as the default
+                    userAddress.address[0].isDefault = true;
+                }
+            }
+
+            await userAddress.save(); // Save the updated address document
+            console.log(userAddress, 'useraddress');
+
+            res.redirect('/checkout');
+
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    },
+
     deletingAddress: async (req, res) => {
         try {
             const id = req.query.id;
@@ -746,7 +793,63 @@ module.exports = {
         } catch (error) {
             res.status(500).json({ success: false, message: 'Failed to set address as default' });
         }
+    },
+
+    loadingCheckoutPage: async (req, res) => {
+        try {
+            const userId = req.session.user_id;
+            console.log(userId, 'id');
+            // Find the default address for the user
+            const defaultAddress = await Address.findOne({ user_id: userId, 'address.isDefault': true }, { 'address.$': 1 }).lean();
+
+            console.log(defaultAddress, 'default address');
+
+            // Find the user document and extract the address array
+            const userDocument = await Address.findOne({ user_id: userId }).lean();
+            const addressArray = userDocument.address;
+            console.log(addressArray, 'addressArray');
+
+            // Filter the addresses where isDefault is false
+            const filteredAddresses = addressArray.filter(address => !address.isDefault);
+            console.log(filteredAddresses, 'filteredAddresses');
+            res.render('users/checkout', { layout: 'user-layout', defaultAddress: defaultAddress.address[0], filteredAddresses: filteredAddresses });
+
+
+
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    },
+
+    changingTheAddress: async (req, res) => {
+        try {
+            console.log(req.body);
+            const addressId = req.body.addressId;
+            const userId = req.session.user_id;
+            console.log(addressId, 'addressId');
+              // Find the user document and extract the address 
+              const userDocument = await Address.findOne({ user_id: userId }).lean();
+              const addressArray = userDocument.address;
+              console.log(addressArray, 'addressArray');
+  
+        // Find the changed address based on the addressId
+        const changedAddress = addressArray.find(address => address._id.toString() === addressId);
+            console.log(changedAddress, 'changedAddress');
+
+             // Filter the addresses where isDefault is false
+             const filteredAddresses = addressArray.filter(address => !address.isDefault);
+            //  console.log(filteredAddresses, 'filteredAddresses');
+           
+            res.render('users/checkout', { layout: 'user-layout',defaultAddress:changedAddress,filteredAddresses:filteredAddresses });
+
+
+        } catch (error) {
+            throw new Error(error.message);
+        }
     }
+
+
+
 
 
 }

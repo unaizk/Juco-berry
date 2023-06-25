@@ -44,9 +44,12 @@ router.get('/user-profile',auth.isLogin,userController.userProfile);
 router.post('/edit-user',userUpload.single('image'),userController.editProfile);
 router.get('/address',auth.isLogin,userController.addressList)
 router.post('/address',userController.addAddress);
+router.post('/add-new-address',userController.addNewAddress)
 router.get('/delete-address',auth.isLogin,userController.deleteAddress);
 router.post('/edit-address',userController.editAddress);
-router.post('/set-as-default',userController.setAsDefault)
+router.post('/set-as-default',userController.setAsDefault);
+router.get('/checkout',auth.isLogin,userController.loadCheckout);
+router.post('/change-address',userController.changeAddress)
 
 
 
