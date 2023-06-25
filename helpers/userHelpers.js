@@ -642,7 +642,7 @@ module.exports = {
         }
     },
 
-    addingNewAddress:async(req,res)=>{
+    addingNewAddress: async (req, res) => {
         try {
             const userId = req.session.user_id
             const { name, mobile, homeAddress, city, street, postalCode } = req.body;
@@ -812,7 +812,55 @@ module.exports = {
             // Filter the addresses where isDefault is false
             const filteredAddresses = addressArray.filter(address => !address.isDefault);
             console.log(filteredAddresses, 'filteredAddresses');
-            res.render('users/checkout', { layout: 'user-layout', defaultAddress: defaultAddress.address[0], filteredAddresses: filteredAddresses });
+
+
+            // finding cart products //
+
+            const cart = await Cart.findOne({ user_id: req.session.user_id })
+                .populate({
+                    path: 'products.productId',
+                    populate: { path: 'category', select: 'category' },
+                })
+                .lean()
+                .exec();
+
+            const products = cart.products.map((product) => {
+                const total =
+                    Number(product.quantity) * Number(product.productId.price);
+                return {
+                    _id: product.productId._id.toString(),
+                    name: product.productId.name,
+                    category: product.productId.category.category, // Access the category field directly
+                    image: product.productId.image,
+                    price: product.productId.price,
+                    description: product.productId.description,
+                    quantity: product.quantity,
+                    total,
+                    user_id: req.session.user_id,
+
+                };
+            });
+
+            const total = products.reduce(
+                (sum, product) => sum + Number(product.total),
+                0
+            );
+            const finalAmount = total;
+            // Get the total count of products
+            const totalCount = products.length;
+
+
+            res.render('users/checkout',
+                {
+                    layout: 'user-layout',
+                    defaultAddress: defaultAddress.address[0],
+                    filteredAddresses: filteredAddresses,
+                    products,
+                    total,
+                    totalCount,
+                    subtotal: total,
+                    finalAmount,
+                });
 
 
 
@@ -827,20 +875,67 @@ module.exports = {
             const addressId = req.body.addressId;
             const userId = req.session.user_id;
             console.log(addressId, 'addressId');
-              // Find the user document and extract the address 
-              const userDocument = await Address.findOne({ user_id: userId }).lean();
-              const addressArray = userDocument.address;
-              console.log(addressArray, 'addressArray');
-  
-        // Find the changed address based on the addressId
-        const changedAddress = addressArray.find(address => address._id.toString() === addressId);
+            // Find the user document and extract the address 
+            const userDocument = await Address.findOne({ user_id: userId }).lean();
+            const addressArray = userDocument.address;
+            console.log(addressArray, 'addressArray');
+
+            // Find the changed address based on the addressId
+            const changedAddress = addressArray.find(address => address._id.toString() === addressId);
             console.log(changedAddress, 'changedAddress');
 
-             // Filter the addresses where isDefault is false
-             const filteredAddresses = addressArray.filter(address => !address.isDefault);
+            // Filter the addresses where isDefault is false
+            const filteredAddresses = addressArray.filter(address => !address.isDefault);
             //  console.log(filteredAddresses, 'filteredAddresses');
-           
-            res.render('users/checkout', { layout: 'user-layout',defaultAddress:changedAddress,filteredAddresses:filteredAddresses });
+
+
+            // finding cart products //
+
+            const cart = await Cart.findOne({ user_id: req.session.user_id })
+                .populate({
+                    path: 'products.productId',
+                    populate: { path: 'category', select: 'category' },
+                })
+                .lean()
+                .exec();
+
+            const products = cart.products.map((product) => {
+                const total =
+                    Number(product.quantity) * Number(product.productId.price);
+                return {
+                    _id: product.productId._id.toString(),
+                    name: product.productId.name,
+                    category: product.productId.category.category, // Access the category field directly
+                    image: product.productId.image,
+                    price: product.productId.price,
+                    description: product.productId.description,
+                    quantity: product.quantity,
+                    total,
+                    user_id: req.session.user_id,
+
+                };
+            });
+
+            const total = products.reduce(
+                (sum, product) => sum + Number(product.total),
+                0
+            );
+            const finalAmount = total;
+            // Get the total count of products
+            const totalCount = products.length;
+
+
+            res.render('users/checkout',
+                {
+                    layout: 'user-layout',
+                    defaultAddress: changedAddress,
+                    filteredAddresses: filteredAddresses,
+                    products,
+                    total,
+                    totalCount,
+                    subtotal: total,
+                    finalAmount,
+                });
 
 
         } catch (error) {
