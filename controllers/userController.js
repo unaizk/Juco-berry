@@ -298,6 +298,26 @@ const loadOrdersView = async(req,res)=>{
     }
 }
 
+const cancellOrder = async(req,res)=>{
+    try {
+        const id = req.body.orderId
+       
+
+        const url = '/ordersView?id='+ id;
+
+      
+
+        await userHelpers.cancellingOrder(id);
+
+        res.redirect(url)
+
+    } catch (error) {
+
+        console.log(error.message);
+
+    }
+}
+
 
 
 
@@ -334,5 +354,6 @@ module.exports = {
     addNewAddress,
     placeOrder,
     orderDetails,
-    loadOrdersView
+    loadOrdersView,
+    cancellOrder
 }

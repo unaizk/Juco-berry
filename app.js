@@ -9,6 +9,8 @@ const bodyParser = require('body-parser')
 const session = require('express-session')
 const multer = require('multer')
 const handlebars = require('handlebars');
+const handlebarsHelpers = require('handlebars-helpers')
+
 
 mongoose.connect('mongodb://127.0.0.1:27017/juco_berry')
 // view engine setup
@@ -20,23 +22,17 @@ const config = require('./config/config')
 
 var app = express();
 
+// handlebars.registerHelper('eq', function (a, b, options) {
+//   return a === b ? options.fn(this) : options.inverse(this);
+// });
 
 
 
 app.set('views',path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
-app.engine('hbs',hbs.engine({extname:'hbs',layoutsDir:__dirname+'/views/layout/',partialsDir:__dirname+'/views/partials/'}))
+app.engine('hbs',hbs.engine({extname:'hbs',layoutsDir:__dirname+'/views/layout/',partialsDir:__dirname+'/views/partials/',helpers:handlebarsHelpers()}))
 
 console.log(path.join(__dirname, 'views', 'partials'));
-
-
-
-
-
-
-
-
-
 
 app.use(logger('dev'));
 app.use(express.json());

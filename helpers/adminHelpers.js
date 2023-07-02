@@ -287,7 +287,8 @@ module.exports = {
                     image: image,
                     price: product.productId.price,
                     total: product.total,
-                    quantity: product.quantity
+                    quantity: product.quantity,
+                    status:order.orderStatus
                 };
             });
 
@@ -305,12 +306,11 @@ module.exports = {
 
 
             const subtotal = order.orderValue;
-            const status = order.orderStatus;
-            const orderDate = order.date
+           
 
 
             console.log(subtotal, 'subtotal');
-            console.log(status, 'status');
+          
 
             console.log(orderDetails, 'orderDetails');
             console.log(deliveryAddress, 'deliveryAddress');
@@ -320,7 +320,7 @@ module.exports = {
                 orderDetails: orderDetails,
                 deliveryAddress: deliveryAddress,
                 subtotal: subtotal,
-                status: status,
+               
                 orderId: orderId,
                 orderDate: createdOnIST
             });

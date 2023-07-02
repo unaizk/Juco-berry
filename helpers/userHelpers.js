@@ -20,6 +20,7 @@ const Address = require('../models/addressModel');
 const Order = require('../models/ordersModel')
 const moment = require("moment-timezone")
 
+
 module.exports = {
     passwordHash: async (password) => {
         try {
@@ -1005,9 +1006,10 @@ module.exports = {
     loadingOrdersViews: async (req, res) => {
         try {
             const orderId = req.query.id;
+            
             const userId = req.session.user_id
 
-            console.log(orderId, 'orderId');
+            console.log(orderId, 'orderId when loading page');
             const order = await Order.findOne({ _id: orderId })
                 .populate({
                     path: 'products.productId',
@@ -1027,7 +1029,9 @@ module.exports = {
                     image: image,
                     price: product.productId.price,
                     total: product.total,
-                    quantity: product.quantity
+                    quantity: product.quantity,
+                    status : order.orderStatus,
+                   
                 };
             });
 
@@ -1041,16 +1045,12 @@ module.exports = {
                 postalCode: order.addressDetails.postalCode,
             };
 
-
-
-
             const subtotal = order.orderValue;
-            const status = order.orderStatus;
-            const orderDate = order.date
-
-
+            const cancellationStatus = order.cancellationStatus
+            console.log(cancellationStatus,'cancellationStatus');
+           
             console.log(subtotal, 'subtotal');
-            console.log(status, 'status');
+            
 
             console.log(orderDetails, 'orderDetails');
             console.log(deliveryAddress, 'deliveryAddress');
@@ -1060,16 +1060,33 @@ module.exports = {
                 orderDetails: orderDetails,
                 deliveryAddress: deliveryAddress,
                 subtotal: subtotal,
-                status: status,
+               
                 orderId: orderId,
-                orderDate: createdOnIST
+                orderDate: createdOnIST,
+                cancellationStatus:cancellationStatus,
+               
             });
         } catch (error) {
-            throw new Error(error.message);
+            throw new Error(error);
         }
     },
 
-    
+
+    cancellingOrder:async(requestData)=>{
+        try {
+            const orderId = requestData
+
+         
+            const updateOrder = await Order.findByIdAndUpdate({_id:new ObjectId(orderId)},{$set:{cancellationStatus:"cancellation requested"}});
+
+            return updateOrder;
+            
+
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
+
 
 
 

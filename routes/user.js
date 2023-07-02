@@ -53,7 +53,7 @@ router.get('/checkout',auth.isLogin,userController.loadCheckout);
 router.post('/place-order',userController.placeOrder)
 router.get('/order-details',auth.isLogin,userController.orderDetails)
 router.get('/ordersView',auth.isLogin,userController.loadOrdersView)
-
+router.post('/cancel-order',userController.cancellOrder)
 
 
 
