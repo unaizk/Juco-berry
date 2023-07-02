@@ -12,222 +12,229 @@ const ObjectId = mongoose.Types.ObjectId;
 
 
 module.exports = {
-    loadingProductPage: async (req, res) => {
-        try {
-          const updatedProducts = await Product.find({ unlist: false }).lean();
-      
-          // Create a lookup object for category names
-          const categoryLookup = {};
-          const categories = await Category.find().lean();
-          categories.forEach((category) => {
-            categoryLookup[category._id] = category.category;
-          });
-      
-          const productWithSerialNumber = updatedProducts.map((product, index) => ({
-            ...product,
-            serialNumber: index + 1,
-            category: categoryLookup[product.category] ,
-          }));
-      
-          console.log('Retrieving categories...');
-          console.log('Categories:', categories);
-          res.render('admin/products', { layout: 'admin-layout', products: productWithSerialNumber, categories: categories });
-        } catch (error) {
-          throw new Error(error.message);
-        }
-      },
-      
-      
+  loadingProductPage: async (req, res) => {
+    try {
+      const updatedProducts = await Product.find({ unlist: false }).lean();
 
-      insertingProduct: async (req, res) => {
-        try {
-          var arrayImage = [];
-          for (let i = 0; i < req.files.length; i++) {
-            arrayImage[i] = req.files[i].filename;
-          }
-          const product = new Product({
-            image: arrayImage,
-            name: req.body.name,
-            category: req.body.category,
-            description: req.body.description,
-            price: req.body.price,
-          });
-      
-          const addProduct = await product.save();
-      
-          if (addProduct) {
-            const updatedProducts = await Product.find().lean();
-      
-            // Create a lookup object for category names
-            const categoryLookup = {};
-            const categories = await Category.find().lean();
-            categories.forEach((category) => {
-              categoryLookup[category._id] = category.category;
-            });
-      
-            const productWithSerialNumber = updatedProducts.map((product, index) => ({
-              ...product,
-              serialNumber: index + 1,
-              category: categoryLookup[product.category] || 'Unknown Category',
-            }));
-      
-            res.render('admin/products', { layout: 'admin-layout', products: productWithSerialNumber, categories: categories });
-          }
-        } catch (error) {
-          throw new Error(error.message);
-        }
-      },
-      
+      // Create a lookup object for category names
+      const categoryLookup = {};
+      const categories = await Category.find().lean();
+      categories.forEach((category) => {
+        categoryLookup[category._id] = category.category;
+      });
 
+      const productWithSerialNumber = updatedProducts.map((product, index) => ({
+        ...product,
+        serialNumber: index + 1,
+        category: categoryLookup[product.category],
+      }));
 
-    unlistingProducts: async (req, res) => {
-        try {
-            const id = req.query.id;
-
-
-          
-
-            const userData = await Product.findByIdAndUpdate({ _id: id }, { $set: { unlist: true } });
-
-           
-            // Retrieve the updated product list
-            const updatedProducts = await Product.find({ unlist: false }).lean();
-            const productWithSerialNumber = updatedProducts.map((product, index) => ({
-                ...product,
-                serialNumber: index + 1,
-            }));
-
-            const categories = await Category.find().lean();
-
-          
-
-            // Pass the updated product list and categories to the view
-            res.render('admin/products', { layout: 'admin-layout', products: productWithSerialNumber, categories: categories });
-        } catch (error) {
-            throw new Error(error.message);
-        }
-    },
-
-    unlistedProductsList: async (req, res) => {
-        try {
-            const unlistedProductsData = await Product.find({ unlist: true }).lean();
-            const productsWithSerialNumber = unlistedProductsData.map((product, index) => ({
-                ...product,
-                serialNumber: index + 1
-            }));
-            console.log(productsWithSerialNumber);
-            const categories = await Category.find().lean();
-            res.render('admin/unlisted-products', { layout: "admin-layout", product: productsWithSerialNumber, categories: categories });
-        } catch (error) {
-            throw new Error(error.message);
-        }
-    },
+      console.log('Retrieving categories...');
+      console.log('Categories:', categories);
+      res.render('admin/products', { layout: 'admin-layout', products: productWithSerialNumber, categories: categories });
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  },
 
 
 
-    listingProducts: async (req, res) => {
-        try {
-            const id = req.query.id;
+  insertingProduct: async (req, res) => {
+    try {
+      var arrayImage = [];
+      for (let i = 0; i < req.files.length; i++) {
+        arrayImage[i] = req.files[i].filename;
+      }
+      const product = new Product({
+        image: arrayImage,
+        name: req.body.name,
+        category: req.body.category,
+        description: req.body.description,
+        price: req.body.price,
+      });
 
-           
+      const addProduct = await product.save();
 
-          
-            // Update the unlist field of the product
-            await Product.findByIdAndUpdate(id, { unlist: false });
+      if (addProduct) {
+        const updatedProducts = await Product.find().lean();
 
-            // Convert the product ID to an ObjectId
-            const productId = mongoose.Types.ObjectId.createFromHexString(id);
+        // Create a lookup object for category names
+        const categoryLookup = {};
+        const categories = await Category.find().lean();
+        categories.forEach((category) => {
+          categoryLookup[category._id] = category.category;
+        });
 
-           
+        const productWithSerialNumber = updatedProducts.map((product, index) => ({
+          ...product,
+          serialNumber: index + 1,
+          category: categoryLookup[product.category] || 'Unknown Category',
+        }));
 
-            // Retrieve the remaining unlisted products
-            const updatedProducts = await Product.find({ unlist: true }).lean();
-            const productWithSerialNumber = updatedProducts.map((product, index) => ({
-                ...product,
-                serialNumber: index + 1,
-            }));
+        res.render('admin/products', { layout: 'admin-layout', products: productWithSerialNumber, categories: categories });
+      }
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  },
 
-            res.redirect('/admin/unlisted-products');
-        } catch (error) {
-            throw new Error(error.message);
-        }
-    },
 
-    editingProductPageLoad: async (req, res) => {
-        try {
-          const id = req.query.id;
-          console.log('ID:', id);
-      
-          const categories = await Category.find({ unlist: false }).lean();
-          const categoryData = {};
-          categories.forEach((data) => {
-            categoryData[data._id.toString()] = {
-              _id: data._id.toString(),
-              category: data.category
-            };
-          });
-      
-          const categoryLookup = {};
-          categories.forEach((category) => {
-            categoryLookup[category._id.toString()] = category.category;
-          });
-      
-          const updatedProduct = await Product.findById(id).lean();
-      
-          if (updatedProduct) {
-            const productWithCategoryName = {
-              ...updatedProduct,
-              category: categoryLookup[updatedProduct.category]
-            };
-            console.log('CategoryData:', categoryData);
-            res.render('admin/edit-product', { product: productWithCategoryName, layout: 'admin-layout', categories: categoryData });
-          } else {
-            console.log('Product not found');
-            res.redirect('/admin/products');
-          }
-        } catch (error) {
-          throw new Error(error.message);
-        }
-      },
-      
-      
-      updatingProducts: async (req, res) => {
-        try {
-          console.log(req.files, 'hi');
-          const id = req.query.id;
-          const product = await Product.findById({ _id: id }).lean();
-            console.log(req.body.category,"coming to updating");
-          let updatedProductData = {
-            name: req.body.name,
-            price: req.body.price,
-            description: req.body.description,
-            category:new mongoose.Types.ObjectId(req.body.category),
-            image: product.image, // Use the previous image data as the starting point
-          };
-      
-          if (req.files && req.files.length > 0) {
-            updatedProductData.image = req.files.map((file) => file.filename); // Update with the new image filenames
-          }
-      
-          const product1 = await Product.findByIdAndUpdate({ _id: req.query.id }, { $set: updatedProductData });
-      
-          res.redirect('/admin/products');
-        } catch (error) {
-          throw new Error(error.message);
-        }
-      },
-      
 
- 
+  unlistingProducts: async (req, res) => {
+    try {
+      const id = req.query.id;
 
-    
-       
-   
-      
-        
 
-      
-      
+
+
+      const userData = await Product.findByIdAndUpdate({ _id: id }, { $set: { unlist: true } });
+
+
+      // Retrieve the updated product list
+      const updatedProducts = await Product.find({ unlist: false }).lean();
+      const productWithSerialNumber = updatedProducts.map((product, index) => ({
+        ...product,
+        serialNumber: index + 1,
+      }));
+
+      const categories = await Category.find().lean();
+
+
+
+      // Pass the updated product list and categories to the view
+      res.render('admin/products', { layout: 'admin-layout', products: productWithSerialNumber, categories: categories });
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  },
+
+  unlistedProductsList: async (req, res) => {
+    try {
+      const unlistedProductsData = await Product.find({ unlist: true }).lean();
+      const productsWithSerialNumber = unlistedProductsData.map((product, index) => ({
+        ...product,
+        serialNumber: index + 1
+      }));
+      console.log(productsWithSerialNumber);
+      const categories = await Category.find().lean();
+      res.render('admin/unlisted-products', { layout: "admin-layout", product: productsWithSerialNumber, categories: categories });
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  },
+
+
+
+  listingProducts: async (req, res) => {
+    try {
+      const id = req.query.id;
+
+
+
+
+      // Update the unlist field of the product
+      await Product.findByIdAndUpdate(id, { unlist: false });
+
+      // Convert the product ID to an ObjectId
+      const productId = mongoose.Types.ObjectId.createFromHexString(id);
+
+
+
+      // Retrieve the remaining unlisted products
+      const updatedProducts = await Product.find({ unlist: true }).lean();
+      const productWithSerialNumber = updatedProducts.map((product, index) => ({
+        ...product,
+        serialNumber: index + 1,
+      }));
+
+      res.redirect('/admin/unlisted-products');
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  },
+
+  editingProductPageLoad: async (req, res) => {
+    try {
+      const id = req.query.id;
+      console.log('ID:', id);
+
+      const categories = await Category.find({ unlist: false }).lean();
+      const categoryData = {};
+      categories.forEach((data) => {
+        categoryData[data._id.toString()] = {
+          _id: data._id.toString(),
+          category: data.category
+        };
+      });
+
+      const categoryLookup = {};
+      categories.forEach((category) => {
+        categoryLookup[category._id.toString()] = category.category;
+      });
+
+      const updatedProduct = await Product.findById(id).lean();
+
+      if (updatedProduct) {
+        const productWithCategoryName = {
+          ...updatedProduct,
+          category: categoryLookup[updatedProduct.category]
+        };
+        console.log('CategoryData:', categoryData);
+        res.render('admin/edit-product', { product: productWithCategoryName, layout: 'admin-layout', categories: categoryData });
+      } else {
+        console.log('Product not found');
+        res.redirect('/admin/products');
+      }
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  },
+
+
+  updatingProducts: async (req, res) => {
+    try {
+      console.log(req.files, 'hi');
+      const id = req.query.id;
+      console.log(id, '----------------');
+      const product = await Product.findById({ _id: new mongoose.Types.ObjectId(req.query.id) }).lean();
+      console.log(product, 'product');
+      console.log(req.body.category, "coming to updating");
+
+      // Retrieve the category ID based on the category name
+      const category = await Category.findOne({ category: req.body.category }).lean();
+      const categoryId = category._id;
+
+      let updatedProductData = {
+        name: req.body.name,
+        price: req.body.price,
+        description: req.body.description,
+        category: new mongoose.Types.ObjectId(categoryId),
+        image: product.image, // Use the previous image data as the starting point
+      };
+      console.log(updatedProductData, 'updatedProductData');
+      if (req.files && req.files.length > 0) {
+        updatedProductData.image = req.files.map((file) => file.filename); // Update with the new image filenames
+      }
+
+      const product1 = await Product.findByIdAndUpdate({ _id: new mongoose.Types.ObjectId(req.query.id) }, { $set: updatedProductData });
+      console.log(product1, 'product1');
+      res.redirect('/admin/products');
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  },
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

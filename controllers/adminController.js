@@ -241,6 +241,22 @@ const updateProduct = async(req,res)=>{
   }
 }
 
+const loadOrdersList = async(req,res)=>{
+  try {
+    await adminHelpers.loadingOrdersList(req,res);
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+const loadOrdersView = async(req,res)=>{
+  try {
+    await adminHelpers.loadingOrdersViews(req,res);
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
 
 
 module.exports = {
@@ -272,5 +288,7 @@ module.exports = {
   editCategoryLoad,
   updateCategory,
   editProductLoad,
-  updateProduct
+  updateProduct,
+  loadOrdersList,
+  loadOrdersView
 }

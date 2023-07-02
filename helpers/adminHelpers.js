@@ -6,8 +6,8 @@ const randomstring = require("randomstring");
 var path = require('path');
 const fs = require('fs')
 const User = require('../models/userModel');
-
-
+const Order = require('../models/ordersModel')
+const moment = require("moment-timezone")
 module.exports = {
     passwordHash: async (password) => {
         try {
@@ -240,8 +240,95 @@ module.exports = {
         } catch (error) {
             throw new Error(error.message);
         }
-    }
+    },
 
+
+    loadingOrdersList: async (req, res) => {
+        try {
+          const orderDetails = await Order.find().populate('userId').lean();
+          console.log(orderDetails, 'orderDetails');
+      
+          const orderHistory = orderDetails.map(history => {
+            let createdOnIST = moment(history.date)
+              .tz('Asia/Kolkata')
+              .format('DD-MM-YYYY h:mm A');
+      
+            return { ...history, date: createdOnIST, userName: history.userId.name };
+          });
+      
+          res.render('admin/ordersList', { layout: 'admin-layout', orderDetails: orderHistory });
+        } catch (error) {
+          throw new Error(error.message);
+        }
+      },
+
+      loadingOrdersViews:async(req,res)=>{
+        try {
+            const orderId = req.query.id;
+           
+
+            console.log(orderId, 'orderId');
+            const order = await Order.findOne({ _id: orderId })
+                .populate({
+                    path: 'products.productId',
+                    select: 'name price image',
+                })
+
+
+            const createdOnIST = moment(order.date).tz('Asia/Kolkata').format('DD-MM-YYYY h:mm A');
+            order.date = createdOnIST;
+
+            const orderDetails = order.products.map(product => {
+                const images = product.productId.image || []; // Set images to an empty array if it is undefined
+                const image = images.length > 0 ? images[0] : ''; // Take the first image from the array if it exists
+
+                return {
+                    name: product.productId.name,
+                    image: image,
+                    price: product.productId.price,
+                    total: product.total,
+                    quantity: product.quantity
+                };
+            });
+
+
+
+            const deliveryAddress = {
+                name: order.addressDetails.name,
+                homeAddress: order.addressDetails.homeAddress,
+                city: order.addressDetails.city,
+                street: order.addressDetails.street,
+                postalCode: order.addressDetails.postalCode,
+            };
+
+
+
+
+            const subtotal = order.orderValue;
+            const status = order.orderStatus;
+            const orderDate = order.date
+
+
+            console.log(subtotal, 'subtotal');
+            console.log(status, 'status');
+
+            console.log(orderDetails, 'orderDetails');
+            console.log(deliveryAddress, 'deliveryAddress');
+
+            res.render('admin/ordersView', {
+                layout: 'admin-layout',
+                orderDetails: orderDetails,
+                deliveryAddress: deliveryAddress,
+                subtotal: subtotal,
+                status: status,
+                orderId: orderId,
+                orderDate: createdOnIST
+            });
+        } catch (error) {
+            throw new Error(error.message);
+        }
+      }
+      
 
 
 }

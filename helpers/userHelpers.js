@@ -17,6 +17,8 @@ const { Console } = require('console');
 const ObjectId = mongoose.Types.ObjectId;
 const Cart = require('../models/cartModel')
 const Address = require('../models/addressModel');
+const Order = require('../models/ordersModel')
+const moment = require("moment-timezone")
 
 module.exports = {
     passwordHash: async (password) => {
@@ -523,8 +525,18 @@ module.exports = {
             // Find the default address for the user
             const defaultAddress = await Address.findOne({ user_id: userId, 'address.isDefault': true }, { 'address.$': 1 }).lean();
             console.log(defaultAddress, 'defaultAddress');
+            if (defaultAddress) {
+                res.render('users/user-profile', {
+                    layout: 'user-layout',
+                    userData,
+                    defaultAddress: defaultAddress.address[0]
+                });
+            } else {
+                // Handle the case when there is no default address
+                res.render('users/user-profile', { layout: 'user-layout', userData });
+                // Or you can redirect the user to a different page or display an error message
+            }
 
-            res.render('users/user-profile', { layout: 'user-layout', userData, defaultAddress: defaultAddress.address[0] });
         } catch (error) {
             throw new Error(error.message);
         }
@@ -795,12 +807,41 @@ module.exports = {
         }
     },
 
+    changingTheAddress: async (req, res) => {
+        try {
+            const addressId = req.body.addressId;
+            const userId = req.session.user_id;
+
+            // Find the current default address and unset its "isDefault" flag
+            await Address.findOneAndUpdate(
+                { user_id: userId, 'address.isDefault': true },
+                { $set: { 'address.$.isDefault': false } }
+            );
+
+            // Set the selected address as the new default address
+            const defaultAddress = await Address.findOneAndUpdate(
+                { user_id: userId, 'address._id': addressId },
+                { $set: { 'address.$.isDefault': true } }
+            );
+
+            res.redirect('/checkout')
+
+
+        } catch (error) {
+            res.status(500).json({ success: false, message: 'Failed to set address as default' });
+        }
+    },
+
     loadingCheckoutPage: async (req, res) => {
         try {
             const userId = req.session.user_id;
             console.log(userId, 'id');
+
             // Find the default address for the user
-            const defaultAddress = await Address.findOne({ user_id: userId, 'address.isDefault': true }, { 'address.$': 1 }).lean();
+            const defaultAddress = await Address.findOne(
+                { user_id: userId, 'address.isDefault': true },
+                { 'address.$': 1 }
+            ).lean();
 
             console.log(defaultAddress, 'default address');
 
@@ -813,7 +854,6 @@ module.exports = {
             const filteredAddresses = addressArray.filter(address => !address.isDefault);
             console.log(filteredAddresses, 'filteredAddresses');
 
-
             // finding cart products //
 
             const cart = await Cart.findOne({ user_id: req.session.user_id })
@@ -837,7 +877,6 @@ module.exports = {
                     quantity: product.quantity,
                     total,
                     user_id: req.session.user_id,
-
                 };
             });
 
@@ -849,19 +888,113 @@ module.exports = {
             // Get the total count of products
             const totalCount = products.length;
 
+            res.render('users/checkout', {
+                layout: 'user-layout',
+                defaultAddress: defaultAddress ? defaultAddress.address[0] : null, // Add a conditional check for defaultAddress
+                filteredAddresses,
+                products,
+                total,
+                totalCount,
+                subtotal: total,
+                finalAmount,
+            });
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    },
 
-            res.render('users/checkout',
-                {
-                    layout: 'user-layout',
-                    defaultAddress: defaultAddress.address[0],
-                    filteredAddresses: filteredAddresses,
-                    products,
-                    total,
-                    totalCount,
-                    subtotal: total,
-                    finalAmount,
-                });
 
+    placingOrder: async (req, res) => {
+        try {
+            const paymentMethod = req.body.paymentMethod;
+            console.log(paymentMethod, 'paymentMethod');
+
+            const userId = req.session.user_id;
+            console.log(userId, 'id');
+
+            const orderStatus = paymentMethod === "COD" ? "Placed" : "Pending";
+            console.log(orderStatus, "orderStatus");
+
+            // Find the default address for the user
+            const defaultAddress = await Address.findOne(
+                { user_id: userId, 'address.isDefault': true },
+                { 'address.$': 1 }
+            ).lean();
+            console.log(defaultAddress, 'default address');
+
+            if (!defaultAddress) {
+                console.log('Default address not found');
+                return res.redirect('/address');
+            }
+
+            const productDetails = await Cart.findOne({ user_id: userId }).lean();
+            console.log(productDetails, 'productDetails');
+
+            // Calculate the new subtotal for all products in the cart
+            const subtotal = productDetails.products.reduce((acc, product) => {
+                return acc + product.total;
+            }, 0);
+
+            console.log(subtotal, 'subtotal');
+
+            const products = productDetails.products.map((product) => ({
+                productId: product.productId,
+                quantity: product.quantity,
+                total: product.total
+            }));
+            const defaultAddressDetails = defaultAddress.address[0];
+            const address = {
+                name: defaultAddressDetails.name,
+                mobile: defaultAddressDetails.mobile,
+                homeAddress: defaultAddressDetails.homeAddress,
+                city: defaultAddressDetails.city,
+                street: defaultAddressDetails.street,
+                postalCode: defaultAddressDetails.postalCode
+            };
+            console.log(address, 'address');
+
+            const orderDetails = new Order({
+                userId: userId,
+                date: Date(),
+                orderValue: subtotal,
+                paymentMethod: paymentMethod,
+                orderStatus: orderStatus,
+                products: products,
+                addressDetails: address
+            });
+
+            const placedOrder = await orderDetails.save();
+
+            console.log(placedOrder, 'placedOrder');
+
+            // Remove the products from the cart
+            await Cart.deleteMany({ user_id: userId });
+
+            res.render('users/orderPlaced', { layout: "user-layout", placedOrder });
+        } catch (error) {
+            console.error(error);
+            res.redirect('/address');
+        }
+    },
+
+
+
+
+    loadOrderDetails: async (req, res) => {
+        try {
+            const userId = req.session.user_id
+            const orderDetails = await Order.find({ userId: userId }).lean()
+            orderHistory = orderDetails.map(history => {
+                let createdOnIST = moment(history.date)
+                    .tz('Asia/kolkata')
+                    .format('DD-MM-YYYY h:mm A');
+
+                return { ...history, date: createdOnIST };
+            })
+
+            console.log(orderDetails, 'orderDetails');
+
+            res.render('users/ordersList', { layout: 'user-layout', orderDetails: orderHistory });
 
 
         } catch (error) {
@@ -869,81 +1002,74 @@ module.exports = {
         }
     },
 
-    changingTheAddress: async (req, res) => {
+    loadingOrdersViews: async (req, res) => {
         try {
-            console.log(req.body);
-            const addressId = req.body.addressId;
-            const userId = req.session.user_id;
-            console.log(addressId, 'addressId');
-            // Find the user document and extract the address 
-            const userDocument = await Address.findOne({ user_id: userId }).lean();
-            const addressArray = userDocument.address;
-            console.log(addressArray, 'addressArray');
+            const orderId = req.query.id;
+            const userId = req.session.user_id
 
-            // Find the changed address based on the addressId
-            const changedAddress = addressArray.find(address => address._id.toString() === addressId);
-            console.log(changedAddress, 'changedAddress');
-
-            // Filter the addresses where isDefault is false
-            const filteredAddresses = addressArray.filter(address => !address.isDefault);
-            //  console.log(filteredAddresses, 'filteredAddresses');
-
-
-            // finding cart products //
-
-            const cart = await Cart.findOne({ user_id: req.session.user_id })
+            console.log(orderId, 'orderId');
+            const order = await Order.findOne({ _id: orderId })
                 .populate({
                     path: 'products.productId',
-                    populate: { path: 'category', select: 'category' },
+                    select: 'name price image',
                 })
-                .lean()
-                .exec();
 
-            const products = cart.products.map((product) => {
-                const total =
-                    Number(product.quantity) * Number(product.productId.price);
+
+            const createdOnIST = moment(order.date).tz('Asia/Kolkata').format('DD-MM-YYYY h:mm A');
+            order.date = createdOnIST;
+
+            const orderDetails = order.products.map(product => {
+                const images = product.productId.image || []; // Set images to an empty array if it is undefined
+                const image = images.length > 0 ? images[0] : ''; // Take the first image from the array if it exists
+
                 return {
-                    _id: product.productId._id.toString(),
                     name: product.productId.name,
-                    category: product.productId.category.category, // Access the category field directly
-                    image: product.productId.image,
+                    image: image,
                     price: product.productId.price,
-                    description: product.productId.description,
-                    quantity: product.quantity,
-                    total,
-                    user_id: req.session.user_id,
-
+                    total: product.total,
+                    quantity: product.quantity
                 };
             });
 
-            const total = products.reduce(
-                (sum, product) => sum + Number(product.total),
-                0
-            );
-            const finalAmount = total;
-            // Get the total count of products
-            const totalCount = products.length;
 
 
-            res.render('users/checkout',
-                {
-                    layout: 'user-layout',
-                    defaultAddress: changedAddress,
-                    filteredAddresses: filteredAddresses,
-                    products,
-                    total,
-                    totalCount,
-                    subtotal: total,
-                    finalAmount,
-                });
+            const deliveryAddress = {
+                name: order.addressDetails.name,
+                homeAddress: order.addressDetails.homeAddress,
+                city: order.addressDetails.city,
+                street: order.addressDetails.street,
+                postalCode: order.addressDetails.postalCode,
+            };
 
 
+
+
+            const subtotal = order.orderValue;
+            const status = order.orderStatus;
+            const orderDate = order.date
+
+
+            console.log(subtotal, 'subtotal');
+            console.log(status, 'status');
+
+            console.log(orderDetails, 'orderDetails');
+            console.log(deliveryAddress, 'deliveryAddress');
+
+            res.render('users/ordersView', {
+                layout: 'user-layout',
+                orderDetails: orderDetails,
+                deliveryAddress: deliveryAddress,
+                subtotal: subtotal,
+                status: status,
+                orderId: orderId,
+                orderDate: createdOnIST
+            });
         } catch (error) {
             throw new Error(error.message);
         }
-    }
+    },
 
-
+    
 
 
 

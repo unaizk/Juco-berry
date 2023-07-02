@@ -258,14 +258,6 @@ const setAsDefault = async(req,res)=>{
     }
 }
 
-const loadCheckout = async(req,res)=>{
-    try {
-        const response = await userHelpers.loadingCheckoutPage(req,res)
-    } catch (error) {
-        console.log(error.message);
-    }
-}
-
 const changeAddress = async(req,res)=>{
     try {
         await userHelpers.changingTheAddress(req,res)
@@ -273,6 +265,40 @@ const changeAddress = async(req,res)=>{
         console.log(error.message);
     }
 }
+
+const loadCheckout = async(req,res)=>{
+    try {
+         await userHelpers.loadingCheckoutPage(req,res)
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const placeOrder = async(req,res)=>{
+    try {
+        await userHelpers.placingOrder(req,res)
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const orderDetails = async(req,res)=>{
+    try {
+        await userHelpers.loadOrderDetails(req,res)
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const loadOrdersView = async(req,res)=>{
+    try {
+        await userHelpers.loadingOrdersViews(req,res)
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+
 
 
 module.exports = {
@@ -305,5 +331,8 @@ module.exports = {
     setAsDefault,
     loadCheckout,
     changeAddress,
-    addNewAddress
+    addNewAddress,
+    placeOrder,
+    orderDetails,
+    loadOrdersView
 }

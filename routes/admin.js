@@ -60,6 +60,8 @@ router.get('/edit-category',adminAuth.isLogin,adminController.editCategoryLoad);
 router.post('/edit-category',adminController.updateCategory);
 router.get('/edit-product',adminAuth.isLogin,adminController.editProductLoad)
 router.post('/edit-product',upload.array('image'),adminController.updateProduct)
+router.get('/ordersList',adminAuth.isLogin,adminController.loadOrdersList)
+router.get('/ordersView',adminAuth.isLogin,adminController.loadOrdersView)
 
 router.get('*', (req, res) => {
   res.redirect('/admin')

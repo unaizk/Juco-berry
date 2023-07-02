@@ -66,7 +66,6 @@
         border-color: #000000;
         box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0.25);
     }
-    
 </style>
 {{>user-header}}
 <div class="card">
@@ -75,6 +74,7 @@
 
             <div class="row">
                 {{#if products}}
+
                 <div class="col-md-4 order-md-2 mb-4">
                     <h4 class="d-flex justify-content-between align-items-center mb-3">
                         <span class="text-muted">Your cart</span>
@@ -84,14 +84,15 @@
                         {{#each products}}
                         <li class="list-group-item d-flex justify-content-between lh-condensed">
                             <div>
-                                 <img src="/productImages/{{this.image}}" class="img-fluid" alt="Product Image" width="50px" />
+                                <img src="/productImages/{{this.image}}" class="img-fluid" alt="Product Image"
+                                    width="50px" />
                                 <h6 class="my-0">{{this.name}} x {{this.quantity}}</h6>
-                               
+
                             </div>
                             <span class="text-muted">₹{{this.total}}</span>
                         </li>
                         {{/each}}
-                       
+
                         <li class="list-group-item d-flex justify-content-between bg-light">
                             <div class="text-success">
                                 <h6 class="my-0">Promo code</h6>
@@ -116,7 +117,7 @@
                 {{/if}}
                 <div class="col-md-8 order-md-1">
                     <h4 class="mb-3">Billing address</h4>
-                    <form class="needs-validation" novalidate="">
+                    <form class="needs-validation" novalidate="" action="/place-order" method="post">
 
 
 
@@ -181,12 +182,12 @@
                         <div class="d-block my-3">
                             <div class="custom-control custom-radio">
                                 <input id="credit" name="paymentMethod" type="radio" class="custom-control-input"
-                                    checked="" required="">
+                                    checked="" required="" value="COD">
                                 <label class="custom-control-label" for="credit">COD</label>
                             </div>
                             <div class="custom-control custom-radio">
                                 <input id="debit" name="paymentMethod" type="radio" class="custom-control-input"
-                                    required="">
+                                    required="" value="ONLINE">
                                 <label class="custom-control-label" for="debit">ONLINE</label>
                             </div>
 
@@ -198,6 +199,7 @@
                             checkout</button>
                     </form>
                 </div>
+
             </div>
 
         </div>
@@ -217,13 +219,13 @@
                 </button>
             </div>
             <div class="modal-body">
-                
+
                 <form action="/change-address" method="post">
-                {{#each filteredAddresses}}
+                    {{#each filteredAddresses}}
                     <div class="card border-dark mb-3" style="max-width: 18rem;">
-                          
+
                         <div class="card-header">Address details</div>
-                        
+
                         <div class="card-body text-dark">
                             <input type="radio" name="addressId" value="{{this._id}}" id="address" checked>
                             <p class="card-text">{{this.name}}</p>
@@ -235,7 +237,7 @@
                         </div>
                     </div>
                     {{/each}}
-                   
+
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-warning" style="color: #ffffff;">Save changes</button>
@@ -252,49 +254,49 @@
 
 <!--Add address Modal -->
 <div class="modal fade" id="addnewaddress" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
-  aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Add new address</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form action="/add-new-address" method="post">
-          <div class="form-group">
-            <label for="edit-username">Name</label>
-            <input type="text" class="form-control" name="name" id="edit-username">
-          </div>
-          <div class="form-group">
-            <label for="edit-email">Mobile</label>
-            <input type="text" class="form-control" name="mobile" id="edit-email">
-          </div>
-          <div class="form-group">
-            <label for="edit-phone">Address</label>
-            <input type="text" class="form-control" name="homeAddress" id="edit-phone">
-          </div>
-          <div class="form-group">
-            <label for="edit-email">City</label>
-            <input type="text" class="form-control" name="city" id="edit-email">
-          </div>
-          <div class="form-group">
-            <label for="edit-email">Street</label>
-            <input type="text" class="form-control" name="street" id="edit-email">
-          </div>
-          <div class="form-group">
-            <label for="edit-email">Postal code</label>
-            <input type="number" class="form-control" name="postalCode" id="edit-email">
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-warning add-button" style="color: #ffffff;">Add</button>
-          </div>
-        </form>
-      </div>
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Add new address</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="/add-new-address" method="post">
+                    <div class="form-group">
+                        <label for="edit-username">Name</label>
+                        <input type="text" class="form-control" name="name" id="edit-username">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-email">Mobile</label>
+                        <input type="text" class="form-control" name="mobile" id="edit-email">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-phone">Address</label>
+                        <input type="text" class="form-control" name="homeAddress" id="edit-phone">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-email">City</label>
+                        <input type="text" class="form-control" name="city" id="edit-email">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-email">Street</label>
+                        <input type="text" class="form-control" name="street" id="edit-email">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-email">Postal code</label>
+                        <input type="number" class="form-control" name="postalCode" id="edit-email">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-warning add-button" style="color: #ffffff;">Add</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 {{>user-footer}}

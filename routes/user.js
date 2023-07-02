@@ -48,8 +48,12 @@ router.post('/add-new-address',userController.addNewAddress)
 router.get('/delete-address',auth.isLogin,userController.deleteAddress);
 router.post('/edit-address',userController.editAddress);
 router.post('/set-as-default',userController.setAsDefault);
+router.post('/change-address',userController.changeAddress);
 router.get('/checkout',auth.isLogin,userController.loadCheckout);
-router.post('/change-address',userController.changeAddress)
+router.post('/place-order',userController.placeOrder)
+router.get('/order-details',auth.isLogin,userController.orderDetails)
+router.get('/ordersView',auth.isLogin,userController.loadOrdersView)
+
 
 
 
