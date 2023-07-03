@@ -222,9 +222,11 @@
                    
                         <button type="button" 
                             class="btn btn-danger btn-sm" onclick="showCancelConfirmationModal('{{orderId}}')">Cancel</button>
-                    </form>
+                    
                     {{else if (eq cancellationStatus "cancellation requested")}}
                     <button type="button" class="btn btn-danger btn-sm">Cancel requested</button>
+                    {{else if (eq cancellationStatus "cancelled")}}
+                    
 
                     {{/if}}
                 </div>

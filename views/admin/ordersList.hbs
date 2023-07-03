@@ -107,16 +107,25 @@
                                 <td>{{this.orderValue}}</td>
                                 <td>{{this.paymentMethod}}</td>
                                 <td>{{this.orderStatus}}</td>
+                                {{#if (eq cancellationStatus "Not requested")}}
                                 <td>
+                                    <a href="/admin/ordersView?id={{this._id}}" class="btn btn-primary btn-sm btn-block view-btn" style="color: #ffffff;"
+                                       
+                                        type="button" >Mark as preparing</a>
+                                </td>
+                                {{else if (eq cancellationStatus "cancellation requested")}}
+                                 <td>
+                                    <a href="/admin/ordersView?id={{this._id}}" class="btn btn-danger btn-sm btn-block view-btn" style="color: #ffffff;"
+                                       
+                                        type="button" >Review cancel</a>
+                                </td>
+                                 {{else if (eq cancellationStatus "cancelled")}}
+                                   <td>
                                     <a href="/admin/ordersView?id={{this._id}}" class="btn btn-primary btn-sm btn-block view-btn" style="color: #ffffff;"
                                        
                                         type="button" >View</a>
                                 </td>
-                                <td>
-                                    <a href="/admin/ordersView?id={{this._id}}" class="btn btn-primary btn-sm btn-block view-btn" style="color: #ffffff;"
-                                       
-                                        type="button" >View</a>
-                                </td>
+                                {{/if}}
                             </tr>
                             {{/each}}
                         </tbody>

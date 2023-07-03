@@ -7,7 +7,10 @@ var path = require('path');
 const fs = require('fs')
 const User = require('../models/userModel');
 const Order = require('../models/ordersModel')
-const moment = require("moment-timezone")
+const moment = require("moment-timezone");
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
+
 module.exports = {
     passwordHash: async (password) => {
         try {
@@ -306,7 +309,8 @@ module.exports = {
 
 
             const subtotal = order.orderValue;
-           
+            const cancellationStatus = order.cancellationStatus
+            console.log(cancellationStatus,'cancellationStatus');
 
 
             console.log(subtotal, 'subtotal');
@@ -322,8 +326,27 @@ module.exports = {
                 subtotal: subtotal,
                
                 orderId: orderId,
-                orderDate: createdOnIST
+                orderDate: createdOnIST,
+                 cancellationStatus:cancellationStatus,
             });
+        } catch (error) {
+            throw new Error(error.message);
+        }
+      },
+
+      cancellingOrderByAdmin:async(requestData)=>{
+        try {
+            const orderId = requestData
+            console.log(orderId,'orderidddddddddddddd');
+            const updateOrder = await Order.findByIdAndUpdate(
+                { _id:new ObjectId(orderId) },
+                { $set: { orderStatus: "cancelled",cancellationStatus:"cancelled" } },
+                { new: true } // This ensures that the updated document is returned
+              ).exec();
+              
+            console.log(updateOrder,'updateOrderrrrrrrrrrrrrrrrrrrrrrrrrrrrrr');
+
+            return updateOrder;
         } catch (error) {
             throw new Error(error.message);
         }
