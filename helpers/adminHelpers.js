@@ -368,6 +368,42 @@ module.exports = {
         } catch (error) {
             throw new Error(error.message);
         }
+      },
+
+      preparingOrderByAdmin:async(requestData)=>{
+        try {
+            const orderId = requestData
+            console.log(orderId,'orderidddddddddddddd');
+            const updateOrder = await Order.findByIdAndUpdate(
+                { _id:new ObjectId(orderId) },
+                { $set: { orderStatus: "Preparing food",cancellationStatus:"Preparing food" } },
+                { new: true } // This ensures that the updated document is returned
+              ).exec();
+              
+            console.log(updateOrder,'updateOrderrrrrrrrrrrrrrrrrrrrrrrrrrrrrr');
+
+            return updateOrder;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+      },
+
+      deliveredOrderByAdmin:async(requestData)=>{
+        try {
+            const orderId = requestData
+            console.log(orderId,'orderidddddddddddddd');
+            const updateOrder = await Order.findByIdAndUpdate(
+                { _id:new ObjectId(orderId) },
+                { $set: { orderStatus: "Delivered",cancellationStatus:"Delivered" } },
+                { new: true } // This ensures that the updated document is returned
+              ).exec();
+              
+            console.log(updateOrder,'updateOrderrrrrrrrrrrrrrrrrrrrrrrrrrrrrr');
+
+            return updateOrder;
+        } catch (error) {
+            throw new Error(error.message);
+        }
       }
       
 

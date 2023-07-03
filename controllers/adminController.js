@@ -288,6 +288,36 @@ const rejectCancellation = async(req,res)=>{
 }
 
 
+const preparingFood = async(req,res)=>{
+  try {
+    const id = req.body.orderId
+    console.log(id,'idddddddddddddd');
+
+     const url = '/admin/ordersView?id='+ id;
+     console.log(url,'urlllllllllllllllllllllllll');
+     await adminHelpers.preparingOrderByAdmin(id);
+
+     res.redirect(url)
+  } catch (error) {
+    
+  }
+}
+
+const deliveredFood = async(req,res)=>{
+  try {
+    const id = req.body.orderId
+    console.log(id,'idddddddddddddd');
+
+     const url = '/admin/ordersView?id='+ id;
+     console.log(url,'urlllllllllllllllllllllllll');
+     await adminHelpers.deliveredOrderByAdmin(id);
+
+     res.redirect(url)
+  } catch (error) {
+    
+  }
+}
+
 
 module.exports = {
   loadLogin,
@@ -322,5 +352,7 @@ module.exports = {
   loadOrdersList,
   loadOrdersView,
   cancelledByAdmin,
-  rejectCancellation
+  rejectCancellation,
+  preparingFood,
+  deliveredFood
 }

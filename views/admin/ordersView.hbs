@@ -63,11 +63,15 @@
                             <div class="col-auto">
                                   {{#if (eq cancellationStatus "Not requested")}}
                                 <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#exampleModalCenter">Cancel</button>
-                                <button type="button" class="btn btn-primary btn-sm">Mark as preparing</button>
+                                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#markAsPreparing">Mark as preparing</button>
                                 {{else if (eq cancellationStatus "cancellation requested")}}
                                  <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#acceptCancel">Accept Cancel</button>
                                  <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#rejectCancel">Reject Cancel</button>
                                   {{else if (eq cancellationStatus "cancelled")}}
+                                {{else if (eq cancellationStatus "Preparing food")}}
+                                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#exampleModalCenter">Cancel</button>
+                                <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#markAsDelivered">Mark as Delivered</button>
+                                {{else if (eq cancellationStatus "Delivered")}}
                                  {{/if}}
                             </div>
                         </div>
@@ -173,6 +177,55 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         <form action="/admin/reject-by-admin" method="post">
+                    <button type="submit" class="btn btn-danger" id="confirmCancelBtn" name="orderId" value="{{orderId}}">Yes</button>
+                </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+             {{!-- mark as preparing --}}
+
+
+    <div class="modal fade" id="markAsPreparing" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Prepare food confirmation</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+         <p>Are you sure you want to prepare the order?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <form action="/admin/prepare-by-admin" method="post">
+                    <button type="submit" class="btn btn-danger" id="confirmCancelBtn" name="orderId" value="{{orderId}}">Yes</button>
+                </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+                   {{!-- mark ad deivered --}}
+
+                   <div class="modal fade" id="markAsDelivered" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Delivery confirmation</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+         <p>Are you sure you want to Deliver the order?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <form action="/admin/deliver-by-admin" method="post">
                     <button type="submit" class="btn btn-danger" id="confirmCancelBtn" name="orderId" value="{{orderId}}">Yes</button>
                 </form>
       </div>

@@ -121,9 +121,21 @@
                                 </td>
                                  {{else if (eq cancellationStatus "cancelled")}}
                                    <td>
-                                    <a href="/admin/ordersView?id={{this._id}}" class="btn btn-primary btn-sm btn-block view-btn" style="color: #ffffff;"
+                                    <a href="/admin/ordersView?id={{this._id}}" class="btn btn-danger btn-sm btn-block view-btn" style="color: #ffffff;"
                                        
-                                        type="button" >View</a>
+                                        type="button" >Cancelled</a>
+                                </td>
+                                {{else if (eq cancellationStatus "Preparing food")}}
+                                <td>
+                                    <a href="/admin/ordersView?id={{this._id}}" class="btn btn-success btn-sm btn-block view-btn" style="color: #ffffff;"
+                                       
+                                        type="button" >Mark as delivered</a>
+                                </td>
+                                {{else if (eq cancellationStatus "Delivered")}}
+                                 <td>
+                                    <a href="/admin/ordersView?id={{this._id}}" class="btn btn-success btn-sm btn-block view-btn" style="color: #ffffff;"
+                                       
+                                        type="button" >Delivered</a>
                                 </td>
                                 {{/if}}
                             </tr>
