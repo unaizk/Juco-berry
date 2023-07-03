@@ -272,6 +272,21 @@ const cancelledByAdmin = async(req,res)=>{
   }
 }
 
+const rejectCancellation = async(req,res)=>{
+  try {
+    const id = req.body.orderId
+    console.log(id,'idddddddddddddd');
+
+     const url = '/admin/ordersView?id='+ id;
+     console.log(url,'urlllllllllllllllllllllllll');
+     await adminHelpers.rejectingCancelOrderByAdmin(id);
+
+     res.redirect(url)
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
 
 
 module.exports = {
@@ -306,5 +321,6 @@ module.exports = {
   updateProduct,
   loadOrdersList,
   loadOrdersView,
-  cancelledByAdmin
+  cancelledByAdmin,
+  rejectCancellation
 }

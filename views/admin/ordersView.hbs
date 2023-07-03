@@ -65,8 +65,8 @@
                                 <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#exampleModalCenter">Cancel</button>
                                 <button type="button" class="btn btn-primary btn-sm">Mark as preparing</button>
                                 {{else if (eq cancellationStatus "cancellation requested")}}
-                                 <button type="button" class="btn btn-danger btn-sm">Accept Cancel</button>
-                                 <button type="button" class="btn btn-danger btn-sm">Reject Cancel</button>
+                                 <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#acceptCancel">Accept Cancel</button>
+                                 <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#rejectCancel">Reject Cancel</button>
                                   {{else if (eq cancellationStatus "cancelled")}}
                                  {{/if}}
                             </div>
@@ -133,6 +133,55 @@
     </div>
   </div>
 </div>
+            {{!-- accepting canceling request --}}
+<div class="modal fade" id="acceptCancel" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Cancel confirmation</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+         <p>Are you sure you want to Accept the cancel order?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <form action="/admin/cancel-by-admin" method="post">
+                    <button type="submit" class="btn btn-danger" id="confirmCancelBtn" name="orderId" value="{{orderId}}">Yes, Cancel</button>
+                </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+         {{!-- rejecting cancel --}}
+         <div class="modal fade" id="rejectCancel" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Cancel confirmation</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+         <p>Are you sure you want to Reject the cancel order?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <form action="/admin/reject-by-admin" method="post">
+                    <button type="submit" class="btn btn-danger" id="confirmCancelBtn" name="orderId" value="{{orderId}}">Yes</button>
+                </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

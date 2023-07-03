@@ -350,6 +350,24 @@ module.exports = {
         } catch (error) {
             throw new Error(error.message);
         }
+      },
+
+      rejectingCancelOrderByAdmin:async(requestData)=>{
+        try {
+            const orderId = requestData
+            console.log(orderId,'orderidddddddddddddd');
+            const updateOrder = await Order.findByIdAndUpdate(
+                { _id:new ObjectId(orderId) },
+                { $set: { orderStatus: "Placed",cancellationStatus:"Not requested" } },
+                { new: true } // This ensures that the updated document is returned
+              ).exec();
+              
+            console.log(updateOrder,'updateOrderrrrrrrrrrrrrrrrrrrrrrrrrrrrrr');
+
+            return updateOrder;
+        } catch (error) {
+            throw new Error(error.message);
+        }
       }
       
 

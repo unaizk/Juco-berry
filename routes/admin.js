@@ -62,7 +62,8 @@ router.get('/edit-product',adminAuth.isLogin,adminController.editProductLoad)
 router.post('/edit-product',upload.array('image'),adminController.updateProduct)
 router.get('/ordersList',adminAuth.isLogin,adminController.loadOrdersList)
 router.get('/ordersView',adminAuth.isLogin,adminController.loadOrdersView);
-router.post('/cancel-by-admin',adminController.cancelledByAdmin)
+router.post('/cancel-by-admin',adminController.cancelledByAdmin);
+router.post('/reject-by-admin',adminController.rejectCancellation)
 
 router.get('*', (req, res) => {
   res.redirect('/admin')
