@@ -19,7 +19,7 @@ const Razorpay = require('razorpay');
 var instance = new Razorpay({
     key_id: 'rzp_test_P5xQ3Jx6p0diLy',
     key_secret: 'yg5JyFNX5hUiz5nnVp3xRZjl',
-  });
+});
 
 
 // signup user method
@@ -155,190 +155,215 @@ const verifyOtp = async (req, res) => {
     }
 }
 
-const viewProduct = async(req,res)=>{
+const viewProduct = async (req, res) => {
     try {
-        await userHelpers.viewProductDetails(req,res);
+        await userHelpers.viewProductDetails(req, res);
     } catch (error) {
         console.log(error.message);
     }
 }
 
-const addToCart = async(req,res)=>{
+const addToCart = async (req, res) => {
     try {
-        await userHelpers.addingToCart(req,res)
+        await userHelpers.addingToCart(req, res)
     } catch (error) {
         console.log(error.message);
     }
 }
 
-const loadCart = async(req,res)=>{
+const loadCart = async (req, res) => {
     try {
-        await userHelpers.loadingCartPage(req,res);
+        await userHelpers.loadingCartPage(req, res);
     } catch (error) {
         console.log(error.message);
     }
 }
 
-const changeQuantity = async(req,res)=>{
+const changeQuantity = async (req, res) => {
     try {
-       const response = await userHelpers.changeProductQuantity(req,res);
+        const response = await userHelpers.changeProductQuantity(req, res);
         res.send(response)
     } catch (error) {
         console.log(error.message);
     }
 }
 
-const deleteProduct = async(req,res)=>{
+const deleteProduct = async (req, res) => {
     try {
-        const response = await userHelpers.deleteProductFromCart(req,res);
+        const response = await userHelpers.deleteProductFromCart(req, res);
         res.send(response)
     } catch (error) {
         console.log(error.message);
     }
 }
 
-const userProfile = async(req,res)=>{
+const userProfile = async (req, res) => {
     try {
-        await userHelpers.loadUserProfile(req,res);
+        await userHelpers.loadUserProfile(req, res);
     } catch (error) {
         console.log(error.message);
     }
 }
 
-const editProfile = async(req,res)=>{
+const editProfile = async (req, res) => {
     try {
-        await userHelpers.editingUserProfile(req,res);
+        await userHelpers.editingUserProfile(req, res);
     } catch (error) {
         console.log(error.message);
     }
 }
 
-const addressList = async(req,res)=>{
+const addressList = async (req, res) => {
     try {
-        await userHelpers.loadAddressList(req,res);
+        await userHelpers.loadAddressList(req, res);
     } catch (error) {
         console.log(error.message);
     }
 }
 
-const addAddress = async(req,res)=>{
+const addAddress = async (req, res) => {
     try {
-        await userHelpers.addingAddress(req,res);
+        await userHelpers.addingAddress(req, res);
     } catch (error) {
         console.log(error.message);
     }
 }
 
-const addNewAddress = async(req,res)=>{
+const addNewAddress = async (req, res) => {
     try {
-        await userHelpers.addingNewAddress(req,res);
+        await userHelpers.addingNewAddress(req, res);
     } catch (error) {
         console.log(error.message);
     }
 }
 
-const deleteAddress = async(req,res)=>{
+const deleteAddress = async (req, res) => {
     try {
-        await userHelpers.deletingAddress(req,res)
+        await userHelpers.deletingAddress(req, res)
     } catch (error) {
         console.log(error.message);
     }
 }
 
-const editAddress = async(req,res)=>{
+const editAddress = async (req, res) => {
     try {
-        await userHelpers.editingAddress(req,res)
+        await userHelpers.editingAddress(req, res)
     } catch (error) {
         console.log(error.message);
     }
 }
 
-const setAsDefault = async(req,res)=>{
+const setAsDefault = async (req, res) => {
     try {
-        const response = await userHelpers.settingAsDefault(req,res)
-        
+        const response = await userHelpers.settingAsDefault(req, res)
+
         res.send(response)
     } catch (error) {
         console.log(error.message);
     }
 }
 
-const changeAddress = async(req,res)=>{
+const changeAddress = async (req, res) => {
     try {
-        await userHelpers.changingTheAddress(req,res)
+        await userHelpers.changingTheAddress(req, res)
     } catch (error) {
         console.log(error.message);
     }
 }
 
-const loadCheckout = async(req,res)=>{
+const loadCheckout = async (req, res) => {
     try {
-         await userHelpers.loadingCheckoutPage(req,res)
+        await userHelpers.loadingCheckoutPage(req, res)
     } catch (error) {
         console.log(error.message);
     }
 }
 
-const placeOrder = async(req,res)=>{
+const placeOrder = async (req, res) => {
     try {
         let userId = req.session.user_id// Used for storing user details for further use in this route
         let orderDetails = req.body;
 
-        console.log(req.body,'vvvvvvvvvvvvvvvvvvvvvvvv');
+        // console.log(req.body,'vvvvvvvvvvvvvvvvvvvvvvvv');
 
         let orderedProducts = await userHelpers.getProductListForOrders(userId);
-        console.log(orderedProducts,'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb');
-        if(orderedProducts){
+        // console.log(orderedProducts,'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb');
+        if (orderedProducts) {
             let totalOrderValue = await userHelpers.getCartValue(userId);
-            
-            userHelpers.placingOrder(userId,orderDetails,orderedProducts,totalOrderValue).then((orderId)=>{
-                if(req.body['paymentMethod']==='COD'){
-                    res.json({COD_CHECKOUT:true});
-                }else if(req.body['paymentMethod']==='ONLINE'){
 
+            userHelpers.placingOrder(userId, orderDetails, orderedProducts, totalOrderValue).then((orderId) => {
+                if (req.body['paymentMethod'] === 'COD') {
+                    res.json({ COD_CHECKOUT: true });
+                } else if (req.body['paymentMethod'] === 'ONLINE') {
+                    userHelpers.generateRazorpayOrder(orderId, totalOrderValue).then(async (razorpayOrderDetails) => {
+                        const user = await User.findById({ _id: userId }).lean()
+                        res.json(
+                            {
+
+                                ONLINE_CHECKOUT: true,
+                                userDetails: user,
+                                userOrderRequestData: orderDetails,
+                                orderDetails: razorpayOrderDetails,
+                                razorpayKeyId: 'rzp_test_P5xQ3Jx6p0diLy'
+                            }
+                        )
+
+                    })
+                } else {
+                    res.json({ paymentStatus: false });
                 }
             })
+        } else {
+            res.json({ checkoutStatus: false });
         }
 
-        
-        
+
+
     } catch (error) {
         console.log(error.message);
     }
 }
 
-const orderPlaced = async(req,res)=>{
+const orderPlaced = async (req, res) => {
     try {
-        res.render('users/orderPlaced',{layout:'user-layout'})
+        res.render('users/orderPlaced', { layout: 'user-layout' })
     } catch (error) {
         console.log(error.message);
     }
 }
 
-const orderDetails = async(req,res)=>{
+const orderFailed = async (req, res) => {
     try {
-        await userHelpers.loadOrderDetails(req,res)
+        res.render('users/orderFailed', { layout: 'user-layout' })
     } catch (error) {
         console.log(error.message);
     }
 }
 
-const loadOrdersView = async(req,res)=>{
+const orderDetails = async (req, res) => {
     try {
-        await userHelpers.loadingOrdersViews(req,res)
+        await userHelpers.loadOrderDetails(req, res)
     } catch (error) {
         console.log(error.message);
     }
 }
 
-const cancellOrder = async(req,res)=>{
+const loadOrdersView = async (req, res) => {
+    try {
+        await userHelpers.loadingOrdersViews(req, res)
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const cancellOrder = async (req, res) => {
     try {
         const id = req.body.orderId
-       
 
-        const url = '/ordersView?id='+ id;
 
-      
+        const url = '/ordersView?id=' + id;
+
+
 
         await userHelpers.cancellingOrder(id);
 
@@ -349,6 +374,32 @@ const cancellOrder = async(req,res)=>{
         console.log(error.message);
 
     }
+}
+
+const verifyPayment = async (req, res) => {
+    userHelpers.verifyOnlinePayment(req.body).then(() => {
+        let receiptId = req.body['serverOrderDetails[receipt]'];
+
+        let paymentSuccess = true;
+        userHelpers.updateOnlineOrderPaymentStatus(receiptId, paymentSuccess).then(() => {
+            // Sending the receiptId to the above userHelper to modify the order status in the DB
+            // We have set the Receipt Id is same as the orders cart collection ID
+
+            res.json({ status: true });
+        })
+    }).catch((err) => {
+        if (err) {
+            console.log(err);
+
+            let paymentSuccess = false;
+            userHelpers.updateOnlineOrderPaymentStatus(receiptId, paymentSuccess).then(() => {
+                // Sending the receiptId to the above userHelper to modify the order status in the DB
+                // We have set the Receipt Id is same as the orders cart collection ID
+
+                res.json({ status: false });
+            })
+        }
+    })
 }
 
 
@@ -389,5 +440,7 @@ module.exports = {
     orderDetails,
     loadOrdersView,
     cancellOrder,
-    orderPlaced
+    orderPlaced,
+    orderFailed,
+    verifyPayment
 }

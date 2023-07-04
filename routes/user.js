@@ -51,11 +51,12 @@ router.post('/set-as-default',userController.setAsDefault);
 router.post('/change-address',userController.changeAddress);
 router.get('/checkout',auth.isLogin,userController.loadCheckout);
 router.post('/place-order',userController.placeOrder)
-router.get('/orderPlaced',auth.isLogin,userController.orderPlaced)
+router.get('/orderPlaced',auth.isLogin,userController.orderPlaced);
+router.get('/orderFailed',auth.isLogin,userController.orderFailed)
 router.get('/order-details',auth.isLogin,userController.orderDetails)
 router.get('/ordersView',auth.isLogin,userController.loadOrdersView)
 router.post('/cancel-order',userController.cancellOrder)
-
+router.post('/verify-payment',userController.verifyPayment)
 
 
 module.exports = router;

@@ -19,11 +19,11 @@ const Cart = require('../models/cartModel')
 const Address = require('../models/addressModel');
 const Order = require('../models/ordersModel')
 const moment = require("moment-timezone")
-// const Razorpay = require('razorpay');
-// var instance = new Razorpay({
-//     key_id: 'rzp_test_P5xQ3Jx6p0diLy',
-//     key_secret: 'yg5JyFNX5hUiz5nnVp3xRZjl',
-//   });
+const Razorpay = require('razorpay');
+var instance = new Razorpay({
+    key_id: 'rzp_test_P5xQ3Jx6p0diLy',
+    key_secret: 'yg5JyFNX5hUiz5nnVp3xRZjl',
+});
 
 module.exports = {
     passwordHash: async (password) => {
@@ -908,54 +908,54 @@ module.exports = {
         }
     },
 
-    getProductListForOrders:async(userId)=>{
-      return new Promise(async(resolve,reject)=>{
-       
-        const productDetails = await Cart.findOne({ user_id: userId }).lean();
-        console.log(productDetails, 'productDetails');
+    getProductListForOrders: async (userId) => {
+        return new Promise(async (resolve, reject) => {
 
-        // Calculate the new subtotal for all products in the cart
-        const subtotal = productDetails.products.reduce((acc, product) => {
-            return acc + product.total;
-        }, 0);
-
-        console.log(subtotal, 'subtotal');
-
-        const products = productDetails.products.map((product) => ({
-            productId: product.productId,
-            quantity: product.quantity,
-            total: product.total
-        }));
-        if(products){
-            resolve(products);
-        }else{
-            resolve(false);
-        }
-      })
-      
-
-    },
-    getCartValue:(userId)=>{
-        return new Promise(async(resolve,reject)=>{
             const productDetails = await Cart.findOne({ user_id: userId }).lean();
             console.log(productDetails, 'productDetails');
-    
+
             // Calculate the new subtotal for all products in the cart
             const subtotal = productDetails.products.reduce((acc, product) => {
                 return acc + product.total;
             }, 0);
-    
+
             console.log(subtotal, 'subtotal');
 
-            if(subtotal){
-                 resolve(subtotal)
-            }else{
+            const products = productDetails.products.map((product) => ({
+                productId: product.productId,
+                quantity: product.quantity,
+                total: product.total
+            }));
+            if (products) {
+                resolve(products);
+            } else {
+                resolve(false);
+            }
+        })
+
+
+    },
+    getCartValue: (userId) => {
+        return new Promise(async (resolve, reject) => {
+            const productDetails = await Cart.findOne({ user_id: userId }).lean();
+            console.log(productDetails, 'productDetails');
+
+            // Calculate the new subtotal for all products in the cart
+            const subtotal = productDetails.products.reduce((acc, product) => {
+                return acc + product.total;
+            }, 0);
+
+            console.log(subtotal, 'subtotal');
+
+            if (subtotal) {
+                resolve(subtotal)
+            } else {
                 resolve(false);
             }
         })
     },
 
-    placingOrder:async(userId,orderData,orderedProducts,totalOrderValue)=>{
+    placingOrder: async (userId, orderData, orderedProducts, totalOrderValue) => {
         let orderStatus = orderData['paymentMethod'] === 'COD' ? 'Placed' : 'Pending'
 
         const defaultAddress = await Address.findOne(
@@ -980,7 +980,7 @@ module.exports = {
         };
         console.log(address, 'address');
 
-        
+
         const orderDetails = new Order({
             userId: userId,
             date: Date(),
@@ -998,10 +998,10 @@ module.exports = {
         // Remove the products from the cart
         await Cart.deleteMany({ user_id: userId });
 
-        let dbOrderId = placedOrder._id.toString(); 
-        console.log(dbOrderId,'order id in stringggggggggggggggggggggggggggg');
-        return dbOrderId; 
-        
+        let dbOrderId = placedOrder._id.toString();
+        console.log(dbOrderId, 'order id in stringggggggggggggggggggggggggggg');
+        return dbOrderId;
+
 
     },
 
@@ -1107,7 +1107,7 @@ module.exports = {
     loadingOrdersViews: async (req, res) => {
         try {
             const orderId = req.query.id;
-            
+
             const userId = req.session.user_id
 
             console.log(orderId, 'orderId when loading page');
@@ -1131,8 +1131,8 @@ module.exports = {
                     price: product.productId.price,
                     total: product.total,
                     quantity: product.quantity,
-                    status : order.orderStatus,
-                   
+                    status: order.orderStatus,
+
                 };
             });
 
@@ -1148,10 +1148,10 @@ module.exports = {
 
             const subtotal = order.orderValue;
             const cancellationStatus = order.cancellationStatus
-            console.log(cancellationStatus,'cancellationStatus');
-           
+            console.log(cancellationStatus, 'cancellationStatus');
+
             console.log(subtotal, 'subtotal');
-            
+
 
             console.log(orderDetails, 'orderDetails');
             console.log(deliveryAddress, 'deliveryAddress');
@@ -1161,11 +1161,11 @@ module.exports = {
                 orderDetails: orderDetails,
                 deliveryAddress: deliveryAddress,
                 subtotal: subtotal,
-               
+
                 orderId: orderId,
                 orderDate: createdOnIST,
-                cancellationStatus:cancellationStatus,
-               
+                cancellationStatus: cancellationStatus,
+
             });
         } catch (error) {
             throw new Error(error);
@@ -1173,20 +1173,100 @@ module.exports = {
     },
 
 
-    cancellingOrder:async(requestData)=>{
+    cancellingOrder: async (requestData) => {
         try {
             const orderId = requestData
 
-         
-            const updateOrder = await Order.findByIdAndUpdate({_id:new ObjectId(orderId)},{$set:{cancellationStatus:"cancellation requested"}});
+
+            const updateOrder = await Order.findByIdAndUpdate({ _id: new ObjectId(orderId) }, { $set: { cancellationStatus: "cancellation requested" } });
 
             return updateOrder;
-            
+
 
         } catch (error) {
             throw new Error(error.message);
         }
+    },
+
+    generateRazorpayOrder: (orderId, totalOrderValue) => {
+        orderValue = totalOrderValue * 100
+        // To convert paisa into rupees as the Razorpay takes the amount in smallest currency unit (paisa) 
+        // Amount is in currency subunits. Default currency is INR. Hence, 1 refers to 1 paise, so here the amount is multiplied by 100 to convert it to rupees
+        return new Promise((resolve, reject) => {
+            let orderDetails = {
+
+                amount: orderValue,
+                currency: "INR",
+                receipt: orderId
+
+            };
+            console.log(orderDetails, 'orderdetailssssssssssssssssssssssssssss');
+            instance.orders.create(orderDetails, function (err, orderDetails) {
+                if (err) {
+                    console.log('Order Creation Error from Razorpay: ' + err);
+                } else {
+                    resolve(orderDetails);
+                }
+            })
+        })
+
+    },
+
+    verifyOnlinePayment: (paymentData) => {
+
+        // console.log(paymentData);
+
+        return new Promise((resolve, reject) => {
+
+            const crypto = require('crypto'); // Requiring crypto Module here for generating server signature for payments verification
+
+            let razorpaySecretKey = 'yg5JyFNX5hUiz5nnVp3xRZjl';
+
+            let hmac = crypto.createHmac('sha256', razorpaySecretKey); // Hashing Razorpay secret key using SHA-256 Algorithm
+
+            hmac.update(paymentData['razorpayServerPaymentResponse[razorpay_order_id]'] + '|' + paymentData['razorpayServerPaymentResponse[razorpay_payment_id]']);
+            // Updating the hash (re-hashing) by adding Razprpay payment Id and order Id received from client as response
+
+            let serverGeneratedSignature = hmac.digest('hex');
+            // Converted the final hashed result into hexa code and saving it as server generated signature
+
+            let razorpayServerGeneratedSignatureFromClient = paymentData['razorpayServerPaymentResponse[razorpay_signature]']
+
+            if (serverGeneratedSignature === razorpayServerGeneratedSignatureFromClient) {
+                // Checking that is the signature generated in our server using the secret key we obtained by hashing secretkey,orderId & paymentId is same as the signature sent by the server 
+
+                // console.log("Payment Signature Verified");
+
+                resolve()
+
+            } else {
+
+                // console.log("Payment Signature Verification Failed");
+
+                reject()
+
+            }
+
+        })
+
+    },
+
+    updateOnlineOrderPaymentStatus: (ordersCollectionId, onlinePaymentStatus) => {
+        return new Promise(async (resolve, reject) => {
+            if (onlinePaymentStatus) {
+                const orderUpdate = await Order.findByIdAndUpdate({ _id: new ObjectId(ordersCollectionId) }, { $set: { orderStatus: "Placed" } }).then(() => {
+                    resolve()
+                });
+
+            } else {
+                const orderUpdate = await Order.findByIdAndUpdate({ _id: new ObjectId(ordersCollectionId) }, { $set: { orderStatus: "Failed" } }).then(() => {
+                    resolve()
+                })
+            }
+        })
     }
+
+
 
 
 
