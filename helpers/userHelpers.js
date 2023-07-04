@@ -19,7 +19,11 @@ const Cart = require('../models/cartModel')
 const Address = require('../models/addressModel');
 const Order = require('../models/ordersModel')
 const moment = require("moment-timezone")
-
+// const Razorpay = require('razorpay');
+// var instance = new Razorpay({
+//     key_id: 'rzp_test_P5xQ3Jx6p0diLy',
+//     key_secret: 'yg5JyFNX5hUiz5nnVp3xRZjl',
+//   });
 
 module.exports = {
     passwordHash: async (password) => {
@@ -904,79 +908,176 @@ module.exports = {
         }
     },
 
+    getProductListForOrders:async(userId)=>{
+      return new Promise(async(resolve,reject)=>{
+       
+        const productDetails = await Cart.findOne({ user_id: userId }).lean();
+        console.log(productDetails, 'productDetails');
 
-    placingOrder: async (req, res) => {
-        try {
-            const paymentMethod = req.body.paymentMethod;
-            console.log(paymentMethod, 'paymentMethod');
+        // Calculate the new subtotal for all products in the cart
+        const subtotal = productDetails.products.reduce((acc, product) => {
+            return acc + product.total;
+        }, 0);
 
-            const userId = req.session.user_id;
-            console.log(userId, 'id');
+        console.log(subtotal, 'subtotal');
 
-            const orderStatus = paymentMethod === "COD" ? "Placed" : "Pending";
-            console.log(orderStatus, "orderStatus");
+        const products = productDetails.products.map((product) => ({
+            productId: product.productId,
+            quantity: product.quantity,
+            total: product.total
+        }));
+        if(products){
+            resolve(products);
+        }else{
+            resolve(false);
+        }
+      })
+      
 
-            // Find the default address for the user
-            const defaultAddress = await Address.findOne(
-                { user_id: userId, 'address.isDefault': true },
-                { 'address.$': 1 }
-            ).lean();
-            console.log(defaultAddress, 'default address');
-
-            if (!defaultAddress) {
-                console.log('Default address not found');
-                return res.redirect('/address');
-            }
-
+    },
+    getCartValue:(userId)=>{
+        return new Promise(async(resolve,reject)=>{
             const productDetails = await Cart.findOne({ user_id: userId }).lean();
             console.log(productDetails, 'productDetails');
-
+    
             // Calculate the new subtotal for all products in the cart
             const subtotal = productDetails.products.reduce((acc, product) => {
                 return acc + product.total;
             }, 0);
-
+    
             console.log(subtotal, 'subtotal');
 
-            const products = productDetails.products.map((product) => ({
-                productId: product.productId,
-                quantity: product.quantity,
-                total: product.total
-            }));
-            const defaultAddressDetails = defaultAddress.address[0];
-            const address = {
-                name: defaultAddressDetails.name,
-                mobile: defaultAddressDetails.mobile,
-                homeAddress: defaultAddressDetails.homeAddress,
-                city: defaultAddressDetails.city,
-                street: defaultAddressDetails.street,
-                postalCode: defaultAddressDetails.postalCode
-            };
-            console.log(address, 'address');
-
-            const orderDetails = new Order({
-                userId: userId,
-                date: Date(),
-                orderValue: subtotal,
-                paymentMethod: paymentMethod,
-                orderStatus: orderStatus,
-                products: products,
-                addressDetails: address
-            });
-
-            const placedOrder = await orderDetails.save();
-
-            console.log(placedOrder, 'placedOrder');
-
-            // Remove the products from the cart
-            await Cart.deleteMany({ user_id: userId });
-
-            res.render('users/orderPlaced', { layout: "user-layout", placedOrder });
-        } catch (error) {
-            console.error(error);
-            res.redirect('/address');
-        }
+            if(subtotal){
+                 resolve(subtotal)
+            }else{
+                resolve(false);
+            }
+        })
     },
+
+    placingOrder:async(userId,orderData,orderedProducts,totalOrderValue)=>{
+        let orderStatus = orderData['paymentMethod'] === 'COD' ? 'Placed' : 'Pending'
+
+        const defaultAddress = await Address.findOne(
+            { user_id: userId, 'address.isDefault': true },
+            { 'address.$': 1 }
+        ).lean();
+        console.log(defaultAddress, 'default address');
+
+        if (!defaultAddress) {
+            console.log('Default address not found');
+            return res.redirect('/address');
+        }
+
+        const defaultAddressDetails = defaultAddress.address[0];
+        const address = {
+            name: defaultAddressDetails.name,
+            mobile: defaultAddressDetails.mobile,
+            homeAddress: defaultAddressDetails.homeAddress,
+            city: defaultAddressDetails.city,
+            street: defaultAddressDetails.street,
+            postalCode: defaultAddressDetails.postalCode
+        };
+        console.log(address, 'address');
+
+        
+        const orderDetails = new Order({
+            userId: userId,
+            date: Date(),
+            orderValue: totalOrderValue,
+            paymentMethod: orderData['paymentMethod'],
+            orderStatus: orderStatus,
+            products: orderedProducts,
+            addressDetails: address
+        });
+
+        const placedOrder = await orderDetails.save();
+
+        console.log(placedOrder, 'placedOrder');
+
+        // Remove the products from the cart
+        await Cart.deleteMany({ user_id: userId });
+
+        let dbOrderId = placedOrder._id.toString(); 
+        console.log(dbOrderId,'order id in stringggggggggggggggggggggggggggg');
+        return dbOrderId; 
+        
+
+    },
+
+
+    // placingOrder: async (req, res) => {
+    //     try {
+    //         const paymentMethod = req.body.paymentMethod;
+    //         console.log(paymentMethod, 'paymentMethod');
+
+    //         const userId = req.session.user_id;
+    //         console.log(userId, 'id');
+
+    //         const orderStatus = paymentMethod === "COD" ? "Placed" : "Pending";
+    //         console.log(orderStatus, "orderStatus");
+
+    //         // Find the default address for the user
+    //         const defaultAddress = await Address.findOne(
+    //             { user_id: userId, 'address.isDefault': true },
+    //             { 'address.$': 1 }
+    //         ).lean();
+    //         console.log(defaultAddress, 'default address');
+
+    //         if (!defaultAddress) {
+    //             console.log('Default address not found');
+    //             return res.redirect('/address');
+    //         }
+
+    //         const productDetails = await Cart.findOne({ user_id: userId }).lean();
+    //         console.log(productDetails, 'productDetails');
+
+    //         // Calculate the new subtotal for all products in the cart
+    //         const subtotal = productDetails.products.reduce((acc, product) => {
+    //             return acc + product.total;
+    //         }, 0);
+
+    //         console.log(subtotal, 'subtotal');
+
+    //         const products = productDetails.products.map((product) => ({
+    //             productId: product.productId,
+    //             quantity: product.quantity,
+    //             total: product.total
+    //         }));
+    //         const defaultAddressDetails = defaultAddress.address[0];
+    //         const address = {
+    //             name: defaultAddressDetails.name,
+    //             mobile: defaultAddressDetails.mobile,
+    //             homeAddress: defaultAddressDetails.homeAddress,
+    //             city: defaultAddressDetails.city,
+    //             street: defaultAddressDetails.street,
+    //             postalCode: defaultAddressDetails.postalCode
+    //         };
+    //         console.log(address, 'address');
+
+    //         const orderDetails = new Order({
+    //             userId: userId,
+    //             date: Date(),
+    //             orderValue: subtotal,
+    //             paymentMethod: paymentMethod,
+    //             orderStatus: orderStatus,
+    //             products: products,
+    //             addressDetails: address
+    //         });
+
+    //         const placedOrder = await orderDetails.save();
+
+    //         console.log(placedOrder, 'placedOrder');
+
+    //         // Remove the products from the cart
+    //         await Cart.deleteMany({ user_id: userId });
+
+    //         res.render('users/orderPlaced', { layout: "user-layout", placedOrder });
+    //     } catch (error) {
+    //         console.error(error);
+    //         res.redirect('/address');
+    //     }
+    // },
 
 
 

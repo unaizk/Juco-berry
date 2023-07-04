@@ -117,7 +117,7 @@
                 {{/if}}
                 <div class="col-md-8 order-md-1">
                     <h4 class="mb-3">Billing address</h4>
-                    <form class="needs-validation" novalidate="" action="/place-order" method="post">
+                    <form class="needs-validation" novalidate="" id="checkout-form">
 
 
 
@@ -126,14 +126,14 @@
                             <label for="username">Name</label>
                             <div class="input-group">
 
-                                <input type="text" class="form-control" id="username" placeholder="Username" required=""
+                                <input type="text" class="form-control" id="username" placeholder="Username" name="name" required=""
                                     value="{{defaultAddress.name}}" readonly>
                                 <div class="invalid-feedback" style="width: 100%;"> Your username is required. </div>
                             </div>
                         </div>
                         <div class="mb-3">
                             <label for="email">Mobile </label>
-                            <input type="email" class="form-control" id="email" placeholder="Mobile"
+                            <input type="email" class="form-control" id="email" name="mobile" placeholder="Mobile"
                                 value="{{defaultAddress.mobile}}" readonly>
                             <div class="invalid-feedback"> Please enter a valid email address for shipping updates.
                             </div>
@@ -141,7 +141,7 @@
                         <div class="mb-3">
                             <label for="address">Address</label>
                             <input type="text" class="form-control" id="address" placeholder="1234 Main St"
-                                value="{{defaultAddress.homeAddress}}" required="" readonly>
+                                value="{{defaultAddress.homeAddress}}" name="homeAddress" required="" readonly>
                             <div class="invalid-feedback"> Please enter your shipping address. </div>
                         </div>
 
@@ -149,19 +149,19 @@
                             <div class="col-md-5 mb-3">
                                 <label for="country">City</label>
                                 <input type="text" class="form-control" id="address" placeholder="1234 Main St"
-                                    required="" value="{{defaultAddress.city}}" readonly>
+                                    required="" value="{{defaultAddress.city}}" name="city" readonly>
                                 <div class="invalid-feedback"> Please select a valid country. </div>
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label for="state">Street</label>
                                 <input type="text" class="form-control" id="address" placeholder="1234 Main St"
-                                    required="" value="{{defaultAddress.street}}" readonly>
+                                    required="" value="{{defaultAddress.street}}" name="street" readonly>
                                 <div class="invalid-feedback"> Please provide a valid state. </div>
                             </div>
                             <div class="col-md-3 mb-3">
                                 <label for="zip">Postal Code</label>
                                 <input type="text" class="form-control" id="zip" placeholder="" required=""
-                                    value="{{defaultAddress.postalCode}}" readonly>
+                                    value="{{defaultAddress.postalCode}}" name="postalCode" readonly>
                                 <div class="invalid-feedback"> Zip code required. </div>
                             </div>
                         </div>
@@ -195,7 +195,7 @@
 
 
                         <hr class="mb-4">
-                        <button class="btn btn-primary btn-lg btn-block btn-checkout" type="submit">Continue to
+                        <button class="btn btn-primary btn-lg btn-block btn-checkout" id="checkout-button" type="submit">Continue to
                             checkout</button>
                     </form>
                 </div>
@@ -300,6 +300,7 @@
 </div>
 
 {{>user-footer}}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
     (function () {
@@ -320,4 +321,44 @@
                 }, false)
             })
         }, false)
+        })
+</script>
+
+/*========================================================================================================================
+  ================================================ SCRIPT FOR CHECKOUT PAGE ==============================================
+  ======================================================================================================================== */
+
+ // JavaScript to make Ajax call for Checkout Button - called by checkout button in place-order page
+<script>
+   
+
+$(document).ready(function() {
+
+  $('#checkout-button').click(function(e){
+
+    e.preventDefault(); // To prevent default method of submitting form as here Ajax should be used here to submit the form based on the two different payment methods
+
+     console.log("Checkout Button Ajax call");
+
+    $.ajax({
+      
+      url:'/place-order',
+
+      method:'POST',
+
+      data: $('#checkout-form').serialize(), // Here serialize function is used to get all the data from the form into the data feild of ajax call
+
+      success:(response)=>{
+
+     if(response.COD_CHECKOUT){
+          location.href ='/orderPlaced'
+     }
+
+      }
+
+    })
+
+  })
+
+})
 </script>

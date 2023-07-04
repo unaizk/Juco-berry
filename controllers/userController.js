@@ -15,6 +15,11 @@ const accountSid = "AC5b08749806fb17d29e70c46231045f1a";
 const authToken = "524284ec82c67ab3d82fd72ddd53a2f7";
 const verifySid = "VA881219022be56f5c9c40f5b2b336e929";
 const twilio = require("twilio")(accountSid, authToken);
+const Razorpay = require('razorpay');
+var instance = new Razorpay({
+    key_id: 'rzp_test_P5xQ3Jx6p0diLy',
+    key_secret: 'yg5JyFNX5hUiz5nnVp3xRZjl',
+  });
 
 
 // signup user method
@@ -276,7 +281,35 @@ const loadCheckout = async(req,res)=>{
 
 const placeOrder = async(req,res)=>{
     try {
-        await userHelpers.placingOrder(req,res)
+        let userId = req.session.user_id// Used for storing user details for further use in this route
+        let orderDetails = req.body;
+
+        console.log(req.body,'vvvvvvvvvvvvvvvvvvvvvvvv');
+
+        let orderedProducts = await userHelpers.getProductListForOrders(userId);
+        console.log(orderedProducts,'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb');
+        if(orderedProducts){
+            let totalOrderValue = await userHelpers.getCartValue(userId);
+            
+            userHelpers.placingOrder(userId,orderDetails,orderedProducts,totalOrderValue).then((orderId)=>{
+                if(req.body['paymentMethod']==='COD'){
+                    res.json({COD_CHECKOUT:true});
+                }else if(req.body['paymentMethod']==='ONLINE'){
+
+                }
+            })
+        }
+
+        
+        
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const orderPlaced = async(req,res)=>{
+    try {
+        res.render('users/orderPlaced',{layout:'user-layout'})
     } catch (error) {
         console.log(error.message);
     }
@@ -355,5 +388,6 @@ module.exports = {
     placeOrder,
     orderDetails,
     loadOrdersView,
-    cancellOrder
+    cancellOrder,
+    orderPlaced
 }

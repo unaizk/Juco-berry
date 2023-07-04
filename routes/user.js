@@ -51,6 +51,7 @@ router.post('/set-as-default',userController.setAsDefault);
 router.post('/change-address',userController.changeAddress);
 router.get('/checkout',auth.isLogin,userController.loadCheckout);
 router.post('/place-order',userController.placeOrder)
+router.get('/orderPlaced',auth.isLogin,userController.orderPlaced)
 router.get('/order-details',auth.isLogin,userController.orderDetails)
 router.get('/ordersView',auth.isLogin,userController.loadOrdersView)
 router.post('/cancel-order',userController.cancellOrder)
