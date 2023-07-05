@@ -163,6 +163,7 @@ module.exports = {
             const productData = await Product.find({ unlist: false }).lean();
             const categories = await Category.find({ unlist: false }).lean()
             res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+            console.log(categories,'categoriessssss');
             res.render('users/home', { layout: 'user-layout', products: productData, categories: categories })
         } catch (error) {
             throw new Error(error.message);
@@ -1264,7 +1265,45 @@ module.exports = {
                 })
             }
         })
-    }
+    },
+
+    getCategory:() => {
+        return new Promise(async (resolve, reject) => {
+          try {
+            const categories = await Category.find({unlist:false}).lean()
+            resolve(categories);
+          } catch (error) {
+            reject(error);
+          }
+        });
+      },
+
+
+      getCategoryByName:(category)=>{
+        return new Promise(async (resolve, reject) => {
+          try {
+            const categoryId = await Category.findOne({category:category }).lean();
+            resolve(categoryId);
+          } catch (error) {
+            reject(error);
+          }
+        });
+      },
+
+      listCategorys:(catId)=>{
+        return new Promise(async (resolve, reject) => {
+          try {
+            const categoryProducts= await Product.find({category:catId, unlist:false }).lean();
+            
+            resolve(categoryProducts);
+          } catch (error) {
+            reject(error);
+          }
+        });
+      },
+
+
+   
 
 
 

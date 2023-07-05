@@ -57,6 +57,8 @@ router.get('/order-details',auth.isLogin,userController.orderDetails)
 router.get('/ordersView',auth.isLogin,userController.loadOrdersView)
 router.post('/cancel-order',userController.cancellOrder)
 router.post('/verify-payment',userController.verifyPayment)
+router.get('/categoryProducts',auth.isLogin,userController.categoryProducts);
+router.post('/list-category',userController.listCategory)
 
 
 module.exports = router;

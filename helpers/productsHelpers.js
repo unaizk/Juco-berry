@@ -200,9 +200,8 @@ module.exports = {
       console.log(product, 'product');
       console.log(req.body.category, "coming to updating");
 
-      // Retrieve the category ID based on the category name
-      const category = await Category.findOne({ category: req.body.category }).lean();
-      const categoryId = category._id;
+    
+      const categoryId = req.body.category;
 
       let updatedProductData = {
         name: req.body.name,
@@ -223,6 +222,19 @@ module.exports = {
       throw new Error(error.message);
     }
   },
+
+  getAllProducts: () => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const products = await Product.find({unlist:false}).lean()
+        resolve(products);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+     
+  
 
 
 

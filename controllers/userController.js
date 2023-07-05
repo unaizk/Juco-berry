@@ -403,6 +403,27 @@ const verifyPayment = async (req, res) => {
 }
 
 
+const categoryProducts = async(req,res)=>{
+    try {
+       const categories = await userHelpers.getCategory()
+       const products = await productHelpers.getAllProducts();
+       res.render('users/categoryProducts', {layout:'user-layout', categories, products});
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const listCategory = async(req,res)=>{
+    try {
+        const catId = await userHelpers.getCategoryByName(req.body.status);
+        const products = await userHelpers.listCategorys(catId._id);
+        const categories = await userHelpers.getCategory();
+        res.render('users/categoryProducts', {layout:'user-layout', products, categories });
+    } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
 
 
 module.exports = {
@@ -442,5 +463,7 @@ module.exports = {
     cancellOrder,
     orderPlaced,
     orderFailed,
-    verifyPayment
+    verifyPayment,
+    categoryProducts,
+    listCategory
 }
