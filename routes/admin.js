@@ -5,6 +5,7 @@ const adminAuth = require('../middleware/adminAuth')
 const multer = require('multer')
 const path = require('path');
 const categoryHelpers = require('../helpers/categoryHelpers');
+const couponController = require('../controllers/couponController')
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -65,7 +66,11 @@ router.get('/ordersView',adminAuth.isLogin,adminController.loadOrdersView);
 router.post('/cancel-by-admin',adminController.cancelledByAdmin);
 router.post('/reject-by-admin',adminController.rejectCancellation)
 router.post('/prepare-by-admin',adminController.preparingFood)
-router.post('/deliver-by-admin',adminController.deliveredFood)
+router.post('/deliver-by-admin',adminController.deliveredFood);
+router.get('/manage-coupons',adminAuth.isLogin, couponController.manageCoupon);
+router.get('/add-coupon',adminAuth.isLogin, couponController.addNewCouponGET);
+router.post('/add-coupon', couponController.addNewCouponPOST);
+
 
 router.get('*', (req, res) => {
   res.redirect('/admin')

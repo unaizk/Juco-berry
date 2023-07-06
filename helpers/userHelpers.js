@@ -18,6 +18,7 @@ const ObjectId = mongoose.Types.ObjectId;
 const Cart = require('../models/cartModel')
 const Address = require('../models/addressModel');
 const Order = require('../models/ordersModel')
+const Coupon = require('../models/couponModel')
 const moment = require("moment-timezone")
 const Razorpay = require('razorpay');
 var instance = new Razorpay({

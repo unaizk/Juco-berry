@@ -1,0 +1,70 @@
+<style>
+    .form {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        /* Inner shadow effect */
+    }
+</style>
+
+{{>admin-header}}
+<div class="container-fluid pt-4 px-4">
+    <div class="row justify-content-center ">
+        <div class="col-sm-12 col-xl-6">
+            <div class="form bg-light rounded h-100 p-4">
+                <h1 class="mb-4">Add Coupon</h1>
+
+
+                <form action="/admin/add-coupon" method="post">
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">Coupon code</label>
+                        <input type="text" class="form-control" id="exampleInputEmail1" name="couponCode"
+                            placeholder="Enter Coupon Code" aria-describedby="emailHelp" required>
+
+                    </div>
+                    {{#if couponExistError}}
+                    <div>
+                        <p style="color: red;">{{couponExistError}}</p>
+                    </div>
+                    {{/if}}
+                    <div class="mb-3">
+                        <label for="exampleInputPassword1" class="form-label">Coupon Description</label>
+                        <input type="text" class="form-control" placeholder="Write Description" name="couponDescription"
+                            id="exampleInputPassword1" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputPassword1" class="form-label">Discount percentage</label>
+                        <input type="number" class="form-control" placeholder="Discount percentage" 
+                            id="exampleInputPassword1" name="discountPercentage" min="0" max="100" step="1" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputPassword1" class="form-label">Max discount Amount</label>
+                        <input type="number" class="form-control" placeholder="Enter discount amount"
+                            name="maxDiscountAmount" id="exampleInputPassword1" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputPassword1" class="form-label">Min order value</label>
+                        <input type="number" class="form-control" placeholder="Enter Min order" name="minOrderValue"
+                            min="0" step="1" id="exampleInputPassword1" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputPassword1" class="form-label">Valid For</label>
+                        <input type="number" class="form-control" placeholder="Number of days for which coupon is valid"
+                            name="validFor" min="1" max="180" step="1" id="exampleInputPassword1" required>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="Coupon Status">Activate Coupon</label>
+                        <select class="form-control" id="activeCoupon" name="activeCoupon" required>
+                            <option value="true">Yes</option>
+                            <option value="false">No</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Add Coupon</button>
+                     <button type="reset" class="btn btn-secondary ml-2">Reset</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{>admin-footer}}

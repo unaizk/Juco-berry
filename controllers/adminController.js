@@ -299,7 +299,7 @@ const preparingFood = async(req,res)=>{
 
      res.redirect(url)
   } catch (error) {
-    
+    console.log(error.message);
   }
 }
 
@@ -314,9 +314,11 @@ const deliveredFood = async(req,res)=>{
 
      res.redirect(url)
   } catch (error) {
-    
+    console.log(error.message);
   }
 }
+
+
 
 
 module.exports = {
@@ -354,5 +356,6 @@ module.exports = {
   cancelledByAdmin,
   rejectCancellation,
   preparingFood,
-  deliveredFood
+  deliveredFood,
+
 }

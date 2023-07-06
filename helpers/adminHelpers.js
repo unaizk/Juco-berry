@@ -7,6 +7,7 @@ var path = require('path');
 const fs = require('fs')
 const User = require('../models/userModel');
 const Order = require('../models/ordersModel')
+const Coupon = require('../models/couponModel')
 const moment = require("moment-timezone");
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
@@ -79,6 +80,7 @@ module.exports = {
                     } else {
                         req.session.user_id = userData._id;
                         req.session.is_admin = userData.is_admin
+                        
 
                         res.redirect('admin/admin-home')
                     }
@@ -404,7 +406,9 @@ module.exports = {
         } catch (error) {
             throw new Error(error.message);
         }
-      }
+      },
+
+      
       
 
 
