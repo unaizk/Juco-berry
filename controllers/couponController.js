@@ -30,7 +30,7 @@ const manageCoupon = async(req,res)=>{
       
         res.render('admin/coupon-manage', dataToRender );
     } catch (error) {
-        
+        console.log(error.message);
     }
 }
 
@@ -84,9 +84,107 @@ const addNewCouponPOST = async(req,res)=>{
     
         }
     } catch (error) {
-        
+        console.log(error.message);
     }
 }
+
+const inactiveCouponsGET = async(req,res)=>{
+    try {
+        const admin = req.session.is_admin;
+        const adminData = await User.find({is_admin:admin})
+
+        const inActiveCoupons = await couponHelpers.getInActiveCoupons();
+    
+        const dataToRender = {
+    
+            layout: 'admin-layout',
+            adminData,
+            inActiveCoupons
+    
+        }
+      
+        res.render('admin/coupon-deactivated', dataToRender );
+        
+    
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const editCouponGET = async(req,res)=>{
+    try {
+        const admin = req.session.is_admin;
+        const adminData = await User.find({is_admin:admin})
+
+        let couponExistError = false;
+
+        if(req.session.couponExistError){
+
+            couponExistError = req.session.couponExistError;
+            
+        }
+        const couponId = req.query.id;
+        // console.log(couponId,'couponIddddddddddddddddd');
+
+        const couponData = await couponHelpers.getSingleCouponData(couponId);
+
+        // console.log(couponData,'couponDatabbbbbbbbbbbbbbb');
+
+        const dataToRender = {
+            
+            layout: 'admin-layout',
+            adminData,
+            couponExistError,
+            couponData
+
+        }
+  
+        res.render('admin/coupon-edit', dataToRender);
+
+        delete req.session.couponExistError;
+    } catch (error) {
+        console.log("Error from editCouponPOST couponController :", error);
+    }
+}
+
+const updateCouponPOST = async (req, res)=>{
+
+    try{
+
+        const admin = req.session.is_admin;
+        const adminData = await User.find({is_admin:admin})
+
+        const couponDataForUpdate = req.body;
+
+        const couponId = couponDataForUpdate.couponId;
+    
+        const couponExist = await couponHelpers.verifyCouponExist(couponDataForUpdate);
+    
+        if(couponExist.status){
+    
+            const couponUpdateStatus = await couponHelpers.updateCouponData(couponDataForUpdate,couponId);
+    
+          
+    
+                res.redirect('/admin/manage-coupons');
+    
+        }else if (couponExist.duplicateCoupon){
+    
+            req.session.couponExistError = "Coupon code already exist, try some other code"
+
+            res.redirect('/admin/edit-coupon/?id='+couponId);
+    
+        }
+
+    }catch (error){
+
+        console.log("Error-2 from updateCouponPOST couponController :", error);
+
+        
+
+    }
+    
+};
 
 
 
@@ -95,5 +193,8 @@ const addNewCouponPOST = async(req,res)=>{
 module.exports ={
     manageCoupon,
     addNewCouponGET,
-    addNewCouponPOST
+    addNewCouponPOST,
+    inactiveCouponsGET,
+    editCouponGET,
+    updateCouponPOST
 }

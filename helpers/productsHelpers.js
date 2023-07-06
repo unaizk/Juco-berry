@@ -179,6 +179,7 @@ module.exports = {
           ...updatedProduct,
           category: categoryLookup[updatedProduct.category]
         };
+        console.log(productWithCategoryName, 'productWithCategoryNamevvvv');
         console.log('CategoryData:', categoryData);
         res.render('admin/edit-product', { product: productWithCategoryName, layout: 'admin-layout', categories: categoryData });
       } else {
@@ -200,8 +201,17 @@ module.exports = {
       console.log(product, 'product');
       console.log(req.body.category, "coming to updating");
 
-    
-      const categoryId = req.body.category;
+
+      let categoryId = req.body.category;
+
+
+
+      if (!mongoose.Types.ObjectId.isValid(categoryId)) {
+        // Category is passed as a string, find the corresponding category ID
+        const category = await Category.findOne({ category: categoryId }).lean();
+        categoryId = category._id;
+      }
+
 
       let updatedProductData = {
         name: req.body.name,
@@ -226,15 +236,15 @@ module.exports = {
   getAllProducts: () => {
     return new Promise(async (resolve, reject) => {
       try {
-        const products = await Product.find({unlist:false}).lean()
+        const products = await Product.find({ unlist: false }).lean()
         resolve(products);
       } catch (error) {
         reject(error);
       }
     });
   }
-     
-  
+
+
 
 
 

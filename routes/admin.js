@@ -70,6 +70,9 @@ router.post('/deliver-by-admin',adminController.deliveredFood);
 router.get('/manage-coupons',adminAuth.isLogin, couponController.manageCoupon);
 router.get('/add-coupon',adminAuth.isLogin, couponController.addNewCouponGET);
 router.post('/add-coupon', couponController.addNewCouponPOST);
+router.get('/inactive-coupons',adminAuth.isLogin,couponController.inactiveCouponsGET);
+router.get('/edit-coupon',adminAuth.isLogin, couponController.editCouponGET);
+router.post('/update-coupon',couponController.updateCouponPOST)
 
 
 router.get('*', (req, res) => {

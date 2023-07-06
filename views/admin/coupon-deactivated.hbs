@@ -12,19 +12,12 @@
 <div class="container-fluid pt-4">
     <div class="row">
         <div class="col-md-12">
-            <div class="text-right mb-3">
-                <form action="/admin/add-coupon" method="GET">
-                    <button type="submit" class="btn btn-primary">
-                        Add Coupon
-                    </button>
-                </form>
-            </div>
-
-            <div class="coupon-form bg-light rounded p-4">
+          
+           <div class="coupon-form bg-light rounded p-4">
                 <div class="d-flex justify-content-between align-items-center">
                     <h3 class="mb-4"
                         style="font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 1.2em; margin-bottom: 0; text-align: center">
-                        Active coupons</h3>
+                        Deactivated Coupons</h3>
 
                 </div>
                 <div class="table-responsive">
@@ -45,7 +38,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {{#each activeCoupons}}
+                            {{#each inActiveCoupons}}
                             <tr>
 
 
@@ -54,7 +47,7 @@
                                     {{#if this.activeCoupon}}
                                     <i class="fas fa-check-circle text-success"></i> Active
                                     {{else}}
-                                    <i class="fas fa-lock text-danger"></i> Blocked
+                                    <i class="fas fa-lock text-danger"></i> In-active
                                     {{/if}}
                                 </td>
                                 <td class="align-middle">{{this.couponDescription}}</td>
@@ -65,15 +58,15 @@
                                 <td class="align-middle">{{this.usageCount}}</td>
                                 <td>
 
-                                    <a href="/admin/edit-coupon?id={{this._id}}" class="btn btn-primary mb-2">EDIT</a>
+                                    <a href="/admin/edit-coupon/{{this._id}}" class="btn btn-primary mb-2">EDIT</a>
 
                                     <form action="/admin/change-coupon-status" method="POST" class="col-md-2">
 
                                         <input type="hidden" name="couponId" value="{{this._id}}">
 
-                                        <button class="btn btn-danger"
+                                        <button class="btn btn-success"
                                             onclick="return confirm('Are you sure that you want to deactivate {{this.couponCode}} coupon?')"
-                                            type="submit">DEACTIVATE</button>
+                                            type="submit">ACTIVATE</button>
 
                                     </form>
 
