@@ -73,6 +73,7 @@ router.post('/add-coupon', couponController.addNewCouponPOST);
 router.get('/inactive-coupons',adminAuth.isLogin,couponController.inactiveCouponsGET);
 router.get('/edit-coupon',adminAuth.isLogin, couponController.editCouponGET);
 router.post('/update-coupon',couponController.updateCouponPOST)
+router.post('/change-coupon-status',couponController.changeCouponStatusPOST)
 
 
 router.get('*', (req, res) => {

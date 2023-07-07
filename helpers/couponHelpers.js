@@ -216,6 +216,51 @@ module.exports = {
     
         })
         
+    },
+
+    getSingleCouponData:(couponId)=>{
+
+        return new Promise( async (resolve, reject)=>{
+    
+            try{
+        
+                const couponData = await Coupon.findOne( {_id :new ObjectId(couponId) } );
+        
+                resolve(couponData);
+        
+            }catch (error){
+        
+                console.log("Error from getSingleCouponData couponHelper :", error);
+    
+                reject(error);
+                
+            }
+    
+        })
+        
+    },
+
+    changeCouponStatus:(couponData,statusToModify)=>{
+        return new Promise(async(resolve,reject)=>{
+            try {
+                if(statusToModify === "Activate"){
+
+                    couponData.activeCoupon = true;
+    
+                }else if(statusToModify === "Deactivate"){
+    
+                    couponData.activeCoupon = false;
+    
+                }
+                const couponStatusUpdation = await Coupon.updateOne({_id:new ObjectId(couponData._id)},{$set:couponData});
+    
+                resolve(couponStatusUpdation);
+            } catch (error) {
+                console.log("Error from updateCouponData couponHelper :", error);
+
+                reject(error);
+            }
+        })
     }
     
 

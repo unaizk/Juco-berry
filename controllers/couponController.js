@@ -184,7 +184,31 @@ const updateCouponPOST = async (req, res)=>{
 
     }
     
-};
+}
+
+const changeCouponStatusPOST = async(req,res)=>{
+    try {
+        const admin = req.session.is_admin;
+        const adminData = await User.find({is_admin:admin})
+
+        const couponId = req.body.couponId;
+    
+        const couponData = await couponHelpers.getSingleCouponData(couponId);
+
+        if(couponData.activeCoupon){
+            const couponUpdateStatus = await couponHelpers.changeCouponStatus(couponData, "Deactivate");
+            res.redirect('/admin/manage-coupons');
+        }else if(!couponData.activeCoupon){
+            const couponUpdateStatus = await couponHelpers.changeCouponStatus(couponData, "Activate");
+            res.redirect('/admin/inactive-coupons');
+        }else{
+            console.log("Error-2 from changeCouponStatusPOST Controller: ", couponUpdateStatus);
+        }
+
+    } catch (error) {
+        console.log("Error-3 from changeCouponStatusPOST couponController :", error);
+    }
+}
 
 
 
@@ -196,5 +220,6 @@ module.exports ={
     addNewCouponPOST,
     inactiveCouponsGET,
     editCouponGET,
-    updateCouponPOST
+    updateCouponPOST,
+    changeCouponStatusPOST
 }
