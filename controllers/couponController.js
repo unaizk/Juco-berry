@@ -7,6 +7,7 @@ const categoryHelpers = require('../helpers/categoryHelpers')
 const productHelpers = require('../helpers/productsHelpers')
 const couponHelpers = require('../helpers/couponHelpers')
 const Coupon = require('../models/couponModel')
+const UsedCoupon = require('../models/usedCouponModel')
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 
@@ -211,6 +212,59 @@ const changeCouponStatusPOST = async(req,res)=>{
 }
 
 
+  /*========================================================================================================================
+                        ==================== USER SIDE COUPON CONTROLLERS ====================
+==========================================================================================================================*/
+
+const applyCouponPOST = async(req,res)=>{
+    try {
+        const userId = req.session.user_id;
+        const couponCode  = req.body.couponCodeFromUser.toLowerCase();
+        const couponData = await couponHelpers.getCouponDataByCouponCode(couponCode);
+        const couponEligible = await couponHelpers.verifyCouponEligibility(couponCode);
+
+
+        if(couponEligible.status){
+            const cartValue = await userHelpers.getCartValue(userId);
+            if(cartValue >= couponData.minOrderValue){
+                const userEligible = await couponHelpers.verifyCouponUsedStatus(userId, couponData._id);
+                if(userEligible.status){
+                    const applyNewCoupon = await couponHelpers.applyCouponToCart(userId, couponData._id);
+                    if(applyNewCoupon.status){
+                        req.session.couponApplied = "Congrats, Coupon applied succesfully";
+
+                        res.redirect('/checkout');
+                    }else{
+                        req.session.couponInvalidError = "Sorry, Unexpected Error in applying coupon";
+
+                        res.redirect('/checkout');
+
+                    }
+                }else{
+                    req.session.couponInvalidError = "Coupon already used earlier";
+
+                    res.redirect('/checkout');
+                }
+            }else{
+                req.session.couponInvalidError = "Coupon not applied, purchase minimum for ₹" + couponData.minOrderValue + " to get coupon";
+
+                res.redirect('/checkout');
+            }
+        }else if (couponEligible.reasonForRejection){
+            req.session.couponInvalidError = couponEligible.reasonForRejection;
+
+            res.redirect('/checkout');
+        }
+
+
+
+
+    } catch (error) {
+        console.log("Error-3 from changeCouponStatusPOST couponController :", error);
+    }
+}
+
+
 
 
 
@@ -221,5 +275,6 @@ module.exports ={
     inactiveCouponsGET,
     editCouponGET,
     updateCouponPOST,
-    changeCouponStatusPOST
+    changeCouponStatusPOST,
+    applyCouponPOST
 }

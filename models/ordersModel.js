@@ -17,6 +17,10 @@ const ordersSchema = new mongoose.Schema({
     type:String,
     require:true
   },
+  couponDiscount:{
+    type:Number,
+    default:0
+  },
   orderStatus:{
     type:String,
     require:true

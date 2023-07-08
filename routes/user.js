@@ -4,6 +4,7 @@ const userController = require('../controllers/userController')
 const auth = require('../middleware/auth')
 const multer = require('multer')
 const path = require('path');
+const couponController = require('../controllers/couponController')
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -59,6 +60,7 @@ router.post('/cancel-order',userController.cancellOrder)
 router.post('/verify-payment',userController.verifyPayment)
 router.get('/categoryProducts',auth.isLogin,userController.categoryProducts);
 router.post('/list-category',userController.listCategory)
+router.post('/apply-coupon-request', couponController.applyCouponPOST);
 
 
 module.exports = router;

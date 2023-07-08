@@ -19,6 +19,8 @@ const Cart = require('../models/cartModel')
 const Address = require('../models/addressModel');
 const Order = require('../models/ordersModel')
 const Coupon = require('../models/couponModel')
+const couponHelpers = require('../helpers/couponHelpers')
+const UsedCoupon = require('../models/usedCouponModel')
 const moment = require("moment-timezone")
 const Razorpay = require('razorpay');
 var instance = new Razorpay({
@@ -891,9 +893,41 @@ module.exports = {
                 (sum, product) => sum + Number(product.total),
                 0
             );
-            const finalAmount = total;
+
+           
+            let finalAmount = total;
             // Get the total count of products
             const totalCount = products.length;
+
+              // Coupon Request configuration
+            let couponError = false;
+            let couponApplied = false;
+
+            if(req.session.couponInvalidError){
+
+                couponError = req.session.couponInvalidError;
+        
+              }else if(req.session.couponApplied){
+        
+                couponApplied = req.session.couponApplied;
+        
+              }
+
+                // Existing Coupon Status Validation & Discount amount calculation using couponHelper
+
+             let couponDiscount = 0;
+
+             const eligibleCoupon = await couponHelpers.checkCurrentCouponValidityStatus(userId, finalAmount);
+
+             if(eligibleCoupon.status){
+                couponDiscount = eligibleCoupon.couponDiscount;
+             }else{
+                couponDiscount = 0;
+             }
+
+             finalAmount = finalAmount-couponDiscount
+
+
 
             res.render('users/checkout', {
                 layout: 'user-layout',
@@ -902,11 +936,17 @@ module.exports = {
                 products,
                 total,
                 totalCount,
-                subtotal: total,
-                finalAmount,
+                couponApplied,
+                couponError,
+                couponDiscount,
+                subtotal: finalAmount,
+                
             });
+            delete req.session.couponApplied;
+
+            delete req.session.couponInvalidError;
         } catch (error) {
-            throw new Error(error.message);
+            console.log("Error from placeOrderGET userController: ", error);
         }
     },
 
@@ -987,6 +1027,7 @@ module.exports = {
             userId: userId,
             date: Date(),
             orderValue: totalOrderValue,
+            couponDiscount:orderData.couponDiscount,
             paymentMethod: orderData['paymentMethod'],
             orderStatus: orderStatus,
             products: orderedProducts,
@@ -1149,6 +1190,9 @@ module.exports = {
             };
 
             const subtotal = order.orderValue;
+            const total = order.orderValue+order.couponDiscount
+            const discountAmount = order.couponDiscount
+            
             const cancellationStatus = order.cancellationStatus
             console.log(cancellationStatus, 'cancellationStatus');
 
@@ -1163,8 +1207,9 @@ module.exports = {
                 orderDetails: orderDetails,
                 deliveryAddress: deliveryAddress,
                 subtotal: subtotal,
-
+                total:total,
                 orderId: orderId,
+                discountAmount:discountAmount,
                 orderDate: createdOnIST,
                 cancellationStatus: cancellationStatus,
 

@@ -95,19 +95,28 @@
 
                         <li class="list-group-item d-flex justify-content-between bg-light">
                             <div class="text-success">
-                                <h6 class="my-0">Promo code</h6>
+                                <h6 class="my-0">Coupon code</h6>
                                 <small>EXAMPLECODE</small>
                             </div>
-                            <span class="text-success">-$5</span>
+                            <span class="text-success">-₹{{this.couponDiscount}}</span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between">
                             <span>Total(INR)</span>
                             <strong>₹{{this.subtotal}}</strong>
                         </li>
                     </ul>
-                    <form class="card p-2">
+                    <form class="card p-2" action="/apply-coupon-request" method="POST">
                         <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Promo code">
+                            <input type="text" class="form-control" placeholder="Coupon code" name="couponCodeFromUser">
+                             {{#if couponApplied}}
+
+                                        <p style="color: #21b503;"><b>{{couponApplied}}</b></p>
+
+                                    {{else if couponError}}
+
+                                        <p style="color: red;"><b>{{couponError}}</b></p>
+
+                                    {{/if}}
                             <div class="input-group-append">
                                 <button type="submit" class="btn btn-secondary">Redeem</button>
                             </div>

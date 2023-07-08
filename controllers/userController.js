@@ -10,6 +10,7 @@ const adminHelpers = require('../helpers/adminHelpers')
 const userHelpers = require('../helpers/userHelpers')
 const categoryHelpers = require('../helpers/categoryHelpers')
 const productHelpers = require('../helpers/productsHelpers')
+const couponHelpers = require('../helpers/couponHelpers')
 
 const accountSid = "AC5b08749806fb17d29e70c46231045f1a";
 const authToken = "524284ec82c67ab3d82fd72ddd53a2f7";
@@ -290,7 +291,19 @@ const placeOrder = async (req, res) => {
         // console.log(orderedProducts,'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb');
         if (orderedProducts) {
             let totalOrderValue = await userHelpers.getCartValue(userId);
+            const availableCouponData = await couponHelpers.checkCurrentCouponValidityStatus(userId, totalOrderValue);
+            if (availableCouponData.status) {
+                const couponDiscountAmount = availableCouponData.couponDiscount;
 
+                // Inserting the value of coupon discount into the order details object created above
+                orderDetails.couponDiscount = couponDiscountAmount;
+
+                // Updating the total order value with coupon discount applied
+                totalOrderValue = totalOrderValue - couponDiscountAmount;
+
+                const updateCouponUsedStatusResult = await couponHelpers.updateCouponUsedStatus(userId, availableCouponData.couponId);
+
+            }
             userHelpers.placingOrder(userId, orderDetails, orderedProducts, totalOrderValue).then((orderId) => {
                 if (req.body['paymentMethod'] === 'COD') {
                     res.json({ COD_CHECKOUT: true });
@@ -403,22 +416,22 @@ const verifyPayment = async (req, res) => {
 }
 
 
-const categoryProducts = async(req,res)=>{
+const categoryProducts = async (req, res) => {
     try {
-       const categories = await userHelpers.getCategory()
-       const products = await productHelpers.getAllProducts();
-       res.render('users/categoryProducts', {layout:'user-layout', categories, products});
+        const categories = await userHelpers.getCategory()
+        const products = await productHelpers.getAllProducts();
+        res.render('users/categoryProducts', { layout: 'user-layout', categories, products });
     } catch (error) {
         console.log(error.message);
     }
 }
 
-const listCategory = async(req,res)=>{
+const listCategory = async (req, res) => {
     try {
         const catId = await userHelpers.getCategoryByName(req.body.status);
         const products = await userHelpers.listCategorys(catId._id);
         const categories = await userHelpers.getCategory();
-        res.render('users/categoryProducts', {layout:'user-layout', products, categories });
+        res.render('users/categoryProducts', { layout: 'user-layout', products, categories });
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });
     }

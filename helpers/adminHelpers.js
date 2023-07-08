@@ -309,7 +309,8 @@ module.exports = {
 
 
 
-
+            const total = order.orderValue+order.couponDiscount
+            const discountAmount = order.couponDiscount
             const subtotal = order.orderValue;
             const cancellationStatus = order.cancellationStatus
             console.log(cancellationStatus,'cancellationStatus');
@@ -326,7 +327,8 @@ module.exports = {
                 orderDetails: orderDetails,
                 deliveryAddress: deliveryAddress,
                 subtotal: subtotal,
-               
+                total:total,
+                discountAmount:discountAmount,
                 orderId: orderId,
                 orderDate: createdOnIST,
                  cancellationStatus:cancellationStatus,
