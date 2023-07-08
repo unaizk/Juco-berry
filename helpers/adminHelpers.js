@@ -8,6 +8,7 @@ const fs = require('fs')
 const User = require('../models/userModel');
 const Order = require('../models/ordersModel')
 const Coupon = require('../models/couponModel')
+const Wallet = require('../models/walletModel')
 const moment = require("moment-timezone");
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
@@ -338,24 +339,50 @@ module.exports = {
         }
       },
 
-      cancellingOrderByAdmin:async(requestData)=>{
+      cancellingOrderByAdmin: async (requestData) => {
         try {
-            const orderId = requestData
-            console.log(orderId,'orderidddddddddddddd');
-            const updateOrder = await Order.findByIdAndUpdate(
-                { _id:new ObjectId(orderId) },
-                { $set: { orderStatus: "cancelled",cancellationStatus:"cancelled" } },
-                { new: true } // This ensures that the updated document is returned
+          const orderId = requestData;
+          console.log(orderId, 'orderidddddddddddddd');
+          const updateOrder = await Order.findByIdAndUpdate(
+            { _id: new ObjectId(orderId) },
+            { $set: { orderStatus: "cancelled", cancellationStatus: "cancelled" } },
+            { new: true } // This ensures that the updated document is returned
+          ).exec();
+      
+          console.log(updateOrder, 'updateOrderrrrrrrrrrrrrrrrrrrrrrrrrrrrrr');
+      
+          // Check if the payment method is online and the order value is greater than 0
+          if (updateOrder.paymentMethod === "ONLINE" && updateOrder.orderValue > 0) {
+            // Check if a wallet exists for the user
+            const wallet = await Wallet.findOne({ userId: updateOrder.userId }).exec();
+      
+            if (wallet) {
+              // Wallet exists, increment the wallet amount
+              const updatedWallet = await Wallet.findOneAndUpdate(
+                {userId:updateOrder.userId},
+                { $inc: { walletAmount: updateOrder.orderValue } },
+                { new: true }
               ).exec();
-              
-            console.log(updateOrder,'updateOrderrrrrrrrrrrrrrrrrrrrrrrrrrrrrr');
-
-            return updateOrder;
+      
+              console.log(updatedWallet, 'updated wallet with order value');
+            } else {
+              // Wallet doesn't exist, create a new wallet with the order value as the initial amount
+              const newWallet = new Wallet({
+                userId: updateOrder.userId,
+                walletAmount: updateOrder.orderValue
+              });
+      
+              const createdWallet = await newWallet.save();
+              console.log(createdWallet, 'created new wallet with order value');
+            }
+          }
+      
+          return updateOrder;
         } catch (error) {
-            throw new Error(error.message);
+          throw new Error(error.message);
         }
       },
-
+      
       rejectingCancelOrderByAdmin:async(requestData)=>{
         try {
             const orderId = requestData

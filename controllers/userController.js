@@ -437,6 +437,16 @@ const listCategory = async (req, res) => {
     }
 }
 
+const loadWallet = async(req,res)=>{
+    try {
+        const userId = req.session.user_id
+        const walletDetails = await userHelpers.getWalletDetails(userId)
+        res.render('users/wallet',{layout:'user-layout',walletDetails})
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 
 
 module.exports = {
@@ -478,5 +488,6 @@ module.exports = {
     orderFailed,
     verifyPayment,
     categoryProducts,
-    listCategory
+    listCategory,
+    loadWallet
 }

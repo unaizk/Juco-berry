@@ -61,6 +61,7 @@ router.post('/verify-payment',userController.verifyPayment)
 router.get('/categoryProducts',auth.isLogin,userController.categoryProducts);
 router.post('/list-category',userController.listCategory)
 router.post('/apply-coupon-request', couponController.applyCouponPOST);
+router.get('/wallet-details',auth.isLogin,userController.loadWallet)
 
 
 module.exports = router;

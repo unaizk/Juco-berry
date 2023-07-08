@@ -21,6 +21,7 @@ const Order = require('../models/ordersModel')
 const Coupon = require('../models/couponModel')
 const couponHelpers = require('../helpers/couponHelpers')
 const UsedCoupon = require('../models/usedCouponModel')
+const Wallet = require('../models/walletModel')
 const moment = require("moment-timezone")
 const Razorpay = require('razorpay');
 var instance = new Razorpay({
@@ -1347,6 +1348,19 @@ module.exports = {
           }
         });
       },
+
+
+      getWalletDetails:(userId)=>{
+        return new Promise(async(resolve,reject)=>{
+            try {
+                const walletDetails = await Wallet.findOne({userId:userId}).lean()
+                console.log(walletDetails,'walletDetailsvvvvvvvvvvvvvv');
+                resolve(walletDetails)
+            } catch (error) {
+                reject(error);
+            }
+        })
+      }
 
 
    
