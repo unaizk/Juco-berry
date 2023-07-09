@@ -53,6 +53,7 @@ router.post('/change-address',userController.changeAddress);
 router.get('/checkout',auth.isLogin,userController.loadCheckout);
 router.post('/place-order',userController.placeOrder)
 router.get('/orderPlaced',auth.isLogin,userController.orderPlaced);
+router.get('/wallet-placed',auth.isLogin,userController.walletOrder)
 router.get('/orderFailed',auth.isLogin,userController.orderFailed)
 router.get('/order-details',auth.isLogin,userController.orderDetails)
 router.get('/ordersView',auth.isLogin,userController.loadOrdersView)

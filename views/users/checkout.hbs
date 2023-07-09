@@ -66,6 +66,12 @@
         border-color: #000000;
         box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0.25);
     }
+
+    .wallet-balance {
+        font-size: 16px;
+        font-weight: 700;
+        color: #000000;
+    }
 </style>
 {{>user-header}}
 <div class="card">
@@ -108,15 +114,15 @@
                     <form class="card p-2" action="/apply-coupon-request" method="POST">
                         <div class="input-group">
                             <input type="text" class="form-control" placeholder="Coupon code" name="couponCodeFromUser">
-                             {{#if couponApplied}}
+                            {{#if couponApplied}}
 
-                                        <p style="color: #21b503;"><b>{{couponApplied}}</b></p>
+                            <p style="color: #21b503;"><b>{{couponApplied}}</b></p>
 
-                                    {{else if couponError}}
+                            {{else if couponError}}
 
-                                        <p style="color: red;"><b>{{couponError}}</b></p>
+                            <p style="color: red;"><b>{{couponError}}</b></p>
 
-                                    {{/if}}
+                            {{/if}}
                             <div class="input-group-append">
                                 <button type="submit" class="btn btn-secondary">Redeem</button>
                             </div>
@@ -199,7 +205,14 @@
                                     required="" value="ONLINE">
                                 <label class="custom-control-label" for="debit">ONLINE</label>
                             </div>
-
+                            <div class="custom-control custom-radio">
+                                <input id="wallet" name="paymentMethod" type="radio" class="custom-control-input"
+                                    required="" value="WALLET">
+                                <label class="custom-control-label" for="wallet">WALLET <span
+                                        class="wallet-balance">(Wallet Balance:
+                                        ₹{{walletDetails.walletAmount}})</span></label>
+                                         <p id="error-message" class="text-danger"></p>
+                            </div>
                         </div>
 
 
@@ -364,6 +377,11 @@
 
                     if (response.COD_CHECKOUT) {
                         location.href = '/orderPlaced'
+                        
+                    }else if(response.WALLET_CHECKOUT){
+                        location.href = '/wallet-placed?id='+response.orderId
+                    }else if(response.error){
+                         $('#error-message').text(response.error);
                     } else if (response.ONLINE_CHECKOUT) {
                         makeRazorpayPayment(response);
                     } else {

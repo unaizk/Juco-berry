@@ -304,10 +304,26 @@ const placeOrder = async (req, res) => {
                 const updateCouponUsedStatusResult = await couponHelpers.updateCouponUsedStatus(userId, availableCouponData.couponId);
 
             }
-            userHelpers.placingOrder(userId, orderDetails, orderedProducts, totalOrderValue).then((orderId) => {
-                if (req.body['paymentMethod'] === 'COD') {
+
+
+            if (req.body['paymentMethod'] === 'COD') {
+                userHelpers.placingOrder(userId, orderDetails, orderedProducts, totalOrderValue).then(async (orderId) => {
                     res.json({ COD_CHECKOUT: true });
-                } else if (req.body['paymentMethod'] === 'ONLINE') {
+                })
+
+            } else if (req.body['paymentMethod'] === 'WALLET') {
+                const walletBalance = await userHelpers.walletBalance(userId);
+                if (walletBalance.walletAmount >= totalOrderValue) {
+                    userHelpers.placingOrder(userId, orderDetails, orderedProducts, totalOrderValue).then(async (orderId) => {
+                        res.json({ WALLET_CHECKOUT: true ,orderId});
+                    })
+                } else {
+                    res.json({ error: 'Insufficient balance.' })
+                }
+            }
+
+            else if (req.body['paymentMethod'] === 'ONLINE') {
+                userHelpers.placingOrder(userId, orderDetails, orderedProducts, totalOrderValue).then(async (orderId) => {
                     userHelpers.generateRazorpayOrder(orderId, totalOrderValue).then(async (razorpayOrderDetails) => {
                         const user = await User.findById({ _id: userId }).lean()
                         res.json(
@@ -322,10 +338,12 @@ const placeOrder = async (req, res) => {
                         )
 
                     })
-                } else {
-                    res.json({ paymentStatus: false });
-                }
-            })
+                })
+
+            } else {
+                res.json({ paymentStatus: false });
+            }
+
         } else {
             res.json({ checkoutStatus: false });
         }
@@ -340,6 +358,18 @@ const placeOrder = async (req, res) => {
 const orderPlaced = async (req, res) => {
     try {
         res.render('users/orderPlaced', { layout: 'user-layout' })
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const walletOrder = async(req,res)=>{
+    try {
+        const orderId = req.query.id
+        console.log(orderId,'orderIddddd');
+        const userId = req.session.user_id
+        const updatingWallet = await userHelpers.updateWallet(userId,orderId);
+        res.redirect('/orderPlaced')
     } catch (error) {
         console.log(error.message);
     }
@@ -439,57 +469,57 @@ const listCategory = async (req, res) => {
 
 const loadWallet = async (req, res) => {
     try {
-      const userId = req.session.user_id;
-      const walletDetails = await userHelpers.getWalletDetails(userId);
-      let orderDetails = await userHelpers.orderDetails(userId);
+        const userId = req.session.user_id;
+        const walletDetails = await userHelpers.getWalletDetails(userId);
+        let orderDetails = await userHelpers.orderDetails(userId);
 
-       // Reverse the order of transactions
-     orderDetails = orderDetails.reverse();
-  
-      // Pagination logic
-      const currentPage = parseInt(req.query.page) || 1; // Get the current page number from the query parameter
-      const PAGE_SIZE = 5; // Number of transactions per page
-  
-      // Calculate the total number of pages
-      const totalPages = Math.ceil(orderDetails.length / PAGE_SIZE);
-  
-      // Determine the start and end index of the current page
-      const startIndex = (currentPage - 1) * PAGE_SIZE;
-      const endIndex = startIndex + PAGE_SIZE;
-  
-      // Get the transactions for the current page
-      const paginatedOrderDetails = orderDetails.slice(startIndex, endIndex);
-  
-      // Determine if there are previous and next pages
-      const hasPrev = currentPage > 1;
-      const hasNext = currentPage < totalPages;
-  
-      // Generate an array of page objects for pagination links
-      const pages = [];
-      for (let i = 1; i <= totalPages; i++) {
-        pages.push({
-          number: i,
-          current: i === currentPage
+        // Reverse the order of transactions
+        orderDetails = orderDetails.reverse();
+
+        // Pagination logic
+        const currentPage = parseInt(req.query.page) || 1; // Get the current page number from the query parameter
+        const PAGE_SIZE = 5; // Number of transactions per page
+
+        // Calculate the total number of pages
+        const totalPages = Math.ceil(orderDetails.length / PAGE_SIZE);
+
+        // Determine the start and end index of the current page
+        const startIndex = (currentPage - 1) * PAGE_SIZE;
+        const endIndex = startIndex + PAGE_SIZE;
+
+        // Get the transactions for the current page
+        const paginatedOrderDetails = orderDetails.slice(startIndex, endIndex);
+
+        // Determine if there are previous and next pages
+        const hasPrev = currentPage > 1;
+        const hasNext = currentPage < totalPages;
+
+        // Generate an array of page objects for pagination links
+        const pages = [];
+        for (let i = 1; i <= totalPages; i++) {
+            pages.push({
+                number: i,
+                current: i === currentPage
+            });
+        }
+
+        res.render('users/wallet', {
+            layout: 'user-layout',
+            walletDetails,
+            orderDetails: paginatedOrderDetails, // Pass the paginated order details to the template
+            showPagination: orderDetails.length > PAGE_SIZE,
+            hasPrev,
+            prevPage: currentPage - 1,
+            hasNext,
+            nextPage: currentPage + 1,
+            pages
         });
-      }
-  
-      res.render('users/wallet', {
-        layout: 'user-layout',
-        walletDetails,
-        orderDetails: paginatedOrderDetails, // Pass the paginated order details to the template
-        showPagination: orderDetails.length > PAGE_SIZE,
-        hasPrev,
-        prevPage: currentPage - 1,
-        hasNext,
-        nextPage: currentPage + 1,
-        pages
-      });
     } catch (error) {
-      console.log(error.message);
-      res.status(500).send('Internal Server Error');
+        console.log(error.message);
+        res.status(500).send('Internal Server Error');
     }
-  };
-  
+};
+
 
 
 module.exports = {
@@ -532,5 +562,6 @@ module.exports = {
     verifyPayment,
     categoryProducts,
     listCategory,
-    loadWallet
+    loadWallet,
+    walletOrder
 }

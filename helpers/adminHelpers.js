@@ -355,7 +355,7 @@ module.exports = {
           console.log(updateOrder, 'updateOrderrrrrrrrrrrrrrrrrrrrrrrrrrrrrr');
       
           // Check if the payment method is online and the order value is greater than 0
-          if (updateOrder.paymentMethod === "ONLINE" && updateOrder.orderValue > 0) {
+          if ((updateOrder.paymentMethod === "ONLINE" || updateOrder.paymentMethod === "WALLET") && updateOrder.orderValue > 0) {
             // Check if a wallet exists for the user
             const wallet = await Wallet.findOne({ userId: updateOrder.userId }).exec();
       

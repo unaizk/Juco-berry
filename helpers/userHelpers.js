@@ -928,7 +928,7 @@ module.exports = {
 
              finalAmount = finalAmount-couponDiscount
 
-
+             const walletDetails = await Wallet.findOne({userId:userId}).lean()
 
             res.render('users/checkout', {
                 layout: 'user-layout',
@@ -941,6 +941,7 @@ module.exports = {
                 couponError,
                 couponDiscount,
                 subtotal: finalAmount,
+                walletDetails
                 
             });
             delete req.session.couponApplied;
@@ -999,7 +1000,16 @@ module.exports = {
     },
 
     placingOrder: async (userId, orderData, orderedProducts, totalOrderValue) => {
-        let orderStatus = orderData['paymentMethod'] === 'COD' ? 'Placed' : 'Pending'
+        
+        let orderStatus  
+
+        if(orderData['paymentMethod'] === 'COD'){
+            orderStatus = 'Placed'
+        }else if(orderData['paymentMethod'] === 'WALLET'){
+            orderStatus = 'Placed'
+        }else{
+            orderStatus = 'Pending'
+        }
 
         const defaultAddress = await Address.findOne(
             { user_id: userId, 'address.isDefault': true },
@@ -1049,6 +1059,44 @@ module.exports = {
 
     },
 
+    walletBalance:(userId)=>{
+        return new Promise(async(resolve,reject)=>{
+            try {
+                const walletBalance = await Wallet.findOne({userId:userId})
+                resolve(walletBalance)
+            } catch (error) {
+                reject(err)
+                
+            }
+        })
+    },
+
+    updateWallet: (userId, orderId) => {
+        return new Promise(async (resolve, reject) => {
+          try {
+            const orderDetails = await Order.findOne({ _id: orderId });
+            const wallet = await Wallet.findOne({ userId: userId });
+      
+            if (wallet) {
+              // Subtract orderValue from walletAmount
+              const updatedWalletAmount = wallet.walletAmount - orderDetails.orderValue;
+      
+              // Update the walletAmount in the Wallet collection
+              await Wallet.findOneAndUpdate(
+                { userId: userId },
+                { walletAmount: updatedWalletAmount }
+              );
+      
+              resolve(updatedWalletAmount);
+            } else {
+              reject('Wallet not found');
+            }
+          } catch (error) {
+            reject(error);
+          }
+        });
+      },
+      
 
     // placingOrder: async (req, res) => {
     //     try {
@@ -1368,29 +1416,30 @@ module.exports = {
         })
       },
 
-      orderDetails:(userId)=>{
-        return new Promise(async(resolve,reject)=>{
-            try {
-                const orderDetails = await Order.find({
-                    userId: userId,
-                    paymentMethod: 'ONLINE',
-                    orderStatus: 'cancelled'
-                  }).lean();
-
-                  orderHistory = orderDetails.map(history => {
-                let createdOnIST = moment(history.date)
-                    .tz('Asia/kolkata')
-                    .format('DD-MM-YYYY h:mm A');
-
-                return { ...history, date: createdOnIST };
-            })
-
-                  resolve(orderHistory)
-            } catch (error) {
-                reject(error);
-            }
-        })
+      orderDetails: (userId) => {
+        return new Promise(async (resolve, reject) => {
+          try {
+            const orderDetails = await Order.find({
+              userId: userId,
+              $or: [{ paymentMethod: 'ONLINE' }, { paymentMethod: 'WALLET' }],
+              orderStatus: 'cancelled'
+            }).lean();
+      
+            const orderHistory = orderDetails.map(history => {
+              let createdOnIST = moment(history.date)
+                .tz('Asia/Kolkata')
+                .format('DD-MM-YYYY h:mm A');
+      
+              return { ...history, date: createdOnIST };
+            });
+      
+            resolve(orderHistory);
+          } catch (error) {
+            reject(error);
+          }
+        });
       }
+      
 
 
    
