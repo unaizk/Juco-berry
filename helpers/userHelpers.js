@@ -111,6 +111,7 @@ module.exports = {
                 is_admin: 0
             });
             const userData = await user.save();
+           
             await module.exports.sendingMailToVerify(req.body.name, req.body.email, userData._id);
             res.render('users/signup&login', { message: "Your registration has been successful. Please verify your email.", layout: 'user-layout' });
         } catch (error) {
@@ -148,8 +149,25 @@ module.exports = {
                         res.render('users/signup&login', { messages: "User has been blocked", layout: 'user-layout' });
                     } else {
                         req.session.user_id = userData._id;
-                        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-                        res.redirect('/home');
+                        // Check if a wallet exists for the user
+                        const wallet = await Wallet.findOne({ userId: userData._id }).exec();
+                        if (wallet) {
+                            res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+                            res.redirect('/home');
+                        } else {
+                            // Wallet doesn't exist, create a new wallet with the order value as the initial amount
+                            const newWallet = new Wallet({
+                                userId: userData._id,
+                                walletAmount: 0
+                            });
+
+                            const createdWallet = await newWallet.save();
+                            res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+                            res.redirect('/home');
+                        }
+
+
+
                     }
                 } else {
                     res.render('users/signup&login', { messages: "Password is incorrect", layout: 'user-layout' });
@@ -167,7 +185,7 @@ module.exports = {
             const productData = await Product.find({ unlist: false }).lean();
             const categories = await Category.find({ unlist: false }).lean()
             res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-            console.log(categories,'categoriessssss');
+            console.log(categories, 'categoriessssss');
             res.render('users/home', { layout: 'user-layout', products: productData, categories: categories })
         } catch (error) {
             throw new Error(error.message);
@@ -873,80 +891,85 @@ module.exports = {
                 })
                 .lean()
                 .exec();
-
-            const products = cart.products.map((product) => {
-                const total =
-                    Number(product.quantity) * Number(product.productId.price);
-                return {
-                    _id: product.productId._id.toString(),
-                    name: product.productId.name,
-                    category: product.productId.category.category, // Access the category field directly
-                    image: product.productId.image,
-                    price: product.productId.price,
-                    description: product.productId.description,
-                    quantity: product.quantity,
+            if(cart){
+                const products = cart.products.map((product) => {
+                    const total =
+                        Number(product.quantity) * Number(product.productId.price);
+                    return {
+                        _id: product.productId._id.toString(),
+                        name: product.productId.name,
+                        category: product.productId.category.category, // Access the category field directly
+                        image: product.productId.image,
+                        price: product.productId.price,
+                        description: product.productId.description,
+                        quantity: product.quantity,
+                        total,
+                        user_id: req.session.user_id,
+                    };
+                });
+    
+                const total = products.reduce(
+                    (sum, product) => sum + Number(product.total),
+                    0
+                );
+    
+    
+                let finalAmount = total;
+                // Get the total count of products
+                const totalCount = products.length;
+    
+                // Coupon Request configuration
+                let couponError = false;
+                let couponApplied = false;
+    
+                if (req.session.couponInvalidError) {
+    
+                    couponError = req.session.couponInvalidError;
+    
+                } else if (req.session.couponApplied) {
+    
+                    couponApplied = req.session.couponApplied;
+    
+                }
+    
+                // Existing Coupon Status Validation & Discount amount calculation using couponHelper
+    
+                let couponDiscount = 0;
+    
+                const eligibleCoupon = await couponHelpers.checkCurrentCouponValidityStatus(userId, finalAmount);
+    
+                if (eligibleCoupon.status) {
+                    couponDiscount = eligibleCoupon.couponDiscount;
+                } else {
+                    couponDiscount = 0;
+                }
+    
+                finalAmount = finalAmount - couponDiscount
+    
+                const walletDetails = await Wallet.findOne({ userId: userId }).lean()
+    
+                res.render('users/checkout', {
+                    layout: 'user-layout',
+                    defaultAddress: defaultAddress ? defaultAddress.address[0] : null, // Add a conditional check for defaultAddress
+                    filteredAddresses,
+                    products,
                     total,
-                    user_id: req.session.user_id,
-                };
-            });
-
-            const total = products.reduce(
-                (sum, product) => sum + Number(product.total),
-                0
-            );
+                    totalCount,
+                    couponApplied,
+                    couponError,
+                    couponDiscount,
+                    subtotal: finalAmount,
+                    walletDetails
+    
+                });
+                delete req.session.couponApplied;
+    
+                delete req.session.couponInvalidError;
+            }else{
+                res.redirect('/cart')
+            }
 
            
-            let finalAmount = total;
-            // Get the total count of products
-            const totalCount = products.length;
-
-              // Coupon Request configuration
-            let couponError = false;
-            let couponApplied = false;
-
-            if(req.session.couponInvalidError){
-
-                couponError = req.session.couponInvalidError;
-        
-              }else if(req.session.couponApplied){
-        
-                couponApplied = req.session.couponApplied;
-        
-              }
-
-                // Existing Coupon Status Validation & Discount amount calculation using couponHelper
-
-             let couponDiscount = 0;
-
-             const eligibleCoupon = await couponHelpers.checkCurrentCouponValidityStatus(userId, finalAmount);
-
-             if(eligibleCoupon.status){
-                couponDiscount = eligibleCoupon.couponDiscount;
-             }else{
-                couponDiscount = 0;
-             }
-
-             finalAmount = finalAmount-couponDiscount
-
-             const walletDetails = await Wallet.findOne({userId:userId}).lean()
-
-            res.render('users/checkout', {
-                layout: 'user-layout',
-                defaultAddress: defaultAddress ? defaultAddress.address[0] : null, // Add a conditional check for defaultAddress
-                filteredAddresses,
-                products,
-                total,
-                totalCount,
-                couponApplied,
-                couponError,
-                couponDiscount,
-                subtotal: finalAmount,
-                walletDetails
-                
-            });
-            delete req.session.couponApplied;
-
-            delete req.session.couponInvalidError;
         } catch (error) {
             console.log("Error from placeOrderGET userController: ", error);
         }
@@ -1000,14 +1023,14 @@ module.exports = {
     },
 
     placingOrder: async (userId, orderData, orderedProducts, totalOrderValue) => {
-        
-        let orderStatus  
 
-        if(orderData['paymentMethod'] === 'COD'){
+        let orderStatus
+
+        if (orderData['paymentMethod'] === 'COD') {
             orderStatus = 'Placed'
-        }else if(orderData['paymentMethod'] === 'WALLET'){
+        } else if (orderData['paymentMethod'] === 'WALLET') {
             orderStatus = 'Placed'
-        }else{
+        } else {
             orderStatus = 'Pending'
         }
 
@@ -1038,7 +1061,7 @@ module.exports = {
             userId: userId,
             date: Date(),
             orderValue: totalOrderValue,
-            couponDiscount:orderData.couponDiscount,
+            couponDiscount: orderData.couponDiscount,
             paymentMethod: orderData['paymentMethod'],
             orderStatus: orderStatus,
             products: orderedProducts,
@@ -1059,44 +1082,44 @@ module.exports = {
 
     },
 
-    walletBalance:(userId)=>{
-        return new Promise(async(resolve,reject)=>{
+    walletBalance: (userId) => {
+        return new Promise(async (resolve, reject) => {
             try {
-                const walletBalance = await Wallet.findOne({userId:userId})
+                const walletBalance = await Wallet.findOne({ userId: userId })
                 resolve(walletBalance)
             } catch (error) {
                 reject(err)
-                
+
             }
         })
     },
 
     updateWallet: (userId, orderId) => {
         return new Promise(async (resolve, reject) => {
-          try {
-            const orderDetails = await Order.findOne({ _id: orderId });
-            const wallet = await Wallet.findOne({ userId: userId });
-      
-            if (wallet) {
-              // Subtract orderValue from walletAmount
-              const updatedWalletAmount = wallet.walletAmount - orderDetails.orderValue;
-      
-              // Update the walletAmount in the Wallet collection
-              await Wallet.findOneAndUpdate(
-                { userId: userId },
-                { walletAmount: updatedWalletAmount }
-              );
-      
-              resolve(updatedWalletAmount);
-            } else {
-              reject('Wallet not found');
+            try {
+                const orderDetails = await Order.findOne({ _id: orderId });
+                const wallet = await Wallet.findOne({ userId: userId });
+
+                if (wallet) {
+                    // Subtract orderValue from walletAmount
+                    const updatedWalletAmount = wallet.walletAmount - orderDetails.orderValue;
+
+                    // Update the walletAmount in the Wallet collection
+                    await Wallet.findOneAndUpdate(
+                        { userId: userId },
+                        { walletAmount: updatedWalletAmount }
+                    );
+
+                    resolve(updatedWalletAmount);
+                } else {
+                    reject('Wallet not found');
+                }
+            } catch (error) {
+                reject(error);
             }
-          } catch (error) {
-            reject(error);
-          }
         });
-      },
-      
+    },
+
 
     // placingOrder: async (req, res) => {
     //     try {
@@ -1243,9 +1266,9 @@ module.exports = {
             };
 
             const subtotal = order.orderValue;
-            const total = order.orderValue+order.couponDiscount
+            const total = order.orderValue + order.couponDiscount
             const discountAmount = order.couponDiscount
-            
+
             const cancellationStatus = order.cancellationStatus
             console.log(cancellationStatus, 'cancellationStatus');
 
@@ -1260,9 +1283,9 @@ module.exports = {
                 orderDetails: orderDetails,
                 deliveryAddress: deliveryAddress,
                 subtotal: subtotal,
-                total:total,
+                total: total,
                 orderId: orderId,
-                discountAmount:discountAmount,
+                discountAmount: discountAmount,
                 orderDate: createdOnIST,
                 cancellationStatus: cancellationStatus,
 
@@ -1366,46 +1389,46 @@ module.exports = {
         })
     },
 
-    getCategory:() => {
+    getCategory: () => {
         return new Promise(async (resolve, reject) => {
-          try {
-            const categories = await Category.find({unlist:false}).lean()
-            resolve(categories);
-          } catch (error) {
-            reject(error);
-          }
-        });
-      },
-
-
-      getCategoryByName:(category)=>{
-        return new Promise(async (resolve, reject) => {
-          try {
-            const categoryId = await Category.findOne({category:category }).lean();
-            resolve(categoryId);
-          } catch (error) {
-            reject(error);
-          }
-        });
-      },
-
-      listCategorys:(catId)=>{
-        return new Promise(async (resolve, reject) => {
-          try {
-            const categoryProducts= await Product.find({category:catId, unlist:false }).lean();
-            
-            resolve(categoryProducts);
-          } catch (error) {
-            reject(error);
-          }
-        });
-      },
-
-
-      getWalletDetails:(userId)=>{
-        return new Promise(async(resolve,reject)=>{
             try {
-                const walletDetails = await Wallet.findOne({userId:userId}).lean()
+                const categories = await Category.find({ unlist: false }).lean()
+                resolve(categories);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    },
+
+
+    getCategoryByName: (category) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const categoryId = await Category.findOne({ category: category }).lean();
+                resolve(categoryId);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    },
+
+    listCategorys: (catId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const categoryProducts = await Product.find({ category: catId, unlist: false }).lean();
+
+                resolve(categoryProducts);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    },
+
+
+    getWalletDetails: (userId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const walletDetails = await Wallet.findOne({ userId: userId }).lean()
                 // console.log(walletDetails,'walletDetailsvvvvvvvvvvvvvv');
 
 
@@ -1414,35 +1437,60 @@ module.exports = {
                 reject(error);
             }
         })
-      },
+    },
 
-      orderDetails: (userId) => {
+    creditOrderDetails: (userId) => {
         return new Promise(async (resolve, reject) => {
-          try {
-            const orderDetails = await Order.find({
-              userId: userId,
-              $or: [{ paymentMethod: 'ONLINE' }, { paymentMethod: 'WALLET' }],
-              orderStatus: 'cancelled'
-            }).lean();
-      
-            const orderHistory = orderDetails.map(history => {
-              let createdOnIST = moment(history.date)
-                .tz('Asia/Kolkata')
-                .format('DD-MM-YYYY h:mm A');
-      
-              return { ...history, date: createdOnIST };
-            });
-      
-            resolve(orderHistory);
-          } catch (error) {
-            reject(error);
-          }
+            try {
+                const orderDetails = await Order.find({
+                    userId: userId,
+                    $or: [{ paymentMethod: 'ONLINE' }, { paymentMethod: 'WALLET' }],
+                    orderStatus: 'cancelled'
+                }).lean();
+
+                const orderHistory = orderDetails.map(history => {
+                    let createdOnIST = moment(history.date)
+                        .tz('Asia/Kolkata')
+                        .format('DD-MM-YYYY h:mm A');
+
+                    return { ...history, date: createdOnIST };
+                });
+
+                resolve(orderHistory);
+            } catch (error) {
+                reject(error);
+            }
         });
-      }
-      
+    },
+
+    debitOrderDetails: (userId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const orderDetails = await Order.find({
+                    userId: userId,
+                    paymentMethod: 'WALLET',
+                    $or: [{ orderStatus: 'Placed' }, { orderStatus: 'Delivered' },{orderStatus:'Preparing food'}],
+                  
+                }).lean();
+
+                const orderHistory = orderDetails.map(history => {
+                    let createdOnIST = moment(history.date)
+                        .tz('Asia/Kolkata')
+                        .format('DD-MM-YYYY h:mm A');
+
+                    return { ...history, date: createdOnIST };
+                });
+
+                resolve(orderHistory);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    },
 
 
-   
+
+
 
 
 

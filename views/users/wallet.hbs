@@ -93,8 +93,13 @@
           <ul class="list-unstyled transaction-list">
             {{#each orderDetails}}
               <li class="d-flex justify-content-between align-items-center">
-                <span class="font-weight-bold">Transaction on {{this.date}}</span>
-                <span class="text-success">₹{{this.orderValue}}</span>
+                {{#if (or (eq this.orderStatus "Preparing food") (eq this.orderStatus "Placed") (eq this.orderStatus "Delivered"))}}
+                  <span class="font-weight-bold">Debit Transaction on {{this.date}}</span>
+                  <span class="text-danger">-₹{{this.orderValue}}</span>
+                {{else if (eq this.orderStatus "cancelled")}}
+                  <span class="font-weight-bold">Credit Transaction on {{this.date}}</span>
+                  <span class="text-success">₹{{this.orderValue}}</span>
+                {{/if}}
               </li>
             {{/each}}
           </ul>
@@ -128,6 +133,8 @@
     </div>
   </div>
 </div>
+
+
 
 {{>user-footer}}
 <!-- Bootstrap JS (Optional) -->
