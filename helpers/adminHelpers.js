@@ -251,8 +251,11 @@ module.exports = {
 
     loadingOrdersList: async (req, res) => {
         try {
-          const orderDetails = await Order.find().populate('userId').lean();
+          let orderDetails = await Order.find().populate('userId').lean();
           console.log(orderDetails, 'orderDetails');
+
+           // Reverse the order of transactions
+            orderDetails = orderDetails.reverse();
       
           const orderHistory = orderDetails.map(history => {
             let createdOnIST = moment(history.date)

@@ -63,42 +63,72 @@
       font-size: 24px;
       font-weight: bold;
     }
+    
+  .black-page-link {
+    color: rgb(0, 0, 0) !important;
+    
+  }
+   .black-page-link.current-page {
+    color: white !important;
+    background-color: black !important;
+    border-color: black;
+   }
+
   </style>
 
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-md-8">
-        <div class="card wallet-card">
-          <div class="card-header wallet-header">
-            <h1 class="display-4 mb-0">My Wallet</h1>
-            <img src="/images/Wallet_Cash_550px.gif"  alt="Wallet" class="wallet-gif">
-          </div>
-          <div class="card-body wallet-body">
-            <div class="balance">
-                {{#if walletDetails}}
+ <div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card wallet-card">
+        <div class="card-header wallet-header">
+          <h1 class="display-4 mb-0">My Wallet</h1>
+          <img src="/images/Wallet_Cash_550px.gif" alt="Wallet" class="wallet-gif">
+        </div>
+        <div class="card-body wallet-body">
+          <div class="balance">
+            {{#if walletDetails}}
               <h2 class="display-2">₹{{walletDetails.walletAmount}}</h2>
-            
-              {{/if}}
-            </div>
-            <ul class="list-unstyled transaction-list">
-              <li class="d-flex justify-content-between align-items-center">
-                <span class="font-weight-bold">Transaction 1</span>
-                <span class="text-danger">-$50.00</span>
-              </li>
-              <li class="d-flex justify-content-between align-items-center">
-                <span class="font-weight-bold">Transaction 2</span>
-                <span class="text-success">+$100.00</span>
-              </li>
-              <li class="d-flex justify-content-between align-items-center">
-                <span class="font-weight-bold">Transaction 3</span>
-                <span class="text-danger">-$20.00</span>
-              </li>
-            </ul>
+            {{/if}}
           </div>
+          <ul class="list-unstyled transaction-list">
+            {{#each orderDetails}}
+              <li class="d-flex justify-content-between align-items-center">
+                <span class="font-weight-bold">Transaction on {{this.date}}</span>
+                <span class="text-success">₹{{this.orderValue}}</span>
+              </li>
+            {{/each}}
+          </ul>
+          {{#if showPagination}}
+            <nav aria-label="Transaction Pagination">
+              <ul class="pagination justify-content-center">
+                {{#if hasPrev}}
+                  <li class="page-item">
+                    <a class="page-link black-page-link" href="?page={{prevPage}}" aria-label="Previous">
+                      <span aria-hidden="true">&laquo;</span>
+                    </a>
+                  </li>
+                {{/if}}
+                {{#each pages}}
+                  <li class="page-item{{#if current}} active{{/if}}">
+                    <a class="page-link black-page-link{{#if current}} current-page{{/if}}" href="?page={{number}}">{{number}}</a>
+                  </li>
+                {{/each}}
+                {{#if hasNext}}
+                  <li class="page-item">
+                    <a class="page-link black-page-link" href="?page={{nextPage}}" aria-label="Next">
+                      <span aria-hidden="true">&raquo;</span>
+                    </a>
+                  </li>
+                {{/if}}
+              </ul>
+            </nav>
+          {{/if}}
         </div>
       </div>
     </div>
   </div>
+</div>
+
 {{>user-footer}}
 <!-- Bootstrap JS (Optional) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>

@@ -1129,7 +1129,11 @@ module.exports = {
     loadOrderDetails: async (req, res) => {
         try {
             const userId = req.session.user_id
-            const orderDetails = await Order.find({ userId: userId }).lean()
+            let orderDetails = await Order.find({ userId: userId }).lean()
+
+            // Reverse the order of transactions
+            orderDetails = orderDetails.reverse();
+
             orderHistory = orderDetails.map(history => {
                 let createdOnIST = moment(history.date)
                     .tz('Asia/kolkata')
@@ -1354,8 +1358,34 @@ module.exports = {
         return new Promise(async(resolve,reject)=>{
             try {
                 const walletDetails = await Wallet.findOne({userId:userId}).lean()
-                console.log(walletDetails,'walletDetailsvvvvvvvvvvvvvv');
+                // console.log(walletDetails,'walletDetailsvvvvvvvvvvvvvv');
+
+
                 resolve(walletDetails)
+            } catch (error) {
+                reject(error);
+            }
+        })
+      },
+
+      orderDetails:(userId)=>{
+        return new Promise(async(resolve,reject)=>{
+            try {
+                const orderDetails = await Order.find({
+                    userId: userId,
+                    paymentMethod: 'ONLINE',
+                    orderStatus: 'cancelled'
+                  }).lean();
+
+                  orderHistory = orderDetails.map(history => {
+                let createdOnIST = moment(history.date)
+                    .tz('Asia/kolkata')
+                    .format('DD-MM-YYYY h:mm A');
+
+                return { ...history, date: createdOnIST };
+            })
+
+                  resolve(orderHistory)
             } catch (error) {
                 reject(error);
             }

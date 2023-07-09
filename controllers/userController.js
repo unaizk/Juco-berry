@@ -437,16 +437,59 @@ const listCategory = async (req, res) => {
     }
 }
 
-const loadWallet = async(req,res)=>{
+const loadWallet = async (req, res) => {
     try {
-        const userId = req.session.user_id
-        const walletDetails = await userHelpers.getWalletDetails(userId)
-        res.render('users/wallet',{layout:'user-layout',walletDetails})
-    } catch (error) {
-        console.log(error.message);
-    }
-}
+      const userId = req.session.user_id;
+      const walletDetails = await userHelpers.getWalletDetails(userId);
+      let orderDetails = await userHelpers.orderDetails(userId);
 
+       // Reverse the order of transactions
+     orderDetails = orderDetails.reverse();
+  
+      // Pagination logic
+      const currentPage = parseInt(req.query.page) || 1; // Get the current page number from the query parameter
+      const PAGE_SIZE = 5; // Number of transactions per page
+  
+      // Calculate the total number of pages
+      const totalPages = Math.ceil(orderDetails.length / PAGE_SIZE);
+  
+      // Determine the start and end index of the current page
+      const startIndex = (currentPage - 1) * PAGE_SIZE;
+      const endIndex = startIndex + PAGE_SIZE;
+  
+      // Get the transactions for the current page
+      const paginatedOrderDetails = orderDetails.slice(startIndex, endIndex);
+  
+      // Determine if there are previous and next pages
+      const hasPrev = currentPage > 1;
+      const hasNext = currentPage < totalPages;
+  
+      // Generate an array of page objects for pagination links
+      const pages = [];
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push({
+          number: i,
+          current: i === currentPage
+        });
+      }
+  
+      res.render('users/wallet', {
+        layout: 'user-layout',
+        walletDetails,
+        orderDetails: paginatedOrderDetails, // Pass the paginated order details to the template
+        showPagination: orderDetails.length > PAGE_SIZE,
+        hasPrev,
+        prevPage: currentPage - 1,
+        hasNext,
+        nextPage: currentPage + 1,
+        pages
+      });
+    } catch (error) {
+      console.log(error.message);
+      res.status(500).send('Internal Server Error');
+    }
+  };
+  
 
 
 module.exports = {
