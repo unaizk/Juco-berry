@@ -74,6 +74,7 @@ router.get('/inactive-coupons',adminAuth.isLogin,couponController.inactiveCoupon
 router.get('/edit-coupon',adminAuth.isLogin, couponController.editCouponGET);
 router.post('/update-coupon',couponController.updateCouponPOST)
 router.post('/change-coupon-status',couponController.changeCouponStatusPOST)
+router.get('/admin-error',adminAuth.isLogin,adminController.errorPageLoad)
 
 
 router.get('*', (req, res) => {

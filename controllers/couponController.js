@@ -31,7 +31,8 @@ const manageCoupon = async(req,res)=>{
       
         res.render('admin/coupon-manage', dataToRender );
     } catch (error) {
-        console.log(error.message);
+        console.log(error.message)
+        res.redirect('/admin/admin-error')
     }
 }
 
@@ -52,7 +53,9 @@ const addNewCouponGET = async(req,res)=>{
 
         delete req.session.couponExistError;
     } catch (error) {
-        console.log("Error from addNewCouponGET couponController :", error);
+        console.log("Error from addNewCouponGET couponController :", error.message);
+        
+        res.redirect('/admin/admin-error')
     }
 }
 
@@ -71,12 +74,6 @@ const addNewCouponPOST = async(req,res)=>{
     
                 res.redirect('/admin/add-coupon');
     
-            
-    
-               
-    
-               
-        
         }else if (couponExist.duplicateCoupon){
     
             req.session.couponExistError = "Coupon code already exist, try some other code"
@@ -85,7 +82,8 @@ const addNewCouponPOST = async(req,res)=>{
     
         }
     } catch (error) {
-        console.log(error.message);
+        console.log(error.message)
+        res.redirect('/admin/admin-error')
     }
 }
 
@@ -108,7 +106,8 @@ const inactiveCouponsGET = async(req,res)=>{
         
     
     } catch (error) {
-        console.log(error.message);
+        console.log(error.message)
+        res.redirect('/admin/admin-error')
     }
 }
 
@@ -144,7 +143,9 @@ const editCouponGET = async(req,res)=>{
 
         delete req.session.couponExistError;
     } catch (error) {
-        console.log("Error from editCouponPOST couponController :", error);
+        console.log("Error from editCouponPOST couponController :", error.message);
+        
+        res.redirect('/admin/admin-error')
     }
 }
 
@@ -179,7 +180,9 @@ const updateCouponPOST = async (req, res)=>{
 
     }catch (error){
 
-        console.log("Error-2 from updateCouponPOST couponController :", error);
+        console.log("Error-2 from updateCouponPOST couponController :", error.message);
+       
+        res.redirect('/admin/admin-error')
 
         
 
@@ -207,7 +210,9 @@ const changeCouponStatusPOST = async(req,res)=>{
         }
 
     } catch (error) {
-        console.log("Error-3 from changeCouponStatusPOST couponController :", error);
+        console.log("Error-3 from changeCouponStatusPOST couponController :", error.message);
+      
+        res.redirect('/admin/admin-error')
     }
 }
 
@@ -260,7 +265,8 @@ const applyCouponPOST = async(req,res)=>{
 
 
     } catch (error) {
-        console.log("Error-3 from changeCouponStatusPOST couponController :", error);
+        console.log("Error-3 from changeCouponStatusPOST couponController :", error.message);
+        res.redirect('/user-error')
     }
 }
 

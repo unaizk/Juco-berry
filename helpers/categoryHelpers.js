@@ -19,7 +19,8 @@ module.exports = {
             }));
             res.render('admin/category', { layout: "admin-layout", category: categoryWithSerialNumber });
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message)
+            res.redirect('/admin/admin-error')
         }
     },
 
@@ -56,7 +57,8 @@ module.exports = {
             // Redirect to the category page on successful addition
             return res.redirect('/admin/category');
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message)
+            res.redirect('/admin/admin-error')
         }
     },
 
@@ -76,7 +78,8 @@ module.exports = {
             res.redirect('/admin/category');
 
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message)
+            res.redirect('/admin/admin-error')
         }
     },
 
@@ -91,7 +94,8 @@ module.exports = {
             const categories = await Category.find().lean();
             res.render('admin/unlisted-category', { layout: "admin-layout", category: categoryWithSerialNumber, categories: categories });
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message)
+            res.redirect('/admin/admin-error')
         }
     },
 
@@ -102,7 +106,8 @@ module.exports = {
             await Category.findByIdAndUpdate({ _id: id }, { $set: { unlist: false } });
             return res.redirect('/admin/unlisted-category');
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message)
+            res.redirect('/admin/admin-error')
         }
     },
 
@@ -121,7 +126,8 @@ module.exports = {
                 res.redirect('/admin/category');
             }
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message)
+            res.redirect('/admin/admin-error')
         }
     },
 
@@ -154,7 +160,8 @@ module.exports = {
             await Category.findByIdAndUpdate(id, { category: category.toUpperCase() });
             res.redirect('/admin/category');
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message)
+            res.redirect('/admin/admin-error')
         }
     },
 

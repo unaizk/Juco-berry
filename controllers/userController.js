@@ -30,6 +30,7 @@ const loadSignup = async (req, res) => {
 
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 // login user method
@@ -38,6 +39,7 @@ const loadLogin = async (req, res) => {
         await userHelpers.loadingLogin(req, res)
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 
@@ -47,6 +49,7 @@ const insertUser = async (req, res) => {
         await userHelpers.insertingUser(req, res)
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 
@@ -59,6 +62,7 @@ const verifyEmail = async (req, res) => {
         await userHelpers.verifyingEmail(req, res)
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 
@@ -69,6 +73,7 @@ const verifyLogin = async (req, res) => {
         await userHelpers.verifyingToLogin(req, res);
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 const loadHome = async (req, res) => {
@@ -76,6 +81,7 @@ const loadHome = async (req, res) => {
         userHelpers.loadingHome(req, res)
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 
@@ -95,6 +101,7 @@ const forgetLoad = async (req, res) => {
         userHelpers.loadingForget(req, res);
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 const forgetVerify = async (req, res) => {
@@ -102,6 +109,7 @@ const forgetVerify = async (req, res) => {
         await userHelpers.forgetPasswordVerify(req, res);
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 
@@ -111,6 +119,7 @@ const forgetPasswordLoad = async (req, res) => {
 
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 const resetPassword = async (req, res) => {
@@ -118,6 +127,7 @@ const resetPassword = async (req, res) => {
         await userHelpers.resettingPassword(req, res);
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 //otp verification
@@ -128,6 +138,7 @@ const loadOtp = async (req, res) => {
         userHelpers.loadingOTP(req, res);
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 
@@ -136,6 +147,7 @@ const sendOtp = async (req, res) => {
         await userHelpers.sendingOTP(req, res);
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 
@@ -144,6 +156,7 @@ const loadVerifyOtp = async (req, res) => {
         userHelpers.loadingVerifyOTP(req, res);
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 
@@ -153,6 +166,7 @@ const verifyOtp = async (req, res) => {
     }
     catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 
@@ -161,6 +175,7 @@ const viewProduct = async (req, res) => {
         await userHelpers.viewProductDetails(req, res);
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 
@@ -169,6 +184,7 @@ const addToCart = async (req, res) => {
         await userHelpers.addingToCart(req, res)
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 
@@ -177,6 +193,7 @@ const loadCart = async (req, res) => {
         await userHelpers.loadingCartPage(req, res);
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 
@@ -186,6 +203,7 @@ const changeQuantity = async (req, res) => {
         res.send(response)
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 
@@ -195,6 +213,7 @@ const deleteProduct = async (req, res) => {
         res.send(response)
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 
@@ -203,6 +222,7 @@ const userProfile = async (req, res) => {
         await userHelpers.loadUserProfile(req, res);
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 
@@ -211,6 +231,7 @@ const editProfile = async (req, res) => {
         await userHelpers.editingUserProfile(req, res);
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 
@@ -219,6 +240,7 @@ const addressList = async (req, res) => {
         await userHelpers.loadAddressList(req, res);
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 
@@ -227,6 +249,7 @@ const addAddress = async (req, res) => {
         await userHelpers.addingAddress(req, res);
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 
@@ -235,6 +258,7 @@ const addNewAddress = async (req, res) => {
         await userHelpers.addingNewAddress(req, res);
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 
@@ -243,6 +267,7 @@ const deleteAddress = async (req, res) => {
         await userHelpers.deletingAddress(req, res)
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 
@@ -251,6 +276,7 @@ const editAddress = async (req, res) => {
         await userHelpers.editingAddress(req, res)
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 
@@ -261,6 +287,7 @@ const setAsDefault = async (req, res) => {
         res.send(response)
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 
@@ -269,6 +296,7 @@ const changeAddress = async (req, res) => {
         await userHelpers.changingTheAddress(req, res)
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 
@@ -277,6 +305,7 @@ const loadCheckout = async (req, res) => {
         await userHelpers.loadingCheckoutPage(req, res)
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 
@@ -307,14 +336,14 @@ const placeOrder = async (req, res) => {
 
 
             if (req.body['paymentMethod'] === 'COD') {
-                userHelpers.placingOrder(userId, orderDetails, orderedProducts, totalOrderValue).then(async (orderId) => {
+                userHelpers.placingOrder(userId, orderDetails, orderedProducts, totalOrderValue).then(async (orderId,error) => {
                     res.json({ COD_CHECKOUT: true });
                 })
 
             } else if (req.body['paymentMethod'] === 'WALLET') {
                 const walletBalance = await userHelpers.walletBalance(userId);
                 if (walletBalance.walletAmount >= totalOrderValue) {
-                    userHelpers.placingOrder(userId, orderDetails, orderedProducts, totalOrderValue).then(async (orderId) => {
+                    userHelpers.placingOrder(userId, orderDetails, orderedProducts, totalOrderValue).then(async (orderId,error) => {
                         res.json({ WALLET_CHECKOUT: true ,orderId});
                     })
                 } else {
@@ -323,21 +352,26 @@ const placeOrder = async (req, res) => {
             }
 
             else if (req.body['paymentMethod'] === 'ONLINE') {
-                userHelpers.placingOrder(userId, orderDetails, orderedProducts, totalOrderValue).then(async (orderId) => {
-                    userHelpers.generateRazorpayOrder(orderId, totalOrderValue).then(async (razorpayOrderDetails) => {
-                        const user = await User.findById({ _id: userId }).lean()
-                        res.json(
-                            {
-
-                                ONLINE_CHECKOUT: true,
-                                userDetails: user,
-                                userOrderRequestData: orderDetails,
-                                orderDetails: razorpayOrderDetails,
-                                razorpayKeyId: 'rzp_test_P5xQ3Jx6p0diLy'
-                            }
-                        )
-
-                    })
+                userHelpers.placingOrder(userId, orderDetails, orderedProducts, totalOrderValue).then(async (orderId,error) => {
+                    if(error){
+                        res.json({ checkoutStatus: false });
+                    }else{
+                        userHelpers.generateRazorpayOrder(orderId, totalOrderValue).then(async (razorpayOrderDetails,err) => {
+                            const user = await User.findById({ _id: userId }).lean()
+                            res.json(
+                                {
+    
+                                    ONLINE_CHECKOUT: true,
+                                    userDetails: user,
+                                    userOrderRequestData: orderDetails,
+                                    orderDetails: razorpayOrderDetails,
+                                    razorpayKeyId: 'rzp_test_P5xQ3Jx6p0diLy'
+                                }
+                            )
+    
+                        })
+                    }
+                   
                 })
 
             } else {
@@ -352,6 +386,7 @@ const placeOrder = async (req, res) => {
 
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 
@@ -360,6 +395,7 @@ const orderPlaced = async (req, res) => {
         res.render('users/orderPlaced', { layout: 'user-layout' })
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 
@@ -372,6 +408,7 @@ const walletOrder = async(req,res)=>{
         res.redirect('/orderPlaced')
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 
@@ -380,6 +417,7 @@ const orderFailed = async (req, res) => {
         res.render('users/orderFailed', { layout: 'user-layout' })
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 
@@ -388,6 +426,7 @@ const orderDetails = async (req, res) => {
         await userHelpers.loadOrderDetails(req, res)
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 
@@ -396,6 +435,7 @@ const loadOrdersView = async (req, res) => {
         await userHelpers.loadingOrdersViews(req, res)
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 
@@ -415,6 +455,7 @@ const cancellOrder = async (req, res) => {
     } catch (error) {
 
         console.log(error.message);
+        res.redirect('/user-error')
 
     }
 }
@@ -432,7 +473,9 @@ const verifyPayment = async (req, res) => {
         })
     }).catch((err) => {
         if (err) {
-            console.log(err);
+            
+            console.log(err.message);
+            
 
             let paymentSuccess = false;
             userHelpers.updateOnlineOrderPaymentStatus(receiptId, paymentSuccess).then(() => {
@@ -453,6 +496,7 @@ const categoryProducts = async (req, res) => {
         res.render('users/categoryProducts', { layout: 'user-layout', categories, products });
     } catch (error) {
         console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 
@@ -463,7 +507,9 @@ const listCategory = async (req, res) => {
         const categories = await userHelpers.getCategory();
         res.render('users/categoryProducts', { layout: 'user-layout', products, categories });
     } catch (error) {
-        res.status(500).json({ error: 'Internal Server Error' });
+        
+        console.log(error.message);
+        res.redirect('/user-error')
     }
 }
 
@@ -514,10 +560,21 @@ const loadWallet = async (req, res) => {
         pages,
       });
     } catch (error) {
-      console.log(error.message);
-      res.status(500).send('Internal Server Error');
+        console.log(error.message);
+        res.redirect('/user-error')
     }
   };
+
+  const errorPageLoad = async(req,res)=>{
+    try {
+        const userId = req.session.user_id;
+        const userDetails = await User.findOne({_id:userId}).lean()
+        res.render('users/user-404',{layout:'user-layout',userDetails})
+    } catch (error) {
+        console.log(error.message);
+        res.redirect('/user-error')
+    }
+  }
   
 
 
@@ -563,5 +620,6 @@ module.exports = {
     categoryProducts,
     listCategory,
     loadWallet,
-    walletOrder
+    walletOrder,
+    errorPageLoad
 }

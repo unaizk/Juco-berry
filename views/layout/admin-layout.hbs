@@ -29,6 +29,7 @@
 
     <!-- Template Stylesheet -->
     <link href="/stylesheets/admin-style.css" rel="stylesheet">
+     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
 </head>
 
 <body>
@@ -48,6 +49,16 @@
 
     <!-- Template Javascript -->
     <script src="/javascripts/main.js"></script>
+
+    <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+   	{{!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCjCGmQ0Uq4exrzdcL6rvxywDDOvfAu6eE"></script> --}}
+   
+   
+    <script>
+        $(document).ready(function () {
+            $('#myTable').DataTable();
+        });
+    </script>
 </body>
 
 </html>

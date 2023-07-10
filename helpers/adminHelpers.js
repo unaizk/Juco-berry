@@ -19,7 +19,8 @@ module.exports = {
             const hashPassword = await bcrypt.hash(password, 10);
             return hashPassword;
         } catch (error) {
-            throw new Error('Failed to hash password');
+            console.log(error.message,'password hash problem')
+            res.redirect('/admin/admin-error')
         }
     },
 
@@ -50,7 +51,9 @@ module.exports = {
                 }
             })
         } catch (error) {
-            throw new Error('Failed to send verification email');
+            console.log(error.message,'Failed to send verification email')
+            
+            res.redirect('/admin/admin-error')
         }
     },
 
@@ -59,7 +62,8 @@ module.exports = {
             res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
             res.render('admin/admin-login', { layout: 'admin-layout' })
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message)
+            res.redirect('/admin/admin-error')
         }
     },
 
@@ -92,7 +96,9 @@ module.exports = {
                 res.render('admin/admin-login', { message: "Your email is incorrect", layout: 'admin-layout' })
             }
         } catch (error) {
-            throw new Error('Failed to verify login');
+            console.log(error.message,'failed to verify login')
+            
+            res.redirect('/admin/admin-error')
         }
     },
 
@@ -100,7 +106,8 @@ module.exports = {
         try {
             res.render('admin/admin-home', { layout: 'admin-layout' })
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message)
+            res.redirect('/admin/admin-error')
         }
     },
 
@@ -109,7 +116,8 @@ module.exports = {
             req.session.destroy();
             res.redirect('admin/admin-login')
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message)
+            res.redirect('/admin/admin-error')
         }
     },
 
@@ -117,7 +125,8 @@ module.exports = {
         try {
             res.render('admin/admin-forget', { layout: 'admin-layout' })
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message)
+            res.redirect('/admin/admin-error')
         }
     },
 
@@ -138,7 +147,8 @@ module.exports = {
                 res.render('admin/admin-forget', { messages: "Your email is incorrect", layout: 'admin-layout' })
             }
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message)
+            res.redirect('/admin/admin-error')
         }
     },
 
@@ -152,7 +162,8 @@ module.exports = {
                 res.render('admin/admin-404', { layout: 'admin-layout' })
             }
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message)
+            res.redirect('/admin/admin-error')
         }
     },
 
@@ -164,7 +175,8 @@ module.exports = {
             const updatedData = await User.findByIdAndUpdate({ _id: user_id }, { $set: { password: sPassword, token: '' } })
             res.redirect('admin/admin-home')
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message)
+            res.redirect('/admin/admin-error')
         }
     },
 
@@ -178,7 +190,8 @@ module.exports = {
             console.log(usersWithSerialNumber);
             res.render('admin/admin-users', { layout: "admin-layout", users: usersWithSerialNumber });
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message)
+            res.redirect('/admin/admin-error')
         }
     },
 
@@ -197,7 +210,8 @@ module.exports = {
                 res.redirect('/admin/admin-users');
             }
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message)
+            res.redirect('/admin/admin-error')
         }
     },
 
@@ -208,7 +222,8 @@ module.exports = {
             const userData = await User.findByIdAndUpdate({ _id: id }, { $set: { name: req.body.name, email: req.body.email, mobile: req.body.mobile, is_verified: req.body.verify } })
             res.redirect('/admin/admin-users')
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message)
+            res.redirect('/admin/admin-error')
         }
     },
 
@@ -219,7 +234,8 @@ module.exports = {
             // Redirect to the admin-users page
             res.redirect('/admin/admin-users');
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message)
+            res.redirect('/admin/admin-error')
         }
     },
 
@@ -233,7 +249,8 @@ module.exports = {
             console.log(usersWithSerialNumber);
             res.render('admin/blocked-users', { layout: "admin-layout", users: usersWithSerialNumber });
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message)
+            res.redirect('/admin/admin-error')
         }
     },
 
@@ -244,7 +261,8 @@ module.exports = {
             // Redirect to the admin-users page
             res.redirect('/admin/blocked-users');
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message)
+            res.redirect('/admin/admin-error')
         }
     },
 
@@ -267,7 +285,8 @@ module.exports = {
       
           res.render('admin/ordersList', { layout: 'admin-layout', orderDetails: orderHistory });
         } catch (error) {
-          throw new Error(error.message);
+            console.log(error.message)
+            res.redirect('/admin/admin-error')
         }
       },
 
@@ -338,7 +357,8 @@ module.exports = {
                  cancellationStatus:cancellationStatus,
             });
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message)
+            res.redirect('/admin/admin-error')
         }
       },
 
@@ -382,7 +402,8 @@ module.exports = {
       
           return updateOrder;
         } catch (error) {
-          throw new Error(error.message);
+            console.log(error.message)
+            res.redirect('/admin/admin-error')
         }
       },
       
@@ -400,7 +421,8 @@ module.exports = {
 
             return updateOrder;
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message)
+            res.redirect('/admin/admin-error')
         }
       },
 
@@ -418,7 +440,8 @@ module.exports = {
 
             return updateOrder;
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message)
+            res.redirect('/admin/admin-error')
         }
       },
 
@@ -436,7 +459,8 @@ module.exports = {
 
             return updateOrder;
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message)
+            res.redirect('/admin/admin-error')
         }
       },
 

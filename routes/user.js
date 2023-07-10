@@ -63,6 +63,11 @@ router.get('/categoryProducts',auth.isLogin,userController.categoryProducts);
 router.post('/list-category',userController.listCategory)
 router.post('/apply-coupon-request', couponController.applyCouponPOST);
 router.get('/wallet-details',auth.isLogin,userController.loadWallet)
+router.get('/user-error',auth.isLogin,userController.errorPageLoad)
+
+
+
+
 
 
 module.exports = router;

@@ -35,7 +35,9 @@ module.exports = {
             const hashPassword = await bcrypt.hash(password, 10);
             return hashPassword;
         } catch (error) {
-            throw new Error('Failed to hash password');
+            
+            console.log(error.message,'Failed to hash password');
+            res.redirect('/user-error')
         }
     },
 
@@ -61,7 +63,10 @@ module.exports = {
             await transporter.sendMail(mailOption);
             console.log("Your email has been sent successfully");
         } catch (error) {
-            throw new Error('Failed to send verification email');
+            
+            console.log(error.message,'Failed to send verification email');
+            res.redirect('/user-error')
+            
         }
     },
 
@@ -86,18 +91,32 @@ module.exports = {
             await transporter.sendMail(mailOption);
             console.log("Your email has been sent successfully");
         } catch (error) {
-            throw new Error('Failed to send reset password email');
+            
+            console.log(error.message,'Failed to send reset password email');
+            res.redirect('/user-error')
         }
     },
 
     loadingSignup: async (req, res) => {
-        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+        try {
+            res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
         res.render('users/signup&login', { layout: 'user-layout' });
+        } catch (error) {
+            console.log(error.message);
+            res.redirect('/user-error')
+        }
+        
     },
 
     loadingLogin: async (req, res) => {
-        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+        try {
+            res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
         res.render('users/signup&login', { layout: 'user-layout' });
+        } catch (error) {
+            console.log(error.message);
+            res.redirect('/user-error')
+        }
+        
     },
 
     insertingUser: async (req, res) => {
@@ -128,10 +147,14 @@ module.exports = {
                 console.log(updateInfo);
                 res.render('users/email-verified', { layout: 'user-layout' });
             } else {
-                throw new Error('Password comparison failed');
+                
+                console.log(error.message,'Password comparison failed');
+                res.redirect('/user-error')
             }
         } catch (error) {
-            throw new Error('Failed to verify email');
+            
+            console.log(error.message,'Failed to verify email');
+            res.redirect('/user-error')
         }
     },
 
@@ -176,7 +199,9 @@ module.exports = {
                 res.render('users/signup&login', { messages: "Email and password are incorrect", layout: 'user-layout' });
             }
         } catch (error) {
-            throw new Error('Failed to verify login');
+            
+            console.log(error.message,'Failed to verify Login');
+            res.redirect('/user-error')
         }
     },
 
@@ -188,7 +213,9 @@ module.exports = {
             console.log(categories, 'categoriessssss');
             res.render('users/home', { layout: 'user-layout', products: productData, categories: categories })
         } catch (error) {
-            throw new Error(error.message);
+            
+            console.log(error.message);
+            res.redirect('/user-error')
         }
     },
 
@@ -197,7 +224,8 @@ module.exports = {
             req.session.destroy();
             res.redirect('/')
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message);
+            res.redirect('/user-error')
         }
     },
 
@@ -205,7 +233,8 @@ module.exports = {
         try {
             res.render('users/forget', { layout: 'user-layout' })
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message);
+            res.redirect('/user-error')
         }
     },
 
@@ -226,7 +255,8 @@ module.exports = {
                 res.render('users/forget', { message: "User email is incorrect", layout: 'user-layout' })
             }
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message);
+            res.redirect('/user-error')
         }
     },
 
@@ -240,7 +270,8 @@ module.exports = {
                 res.render('users/404', { message: "Your token is invalid", layout: "user-layout" })
             }
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message);
+            res.redirect('/user-error')
         }
     },
 
@@ -252,7 +283,8 @@ module.exports = {
             const updatedData = await User.findByIdAndUpdate({ _id: user_id }, { $set: { password: secure_password, token: '' } })
             res.redirect('/login')
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message);
+            res.redirect('/user-error')
         }
     },
 
@@ -260,7 +292,8 @@ module.exports = {
         try {
             res.render('users/otp', { layout: 'user-layout' });
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message);
+            res.redirect('/user-error')
         }
     },
 
@@ -297,7 +330,8 @@ module.exports = {
                 res.render('users/otp', { message: "You have to signup before OTP login", layout: 'user-layout' })
             }
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message);
+            res.redirect('/user-error')
         }
     },
 
@@ -306,7 +340,8 @@ module.exports = {
         try {
             res.render('users/verify-otp', { layout: 'user-layout' })
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message);
+            res.redirect('/user-error')
         }
     },
 
@@ -334,7 +369,8 @@ module.exports = {
 
                 });
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message);
+            res.redirect('/user-error')
         }
     },
     viewProductDetails: async (req, res) => {
@@ -345,7 +381,8 @@ module.exports = {
             console.log(product);
             res.render('users/view-product', { layout: 'user-layout', products: product });
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message);
+            res.redirect('/user-error')
         }
     },
 
@@ -392,7 +429,8 @@ module.exports = {
             res.status(200).json({ message: 'Product added to cart successfully' });
         } catch (error) {
             // Handle any errors that occurred during the process
-            res.status(500).json({ error: error.message });
+            console.log(error.message);
+            res.redirect('/user-error')
         }
     },
 
@@ -449,7 +487,8 @@ module.exports = {
                 });
             }
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message);
+            res.redirect('/user-error')
         }
     },
 
@@ -504,8 +543,8 @@ module.exports = {
             console.log(response);
             return response
         } catch (error) {
-            console.log(error);
-            res.status(500).json({ error: error.message });
+            console.log(error.message);
+            res.redirect('/user-error')
         }
     },
 
@@ -537,8 +576,8 @@ module.exports = {
             }
 
         } catch (error) {
-            console.log(error);
-            res.status(500).json({ error: error.message });
+            console.log(error.message);
+            res.redirect('/user-error')
         }
     },
 
@@ -566,7 +605,8 @@ module.exports = {
             }
 
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message);
+            res.redirect('/user-error')
         }
     },
 
@@ -595,7 +635,8 @@ module.exports = {
             const updatedUser = await User.findByIdAndUpdate({ _id: id }, { $set: updatedUserData }, { new: true });
             res.redirect('/user-profile');
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message);
+            res.redirect('/user-error')
         }
     },
 
@@ -630,7 +671,8 @@ module.exports = {
                 res.render('users/address', { layout: 'user-layout', addressDetails: [] });
             }
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message);
+            res.redirect('/user-error')
         }
     },
 
@@ -678,7 +720,8 @@ module.exports = {
             res.redirect('/address');
 
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message);
+            res.redirect('/user-error')
         }
     },
 
@@ -725,7 +768,8 @@ module.exports = {
             res.redirect('/checkout');
 
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message);
+            res.redirect('/user-error')
         }
     },
 
@@ -760,7 +804,8 @@ module.exports = {
             await address.save();
             res.redirect('/address');
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message);
+            res.redirect('/user-error')
         }
     },
 
@@ -831,7 +876,8 @@ module.exports = {
             return response
 
         } catch (error) {
-            res.status(500).json({ success: false, message: 'Failed to set address as default' });
+            console.log(error.message);
+            res.redirect('/user-error')
         }
     },
 
@@ -856,7 +902,9 @@ module.exports = {
 
 
         } catch (error) {
-            res.status(500).json({ success: false, message: 'Failed to set address as default' });
+            
+            console.log(error.message,'Failed to set address as default');
+            res.redirect('/user-error')
         }
     },
 
@@ -972,112 +1020,133 @@ module.exports = {
            
         } catch (error) {
             console.log("Error from placeOrderGET userController: ", error);
+            
+            res.redirect('/user-error')
         }
     },
 
     getProductListForOrders: async (userId) => {
         return new Promise(async (resolve, reject) => {
-
-            const productDetails = await Cart.findOne({ user_id: userId }).lean();
-            console.log(productDetails, 'productDetails');
-
-            // Calculate the new subtotal for all products in the cart
-            const subtotal = productDetails.products.reduce((acc, product) => {
-                return acc + product.total;
-            }, 0);
-
-            console.log(subtotal, 'subtotal');
-
-            const products = productDetails.products.map((product) => ({
-                productId: product.productId,
-                quantity: product.quantity,
-                total: product.total
-            }));
-            if (products) {
-                resolve(products);
-            } else {
-                resolve(false);
+            try {
+                const productDetails = await Cart.findOne({ user_id: userId }).lean();
+                console.log(productDetails, 'productDetails');
+    
+                // Calculate the new subtotal for all products in the cart
+                const subtotal = productDetails.products.reduce((acc, product) => {
+                    return acc + product.total;
+                }, 0);
+    
+                console.log(subtotal, 'subtotal');
+    
+                const products = productDetails.products.map((product) => ({
+                    productId: product.productId,
+                    quantity: product.quantity,
+                    total: product.total
+                }));
+                if (products) {
+                    resolve(products);
+                } else {
+                    resolve(false);
+                }
+            } catch (error) {
+                reject(error)
             }
+           
+           
         })
 
 
     },
     getCartValue: (userId) => {
+
         return new Promise(async (resolve, reject) => {
-            const productDetails = await Cart.findOne({ user_id: userId }).lean();
-            console.log(productDetails, 'productDetails');
-
-            // Calculate the new subtotal for all products in the cart
-            const subtotal = productDetails.products.reduce((acc, product) => {
-                return acc + product.total;
-            }, 0);
-
-            console.log(subtotal, 'subtotal');
-
-            if (subtotal) {
-                resolve(subtotal)
-            } else {
-                resolve(false);
+            try {
+                const productDetails = await Cart.findOne({ user_id: userId }).lean();
+                console.log(productDetails, 'productDetails');
+    
+                // Calculate the new subtotal for all products in the cart
+                const subtotal = productDetails.products.reduce((acc, product) => {
+                    return acc + product.total;
+                }, 0);
+    
+                console.log(subtotal, 'subtotal');
+    
+                if (subtotal) {
+                    resolve(subtotal)
+                } else {
+                    resolve(false);
+                }
+            } catch (error) {
+                reject(error)
             }
+           
         })
     },
 
     placingOrder: async (userId, orderData, orderedProducts, totalOrderValue) => {
-
-        let orderStatus
-
-        if (orderData['paymentMethod'] === 'COD') {
-            orderStatus = 'Placed'
-        } else if (orderData['paymentMethod'] === 'WALLET') {
-            orderStatus = 'Placed'
-        } else {
-            orderStatus = 'Pending'
-        }
-
-        const defaultAddress = await Address.findOne(
-            { user_id: userId, 'address.isDefault': true },
-            { 'address.$': 1 }
-        ).lean();
-        console.log(defaultAddress, 'default address');
-
-        if (!defaultAddress) {
-            console.log('Default address not found');
-            return res.redirect('/address');
-        }
-
-        const defaultAddressDetails = defaultAddress.address[0];
-        const address = {
-            name: defaultAddressDetails.name,
-            mobile: defaultAddressDetails.mobile,
-            homeAddress: defaultAddressDetails.homeAddress,
-            city: defaultAddressDetails.city,
-            street: defaultAddressDetails.street,
-            postalCode: defaultAddressDetails.postalCode
-        };
-        console.log(address, 'address');
-
-
-        const orderDetails = new Order({
-            userId: userId,
-            date: Date(),
-            orderValue: totalOrderValue,
-            couponDiscount: orderData.couponDiscount,
-            paymentMethod: orderData['paymentMethod'],
-            orderStatus: orderStatus,
-            products: orderedProducts,
-            addressDetails: address
-        });
-
-        const placedOrder = await orderDetails.save();
-
-        console.log(placedOrder, 'placedOrder');
-
-        // Remove the products from the cart
-        await Cart.deleteMany({ user_id: userId });
-
-        let dbOrderId = placedOrder._id.toString();
-        console.log(dbOrderId, 'order id in stringggggggggggggggggggggggggggg');
-        return dbOrderId;
+        return new Promise(async (resolve, reject)=>{
+            try {
+                let orderStatus
+    
+                if (orderData['paymentMethod'] === 'COD') {
+                    orderStatus = 'Placed'
+                } else if (orderData['paymentMethod'] === 'WALLET') {
+                    orderStatus = 'Placed'
+                } else {
+                    orderStatus = 'Pending'
+                }
+        
+                const defaultAddress = await Address.findOne(
+                    { user_id: userId, 'address.isDefault': true },
+                    { 'address.$': 1 }
+                ).lean();
+                console.log(defaultAddress, 'default address');
+        
+                if (!defaultAddress) {
+                    console.log('Default address not found');
+                    return res.redirect('/address');
+                }
+        
+                const defaultAddressDetails = defaultAddress.address[0];
+                const address = {
+                    name: defaultAddressDetails.name,
+                    mobile: defaultAddressDetails.mobile,
+                    homeAddress: defaultAddressDetails.homeAddress,
+                    city: defaultAddressDetails.city,
+                    street: defaultAddressDetails.street,
+                    postalCode: defaultAddressDetails.postalCode
+                };
+                console.log(address, 'address');
+        
+        
+                const orderDetails = new Order({
+                    userId: userId,
+                    date: Date(),
+                    orderValue: totalOrderValue,
+                    couponDiscount: orderData.couponDiscount,
+                    paymentMethod: orderData['paymentMethod'],
+                    orderStatus: orderStatus,
+                    products: orderedProducts,
+                    addressDetails: address
+                });
+        
+                const placedOrder = await orderDetails.save();
+        
+                console.log(placedOrder, 'placedOrder');
+        
+                // Remove the products from the cart
+                await Cart.deleteMany({ user_id: userId });
+        
+                let dbOrderId = placedOrder._id.toString();
+                console.log(dbOrderId, 'order id in stringggggggggggggggggggggggggggg');
+                
+                resolve(dbOrderId)
+            } catch (error) {
+                reject(error)
+            }
+        })
+        
+       
 
 
     },
@@ -1219,7 +1288,9 @@ module.exports = {
 
 
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message);
+            
+            res.redirect('/user-error')
         }
     },
 
@@ -1291,7 +1362,9 @@ module.exports = {
 
             });
         } catch (error) {
-            throw new Error(error);
+            console.log(error.message);
+            
+            res.redirect('/user-error')
         }
     },
 
@@ -1307,7 +1380,9 @@ module.exports = {
 
 
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error.message);
+            
+            res.redirect('/user-error')
         }
     },
 
@@ -1316,21 +1391,27 @@ module.exports = {
         // To convert paisa into rupees as the Razorpay takes the amount in smallest currency unit (paisa) 
         // Amount is in currency subunits. Default currency is INR. Hence, 1 refers to 1 paise, so here the amount is multiplied by 100 to convert it to rupees
         return new Promise((resolve, reject) => {
-            let orderDetails = {
+            try {
+                let orderDetails = {
 
-                amount: orderValue,
-                currency: "INR",
-                receipt: orderId
-
-            };
-            console.log(orderDetails, 'orderdetailssssssssssssssssssssssssssss');
-            instance.orders.create(orderDetails, function (err, orderDetails) {
-                if (err) {
-                    console.log('Order Creation Error from Razorpay: ' + err);
-                } else {
-                    resolve(orderDetails);
-                }
-            })
+                    amount: orderValue,
+                    currency: "INR",
+                    receipt: orderId
+    
+                };
+                console.log(orderDetails, 'orderdetailssssssssssssssssssssssssssss');
+                instance.orders.create(orderDetails, function (err, orderDetails) {
+                    if (err) {
+                        console.log('Order Creation Error from Razorpay: ' + err);
+                        reject(err)
+                    } else {
+                        resolve(orderDetails);
+                    }
+                })
+            } catch (error) {
+                reject(error)
+            }
+            
         })
 
     },
@@ -1340,35 +1421,40 @@ module.exports = {
         // console.log(paymentData);
 
         return new Promise((resolve, reject) => {
+            try {
+                const crypto = require('crypto'); // Requiring crypto Module here for generating server signature for payments verification
 
-            const crypto = require('crypto'); // Requiring crypto Module here for generating server signature for payments verification
-
-            let razorpaySecretKey = 'yg5JyFNX5hUiz5nnVp3xRZjl';
-
-            let hmac = crypto.createHmac('sha256', razorpaySecretKey); // Hashing Razorpay secret key using SHA-256 Algorithm
-
-            hmac.update(paymentData['razorpayServerPaymentResponse[razorpay_order_id]'] + '|' + paymentData['razorpayServerPaymentResponse[razorpay_payment_id]']);
-            // Updating the hash (re-hashing) by adding Razprpay payment Id and order Id received from client as response
-
-            let serverGeneratedSignature = hmac.digest('hex');
-            // Converted the final hashed result into hexa code and saving it as server generated signature
-
-            let razorpayServerGeneratedSignatureFromClient = paymentData['razorpayServerPaymentResponse[razorpay_signature]']
-
-            if (serverGeneratedSignature === razorpayServerGeneratedSignatureFromClient) {
-                // Checking that is the signature generated in our server using the secret key we obtained by hashing secretkey,orderId & paymentId is same as the signature sent by the server 
-
-                // console.log("Payment Signature Verified");
-
-                resolve()
-
-            } else {
-
-                // console.log("Payment Signature Verification Failed");
-
-                reject()
-
+                let razorpaySecretKey = 'yg5JyFNX5hUiz5nnVp3xRZjl';
+    
+                let hmac = crypto.createHmac('sha256', razorpaySecretKey); // Hashing Razorpay secret key using SHA-256 Algorithm
+    
+                hmac.update(paymentData['razorpayServerPaymentResponse[razorpay_order_id]'] + '|' + paymentData['razorpayServerPaymentResponse[razorpay_payment_id]']);
+                // Updating the hash (re-hashing) by adding Razprpay payment Id and order Id received from client as response
+    
+                let serverGeneratedSignature = hmac.digest('hex');
+                // Converted the final hashed result into hexa code and saving it as server generated signature
+    
+                let razorpayServerGeneratedSignatureFromClient = paymentData['razorpayServerPaymentResponse[razorpay_signature]']
+    
+                if (serverGeneratedSignature === razorpayServerGeneratedSignatureFromClient) {
+                    // Checking that is the signature generated in our server using the secret key we obtained by hashing secretkey,orderId & paymentId is same as the signature sent by the server 
+    
+                    // console.log("Payment Signature Verified");
+    
+                    resolve()
+    
+                } else {
+    
+                    // console.log("Payment Signature Verification Failed");
+    
+                    reject()
+    
+                }
+            } catch (error) {
+                reject(error)
             }
+
+           
 
         })
 
@@ -1376,16 +1462,21 @@ module.exports = {
 
     updateOnlineOrderPaymentStatus: (ordersCollectionId, onlinePaymentStatus) => {
         return new Promise(async (resolve, reject) => {
-            if (onlinePaymentStatus) {
-                const orderUpdate = await Order.findByIdAndUpdate({ _id: new ObjectId(ordersCollectionId) }, { $set: { orderStatus: "Placed" } }).then(() => {
-                    resolve()
-                });
-
-            } else {
-                const orderUpdate = await Order.findByIdAndUpdate({ _id: new ObjectId(ordersCollectionId) }, { $set: { orderStatus: "Failed" } }).then(() => {
-                    resolve()
-                })
+            try {
+                if (onlinePaymentStatus) {
+                    const orderUpdate = await Order.findByIdAndUpdate({ _id: new ObjectId(ordersCollectionId) }, { $set: { orderStatus: "Placed" } }).then(() => {
+                        resolve()
+                    });
+    
+                } else {
+                    const orderUpdate = await Order.findByIdAndUpdate({ _id: new ObjectId(ordersCollectionId) }, { $set: { orderStatus: "Failed" } }).then(() => {
+                        resolve()
+                    })
+                }
+            } catch (error) {
+                reject(error)
             }
+           
         })
     },
 

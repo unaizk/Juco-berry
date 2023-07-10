@@ -33,7 +33,8 @@ module.exports = {
       console.log('Categories:', categories);
       res.render('admin/products', { layout: 'admin-layout', products: productWithSerialNumber, categories: categories });
     } catch (error) {
-      throw new Error(error.message);
+      console.log(error.message)
+      res.redirect('/admin/admin-error')
     }
   },
 
@@ -74,7 +75,8 @@ module.exports = {
         res.render('admin/products', { layout: 'admin-layout', products: productWithSerialNumber, categories: categories });
       }
     } catch (error) {
-      throw new Error(error.message);
+      console.log(error.message)
+      res.redirect('/admin/admin-error')
     }
   },
 
@@ -104,7 +106,8 @@ module.exports = {
       // Pass the updated product list and categories to the view
       res.render('admin/products', { layout: 'admin-layout', products: productWithSerialNumber, categories: categories });
     } catch (error) {
-      throw new Error(error.message);
+      console.log(error.message)
+      res.redirect('/admin/admin-error')
     }
   },
 
@@ -119,7 +122,8 @@ module.exports = {
       const categories = await Category.find().lean();
       res.render('admin/unlisted-products', { layout: "admin-layout", product: productsWithSerialNumber, categories: categories });
     } catch (error) {
-      throw new Error(error.message);
+      console.log(error.message)
+      res.redirect('/admin/admin-error')
     }
   },
 
@@ -149,7 +153,8 @@ module.exports = {
 
       res.redirect('/admin/unlisted-products');
     } catch (error) {
-      throw new Error(error.message);
+      console.log(error.message)
+      res.redirect('/admin/admin-error')
     }
   },
 
@@ -187,7 +192,8 @@ module.exports = {
         res.redirect('/admin/products');
       }
     } catch (error) {
-      throw new Error(error.message);
+      console.log(error.message)
+      res.redirect('/admin/admin-error')
     }
   },
 
@@ -229,7 +235,8 @@ module.exports = {
       console.log(product1, 'product1');
       res.redirect('/admin/products');
     } catch (error) {
-      throw new Error(error.message);
+      console.log(error.message)
+      res.redirect('/admin/admin-error')
     }
   },
 
