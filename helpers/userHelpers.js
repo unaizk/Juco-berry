@@ -548,6 +548,7 @@ module.exports = {
             const response = {
                 quantity: updatedProduct.quantity,
                 subtotal: subtotal
+                
             };
             console.log(response);
             return response
