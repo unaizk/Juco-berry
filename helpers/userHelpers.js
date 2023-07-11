@@ -123,6 +123,11 @@ module.exports = {
 
     insertingUser: async (req, res) => {
         try {
+            const emailExists = await User.findOne({ email: req.body.email });
+            if (emailExists) {
+                return res.render('users/signup&login', { messages: "Email already exists. Please enter a different email.", layout: 'user-layout' });
+            }
+            
             const spassword = await module.exports.passwordHash(req.body.password);
             const user = new User({
                 name: req.body.name,
@@ -132,7 +137,7 @@ module.exports = {
                 is_admin: 0
             });
             const userData = await user.save();
-           
+            
             await module.exports.sendingMailToVerify(req.body.name, req.body.email, userData._id);
             res.render('users/signup&login', { message: "Your registration has been successful. Please verify your email.", layout: 'user-layout' });
         } catch (error) {
@@ -140,6 +145,7 @@ module.exports = {
             throw new Error('Failed to insert user');
         }
     },
+    
 
     verifyingEmail: async (req, res) => {
         try {

@@ -3,6 +3,7 @@ var router = express.Router();
 const adminController = require('../controllers/adminController')
 const adminAuth = require('../middleware/adminAuth')
 const multer = require('multer')
+const sharp = require('sharp');
 const path = require('path');
 const categoryHelpers = require('../helpers/categoryHelpers');
 const couponController = require('../controllers/couponController')

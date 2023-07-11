@@ -305,7 +305,19 @@ module.exports = {
 
             const createdOnIST = moment(order.date).tz('Asia/Kolkata').format('DD-MM-YYYY h:mm A');
             order.date = createdOnIST;
-
+            const orderdetails = order.products.map((product) => {
+                const images = product.productId.image || [];
+                const image = images.length > 0 ? images[0] : "";
+                return {
+                  name: product.productId.name,
+                  image: image,
+                  
+                  price: product.productId.price,
+                  quantity: product.quantity,
+                  status: order.orderStatus,
+                  total:product.total
+                };
+              });
           
 
 
@@ -315,6 +327,7 @@ module.exports = {
                 city: order.addressDetails.city,
                 street: order.addressDetails.street,
                 postalCode: order.addressDetails.postalCode,
+                
             };
 
 
@@ -330,12 +343,12 @@ module.exports = {
             console.log(subtotal, 'subtotal');
           
 
-            console.log(orderDetails, 'orderDetails');
+            console.log(orderdetails, 'orderDetails');
             console.log(deliveryAddress, 'deliveryAddress');
 
             res.render('admin/ordersView', {
                 layout: 'admin-layout',
-                orderDetails: orderDetails,
+                orderDetails: orderdetails,
                 deliveryAddress: deliveryAddress,
                 subtotal: subtotal,
                 total:total,
