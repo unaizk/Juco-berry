@@ -306,20 +306,7 @@ module.exports = {
             const createdOnIST = moment(order.date).tz('Asia/Kolkata').format('DD-MM-YYYY h:mm A');
             order.date = createdOnIST;
 
-            const orderDetails = order.products.map(product => {
-                const images = product.productId.image || []; // Set images to an empty array if it is undefined
-                const image = images.length > 0 ? images[0] : ''; // Take the first image from the array if it exists
-
-                return {
-                    name: product.productId.name,
-                    image: image,
-                    price: product.productId.price,
-                    total: product.total,
-                    quantity: product.quantity,
-                    status:order.orderStatus
-                };
-            });
-
+          
 
 
             const deliveryAddress = {
@@ -336,6 +323,7 @@ module.exports = {
             const discountAmount = order.couponDiscount
             const subtotal = order.orderValue;
             const cancellationStatus = order.cancellationStatus
+            
             console.log(cancellationStatus,'cancellationStatus');
 
 

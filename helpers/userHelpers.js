@@ -8,9 +8,11 @@ const config = require('../config/config');
 const randomstring = require("randomstring");
 var path = require('path');
 const fs = require('fs')
-const accountSid = "AC5b08749806fb17d29e70c46231045f1a";
-const authToken = "6244609fd966dac7f208bf06003da851";
-const verifySid = "VA881219022be56f5c9c40f5b2b336e929";
+require('dotenv').config()
+const accountSid = process.env.ACCOUNT_SID;
+const authToken = process.env.AUTH_TOCKEN;
+const verifySid = process.env.VERIFY_SID;
+
 const twilio = require("twilio")(accountSid, authToken);
 const mongoose = require('mongoose');
 const { Console } = require('console');
@@ -25,8 +27,8 @@ const Wallet = require('../models/walletModel')
 const moment = require("moment-timezone")
 const Razorpay = require('razorpay');
 var instance = new Razorpay({
-    key_id: 'rzp_test_P5xQ3Jx6p0diLy',
-    key_secret: 'yg5JyFNX5hUiz5nnVp3xRZjl',
+   key_id: process.env.KEY_ID,
+   key_secret: process.env.KEY_SECRET,
 });
 
 module.exports = {
@@ -309,6 +311,7 @@ module.exports = {
             console.log(userData);
             if (userData) {
                 if (userData.is_verified === true) {
+                    console.log(verifySid,'verifySid');
                     const userMobile = "+91" + mobile;
                     twilio.verify.v2
                         .services(verifySid)
@@ -1424,7 +1427,7 @@ module.exports = {
             try {
                 const crypto = require('crypto'); // Requiring crypto Module here for generating server signature for payments verification
 
-                let razorpaySecretKey = 'yg5JyFNX5hUiz5nnVp3xRZjl';
+                let razorpaySecretKey = process.env.KEY_SECRET;
     
                 let hmac = crypto.createHmac('sha256', razorpaySecretKey); // Hashing Razorpay secret key using SHA-256 Algorithm
     

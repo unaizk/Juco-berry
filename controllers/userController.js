@@ -11,15 +11,12 @@ const userHelpers = require('../helpers/userHelpers')
 const categoryHelpers = require('../helpers/categoryHelpers')
 const productHelpers = require('../helpers/productsHelpers')
 const couponHelpers = require('../helpers/couponHelpers')
+require('dotenv').config()
 
-const accountSid = "AC5b08749806fb17d29e70c46231045f1a";
-const authToken = "524284ec82c67ab3d82fd72ddd53a2f7";
-const verifySid = "VA881219022be56f5c9c40f5b2b336e929";
-const twilio = require("twilio")(accountSid, authToken);
 const Razorpay = require('razorpay');
 var instance = new Razorpay({
-    key_id: 'rzp_test_P5xQ3Jx6p0diLy',
-    key_secret: 'yg5JyFNX5hUiz5nnVp3xRZjl',
+    key_id: process.env.KEY_ID,
+    key_secret: process.env.KEY_SECRET,
 });
 
 
@@ -365,7 +362,7 @@ const placeOrder = async (req, res) => {
                                     userDetails: user,
                                     userOrderRequestData: orderDetails,
                                     orderDetails: razorpayOrderDetails,
-                                    razorpayKeyId: 'rzp_test_P5xQ3Jx6p0diLy'
+                                    razorpayKeyId: process.env.KEY_ID,
                                 }
                             )
     
