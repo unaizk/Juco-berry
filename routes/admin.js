@@ -7,6 +7,7 @@ const sharp = require('sharp');
 const path = require('path');
 const categoryHelpers = require('../helpers/categoryHelpers');
 const couponController = require('../controllers/couponController')
+const offerController = require('../controllers/offerController')
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -76,6 +77,8 @@ router.get('/edit-coupon',adminAuth.isLogin, couponController.editCouponGET);
 router.post('/update-coupon',couponController.updateCouponPOST)
 router.post('/change-coupon-status',couponController.changeCouponStatusPOST)
 router.get('/admin-error',adminAuth.isLogin,adminController.errorPageLoad)
+router.post('/set-product-offer', offerController.setProductOfferPOST);
+router.post('/remove-product-offer',offerController.removeProductOfferPOST);
 
 
 router.get('*', (req, res) => {

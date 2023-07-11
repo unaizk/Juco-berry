@@ -21,6 +21,10 @@ const productsSchema = new mongoose.Schema({
         type:String,
         require:true
     },
+    productOffer:{
+        type:Number,
+        default:0
+    },
     unlist : {
         type:Boolean,
         default:false

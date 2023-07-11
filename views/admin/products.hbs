@@ -14,10 +14,12 @@
                     Add Products
                 </button>
             </div>
-            
+
             <div class="bg-light rounded p-4">
-                 <div class="d-flex justify-content-between align-items-center">
-                    <h6 class="mb-4" style="font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 1.2em; margin-bottom: 0;">Product List</h6>
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="mb-4"
+                        style="font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 1.2em; margin-bottom: 0;">
+                        Product List</h6>
                     <a href="/admin/unlisted-products" class="btn btn-outline-danger m-2">Unlisted products</a>
                 </div>
                 <div class="table-responsive">
@@ -30,7 +32,7 @@
                                 <th scope="col">CATEGORY</th>
                                 <th scope="col">DESCRIPTION</th>
                                 <th scope="col">PRICE</th>
-                                <th scope="col">ACTION</th>
+                                <th scope="col">OFFERS</th>
                                 <th scope="col">ACTION</th>
                             </tr>
                         </thead>
@@ -38,18 +40,69 @@
                             {{#each products}}
                             <tr>
                                 <th class="align-middle" scope="row">{{serialNumber}}</th>
-                                <td class="align-middle"><img src="/productImages/{{image.[0]}}" alt="{{image}}" width="50px" height="50px"></td>
+                                <td class="align-middle"><img src="/productImages/{{image.[0]}}" alt="{{image}}"
+                                        width="50px" height="50px"></td>
                                 <td class="align-middle">{{name}}</td>
                                 <td class="align-middle">{{category}}</td>
                                 <td class="align-middle">{{description}}</td>
                                 <td class="align-middle">{{price}}</td>
-                                  <td class="align-middle">
-                                    <a href="/admin/edit-product?id={{_id}}" class="btn btn-primary m-2">Edit</a>
+                                <td>
+
+                                    <button class="btn  btn-primary m-2" data-bs-toggle="modal"
+                                        data-bs-target="#set-product-offer-{{this._id}}">Add</button>
+
+                                    <form action="/admin/remove-product-offer" method="post">
+                                        <input type="hidden" name="productId" value="{{this._id}}">
+                                        <button type="submit" class="btn btn-danger"
+                                            onclick="return confirm('Are you sure that you want to remove {{name}} offer ?')">Remove</button>
+                                    </form>
+
                                 </td>
                                 <td class="align-middle">
-                                    <a href="/admin/unlist-products?id={{this._id}}" class="btn btn-danger" onclick="return confirm('Are you sure you want to Unlist {{this.name}}?')">Unlist</a>
+                                    <a href="/admin/edit-product?id={{_id}}" class="btn btn-primary m-2">Edit</a>
+                                    <a href="/admin/unlist-products?id={{this._id}}" class="btn btn-danger"
+                                        onclick="return confirm('Are you sure you want to Unlist {{this.name}}?')">Unlist</a>
+                                </td>
+                                <td class="align-middle">
+
                                 </td>
                             </tr>
+                             {{!-- ========================== Modal for Adding product offer ========================== --}}
+
+                            <div class="modal fade" id="set-product-offer-{{this._id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+
+                                        <div class="modal-header">
+
+                                    <h5 class="modal-title" id="exampleModalCenterTitle">Set {{name}} Offer</h5>
+                                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+
+                                </div>
+
+                                <form action="/admin/set-product-offer" method="POST">
+
+                                    <div class="modal-body">
+                                        <label for="offer">OFFER PERCENTAGE %:</label>
+                                        <input type="number" id="productOfferPercentage" name="productOfferPercentage" required min="1" max="99">
+
+                                        <input type="hidden" class="form-control" id="productId" name="productId" value="{{this._id}}" required>
+
+                                        <br><br>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary">Save changes</button>
+                                    </div>
+
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
                             {{/each}}
                         </tbody>
                     </table>
@@ -73,31 +126,31 @@
             <form action="/admin/products" method="post" enctype="multipart/form-data">
                 <div class="modal-body">
                     <div class="mb-3">
-                         <label for="image" class="form-label">Image</label>
+                        <label for="image" class="form-label">Image</label>
                         <input type="file" name="image" class="form-control" multiple required>
                     </div>
-                     <div class="mb-3">
-                         <label for="name" class="form-label">Name</label>
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
                         <input type="text" name="name" class="form-control" required>
                     </div>
-                     <div class="mb-3">
-                         <label for="category" class="form-label">Category</label>
-                         <select name="category" class="form-control" required>
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Category</label>
+                        <select name="category" class="form-control" required>
                             {{#each categories}}
-                                {{#if unlist}}
-                                    {{!-- Skip rendering the option for unlisted categories --}}
-                                {{else}}
-                                    <option value="{{_id}}">{{category}}</option>
-                                {{/if}}
+                            {{#if unlist}}
+                            {{!-- Skip rendering the option for unlisted categories --}}
+                            {{else}}
+                            <option value="{{_id}}">{{category}}</option>
+                            {{/if}}
                             {{/each}}
                         </select>
                     </div>
-                     <div class="mb-3">
-                         <label for="description" class="form-label">Description</label>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
                         <input type="text" name="description" class="form-control" required>
                     </div>
-                     <div class="mb-3">
-                         <label for="price" class="form-label">Price</label>
+                    <div class="mb-3">
+                        <label for="price" class="form-label">Price</label>
                         <input type="number" name="price" class="form-control" required>
                     </div>
                 </div>
