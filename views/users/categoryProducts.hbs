@@ -4,7 +4,7 @@
   <div class="container">
     <form id="categoryForm" action="/list-category" method="post">
       <select class="select" name="status" onchange="submitForm()">
-        <option value="">Select category</option>
+        
         {{#each categories}}
         <option value="{{this.category}}">{{this.category}} </option>
         {{/each}}
@@ -24,6 +24,11 @@
           </div>
           <div class="detail-box">
             <h5>{{name}}</h5>
+             <span class="stext-107 cl4" style="color: #00ad5f;">
+                  {{#if (gt productOffer 0)}}
+                    Purchase NOW with {{productOffer}} % Discount.
+                  {{/if}}
+              </span>
             <p>{{description}}</p>
             <div class="options">
               <h6>₹{{price}}</h6>

@@ -244,20 +244,31 @@
                             <p class="mb-1">&#8377;{{total}}</p>
                         </div>
                     </div>
+                    
                     <div class="row justify-content-between">
                         <div class="flex-sm-col text-right col">
-                            <p class="mb-1"><b>Discount</b></p>
+                            <p class="mb-1"><b>Coupon Discount</b></p>
                         </div>
                         <div class="flex-sm-col col-auto">
-                            <p class="mb-1">&#8377;{{discountAmount}}</p>
+                            
+                            <p class="mb-1"><span style="color: red;">-&#8377;{{discountAmount}}</span></p>
+                           
+                        </div>
+                    </div>
+                      <div class="row justify-content-between">
+                        <div class="flex-sm-col text-right col">
+                            <p class="mb-1"><b>Product Discount</b></p>
+                        </div>
+                        <div class="flex-sm-col col-auto">
+                            <p class="mb-1"><span style="color: red;">-&#8377;{{productDiscount}}</span></p>
                         </div>
                     </div>
                     <div class="row justify-content-between">
                         <div class="flex-sm-col text-right col">
-                            <p class="mb-1"><b>Delivery Charges</b></p>
+                            <p class="mb-1"><b>Category Discount</b></p>
                         </div>
                         <div class="flex-sm-col col-auto">
-                            <p class="mb-1">Free</p>
+                            <p class="mb-1"><span style="color: red;">-&#8377;{{categoryDiscount}}</span></p>
                         </div>
                     </div>
                 </div>

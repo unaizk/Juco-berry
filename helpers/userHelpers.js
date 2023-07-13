@@ -452,42 +452,96 @@ module.exports = {
                 const cart = await Cart.findOne({ user_id: req.session.user_id })
                     .populate({
                         path: 'products.productId',
-                        populate: { path: 'category', select: 'category' },
+                        populate: { path: 'category', select: 'categoryOffer' },
                     })
                     .lean()
                     .exec();
 
                 const products = cart.products.map((product) => {
-                    const total =
-                        Number(product.quantity) * Number(product.productId.price);
+                        // total amount of all products
+
+                        const total =  Number(product.quantity) * Number(product.productId.price);
+
+                        //calculating category and product offer
+
+                        const categoryOfferPercentage =  product.productId.category.categoryOffer;
+                        const productOfferPercentage = product.productId.productOffer;
+                        
+
+                        const categoryDiscountAmount = (total * categoryOfferPercentage) / 100;
+
+                        const productDiscountAmount = (total * productOfferPercentage) / 100;
+
+                        const finalAmount = total - productDiscountAmount - categoryDiscountAmount;
+
                     return {
                         _id: product.productId._id.toString(),
                         name: product.productId.name,
-                        category: product.productId.category.category, // Access the category field directly
+                        categoryOffer: product.productId.category.categoryOffer, // Access the category field directly
                         image: product.productId.image,
                         price: product.productId.price,
                         description: product.productId.description,
+                        finalAmount:finalAmount,
+                        discountAmount:categoryDiscountAmount+productDiscountAmount,
+                        productOffer:product.productId.productOffer,
                         quantity: product.quantity,
-                        total,
+                        total:total,
                         user_id: req.session.user_id,
-
+                        totalDiscountPercentage: productOfferPercentage + categoryOfferPercentage,
                     };
                 });
+                console.log(products,'productsproductsvvvvvvvvvvvvvv');
+
+                //total value of all products in the cart
 
                 const total = products.reduce(
                     (sum, product) => sum + Number(product.total),
                     0
                 );
-                const finalAmount = total;
+                console.log(total,'totalvvvvvvvvvvvv');
+
+
+
+                //calculating total product offer discount amount
+                let totalProductDiscountAmount = 0
+
+                const productDiscounts = cart.products.forEach((item)=>{
+                    const quantity = item.quantity
+                    const price = item.productId.price;
+                    const productOffer = item.productId.productOffer;
+
+                    const discountAmount = (quantity * price * productOffer) / 100;
+                    totalProductDiscountAmount += discountAmount;
+
+                })
+                
+                //calculating total category Offer discount amount
+                let totalCategoryDiscountAmount = 0
+
+                const categoryDiscounts = cart.products.forEach((item)=>{
+
+                    const actualProductAmount = item.productId.price * item.quantity;
+                    const categoryOffer = item.productId.category.categoryOffer
+
+                    const categoryDiscountAmount = (actualProductAmount *categoryOffer) / 100;
+                    totalCategoryDiscountAmount += categoryDiscountAmount;
+
+                })
+                 
+                const TotalAmount = total-totalProductDiscountAmount-totalCategoryDiscountAmount
+
+
+
                 // Get the total count of products
                 const totalCount = products.length;
+
                 res.render('users/cart', {
                     layout: 'user-layout',
                     products,
                     total,
                     totalCount,
                     subtotal: total,
-                    finalAmount,
+                    TotalAmount,
                 });
             } else {
                 res.render('users/cart', {
@@ -521,7 +575,11 @@ module.exports = {
                 { user_id: userId, 'products.productId': productId },
                 { $inc: { 'products.$.quantity': count } },
                 { new: true }
-            ).populate('products.productId');
+            ).populate({
+                path: 'products.productId',
+                populate: { path: 'category', select: 'categoryOffer' },
+            })
+            .exec();
 
             // Update the total for the specific product in the cart
             const updatedProduct = cart.products.find(product => product.productId._id.equals(productId));
@@ -537,20 +595,50 @@ module.exports = {
                 return response
             }
 
+           
+            //calculating subtotal after discounting offer
+            
+            const total = cart.products.reduce(
+                (sum, product) => sum + Number(product.total),
+                0
+            );
+            
 
+            
+            //calculating total product offer discount amount
+            let totalProductDiscountAmount = 0
 
-            // Calculate the new subtotal for all products in the cart
-            const subtotal = cart.products.reduce((acc, product) => {
-                return acc + product.total;
-            }, 0);
+            const productDiscounts = cart.products.forEach((item)=>{
+                const quantity = item.quantity
+                const price = item.productId.price;
+                const productOffer = item.productId.productOffer;
+
+                const discountAmount = (quantity * price * productOffer) / 100;
+                totalProductDiscountAmount += discountAmount;
+
+            })
+            
+            //calculating total category Offer discount amount
+            let totalCategoryDiscountAmount = 0
+
+            const categoryDiscounts = cart.products.forEach((item)=>{
+
+                const actualProductAmount = item.productId.price * item.quantity;
+                const categoryOffer = item.productId.category.categoryOffer
+
+                const categoryDiscountAmount = (actualProductAmount *categoryOffer) / 100;
+                totalCategoryDiscountAmount += categoryDiscountAmount;
+
+            })
+             
+            const TotalAmount = total-totalProductDiscountAmount-totalCategoryDiscountAmount;
 
             // Prepare the response object
             const response = {
                 quantity: updatedProduct.quantity,
-                subtotal: subtotal
-                
+                TotalAmount: TotalAmount,
             };
-            console.log(response);
+            console.log(response,'response');
             return response
         } catch (error) {
             console.log(error.message);
@@ -945,36 +1033,79 @@ module.exports = {
             const cart = await Cart.findOne({ user_id: req.session.user_id })
                 .populate({
                     path: 'products.productId',
-                    populate: { path: 'category', select: 'category' },
+                    populate: { path: 'category', select: 'categoryOffer' },
                 })
                 .lean()
                 .exec();
             if(cart){
                 const products = cart.products.map((product) => {
-                    const total =
-                        Number(product.quantity) * Number(product.productId.price);
-                    return {
-                        _id: product.productId._id.toString(),
-                        name: product.productId.name,
-                        category: product.productId.category.category, // Access the category field directly
-                        image: product.productId.image,
-                        price: product.productId.price,
-                        description: product.productId.description,
-                        quantity: product.quantity,
-                        total,
-                        user_id: req.session.user_id,
-                    };
-                });
-    
+                    // total amount of all products
+
+                    const total =  Number(product.quantity) * Number(product.productId.price);
+
+                    //calculating category and product offer
+
+                    const categoryOfferPercentage =  product.productId.category.categoryOffer;
+                    const productOfferPercentage = product.productId.productOffer;
+                    
+
+                    const categoryDiscountAmount = (total * categoryOfferPercentage) / 100;
+
+                    const productDiscountAmount = (total * productOfferPercentage) / 100;
+
+                    const finalAmount = total - productDiscountAmount - categoryDiscountAmount;
+
+                return {
+                    _id: product.productId._id.toString(),
+                    name: product.productId.name,
+                    categoryOffer: product.productId.category.categoryOffer, // Access the category field directly
+                    image: product.productId.image,
+                    price: product.productId.price,
+                    description: product.productId.description,
+                    finalAmount:finalAmount,
+                    discountAmount:categoryDiscountAmount+productDiscountAmount,
+                    productOffer:product.productId.productOffer,
+                    quantity: product.quantity,
+                    total:total,
+                    user_id: req.session.user_id,
+                    totalDiscountPercentage: productOfferPercentage + categoryOfferPercentage,
+                };
+            });
+            console.log(products,'productsproductsvvvvvvvvvvvvvv');
+
+            //total value of all products in the cart
+
                 const total = products.reduce(
                     (sum, product) => sum + Number(product.total),
                     0
                 );
-    
-    
-                let finalAmount = total;
-                // Get the total count of products
-                const totalCount = products.length;
+
+
+                  //calculating total product offer discount amount
+                  let totalProductDiscountAmount = 0
+
+                  const productDiscounts = cart.products.forEach((item)=>{
+                      const quantity = item.quantity
+                      const price = item.productId.price;
+                      const productOffer = item.productId.productOffer;
+  
+                      const discountAmount = (quantity * price * productOffer) / 100;
+                      totalProductDiscountAmount += discountAmount;
+  
+                  })
+                  
+                  //calculating total category Offer discount amount
+                  let totalCategoryDiscountAmount = 0
+  
+                  const categoryDiscounts = cart.products.forEach((item)=>{
+  
+                      const actualProductAmount = item.productId.price * item.quantity;
+                      const categoryOffer = item.productId.category.categoryOffer
+  
+                      const categoryDiscountAmount = (actualProductAmount *categoryOffer) / 100;
+                      totalCategoryDiscountAmount += categoryDiscountAmount;
+  
+                  })
     
                 // Coupon Request configuration
                 let couponError = false;
@@ -989,22 +1120,34 @@ module.exports = {
                     couponApplied = req.session.couponApplied;
     
                 }
+               
     
                 // Existing Coupon Status Validation & Discount amount calculation using couponHelper
     
                 let couponDiscount = 0;
     
-                const eligibleCoupon = await couponHelpers.checkCurrentCouponValidityStatus(userId, finalAmount);
+                const eligibleCoupon = await couponHelpers.checkCurrentCouponValidityStatus(userId, total);
     
                 if (eligibleCoupon.status) {
                     couponDiscount = eligibleCoupon.couponDiscount;
                 } else {
                     couponDiscount = 0;
                 }
-    
-                finalAmount = finalAmount - couponDiscount
-    
+                
+                // total amount by reducing offer price 
+
+                let TotalAmount  = total- couponDiscount-totalProductDiscountAmount-totalCategoryDiscountAmount
+
+               
+
+
+
+                // To display the wallet amount blance in checkout page
+
                 const walletDetails = await Wallet.findOne({ userId: userId }).lean()
+
+                 // Get the total count of products
+                 const totalCount = products.length;
     
                 res.render('users/checkout', {
                     layout: 'user-layout',
@@ -1016,7 +1159,7 @@ module.exports = {
                     couponApplied,
                     couponError,
                     couponDiscount,
-                    subtotal: finalAmount,
+                    TotalAmount: TotalAmount,
                     walletDetails
     
                 });
@@ -1137,7 +1280,11 @@ module.exports = {
                     paymentMethod: orderData['paymentMethod'],
                     orderStatus: orderStatus,
                     products: orderedProducts,
-                    addressDetails: address
+                    addressDetails: address,
+                    actualOrderValue:orderData.actualOrderValue,
+                    productOfferDiscount:orderData.productOfferDiscount,
+                    categoryOfferDiscount:orderData.categoryOfferDiscount
+
                 });
         
                 const placedOrder = await orderDetails.save();
@@ -1347,8 +1494,12 @@ module.exports = {
             };
 
             const subtotal = order.orderValue;
-            const total = order.orderValue + order.couponDiscount
+            const total = order.actualOrderValue
             const discountAmount = order.couponDiscount
+            const productDiscount = order.productOfferDiscount
+            const categoryDiscount = order.categoryOfferDiscount
+
+
 
             const cancellationStatus = order.cancellationStatus
             console.log(cancellationStatus, 'cancellationStatus');
@@ -1369,6 +1520,8 @@ module.exports = {
                 discountAmount: discountAmount,
                 orderDate: createdOnIST,
                 cancellationStatus: cancellationStatus,
+                productDiscount:productDiscount,
+                categoryDiscount:categoryDiscount
 
             });
         } catch (error) {

@@ -6,6 +6,11 @@ const categorySchema = new mongoose.Schema({
         require: true
     },
 
+    categoryOffer:{
+        type: Number,
+        default:0
+    },
+
     unlist: {
         type: Boolean,
         default: false

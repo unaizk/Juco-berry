@@ -401,7 +401,7 @@ a:focus {
 
 .offer_section {
   position: relative;
-  padding-top: 45px;
+  padding-top: 8px;
 }
 
 .offer_section .box {
@@ -742,6 +742,7 @@ a:focus {
 /* client section start */
 .client_section .heading_container {
   margin-bottom: 30px;
+  margin-top: 50px;
 }
 
 .client_section .box {

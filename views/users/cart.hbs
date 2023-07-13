@@ -1,328 +1,239 @@
 {{>user-header}}
-
 <style>
-
-   /* Add this CSS to change the font of the modal confirmation heading */
-  .modal-title {
-    font-family: inherit;
-    /* Use the same font as the "Cart" heading */
-  }
-
-  
-  /* Add this CSS to create space between the footer and the cart */
-  .cart-section {
-    margin-bottom: 100px;
-    /* Adjust the value as needed */
-  }
-
-  @media (min-width: 1025px) {
-    .h-custom {
-      height: 100vh !important;
+.title{
+    margin-bottom: 5vh;
+}
+.card{
+    margin: auto;
+    max-width: 1450px;
+    width: 100%;
+    box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    border-radius: 1rem;
+    border: transparent;
+}
+@media(max-width:767px){
+    .card{
+        margin: 3vh auto;
     }
-  }
-
-  .card-registration .select-input.form-control[readonly]:not([disabled]) {
-    font-size: 1rem;
-    line-height: 2.15;
-    padding-left: .75em;
-    padding-right: .75em;
-  }
-
-  .card-registration .select-arrow {
-    top: 13px;
-  }
-
-  .bg-grey {
+}
+.cart{
+    background-color: #fff;
+    padding: 4vh 5vh;
+    border-bottom-left-radius: 1rem;
+    border-top-left-radius: 1rem;
+}
+@media(max-width:767px){
+    .cart{
+        padding: 4vh;
+        border-bottom-left-radius: unset;
+        border-top-right-radius: 1rem;
+    }
+}
+.summary{
+    background-color: #eff2ff;
+    border-top-right-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+    padding: 4vh;
+    color: rgb(0, 0, 0);
+}
+@media(max-width:767px){
+    .summary{
+    border-top-right-radius: unset;
+    border-bottom-left-radius: 1rem;
+    }
+}
+.summary .col-2{
+    padding: 0;
+}
+.summary .col-10
+{
+    padding: 0;
+}.row{
+    margin: 0;
+}
+.title b{
+    font-size: 1.5rem;
+}
+.main{
+    margin: 0;
+    padding: 2vh 0;
+    width: 100%;
+}
+.col-2, .col{
+    padding: 0 1vh;
+}
+a{
+    padding: 0 1vh;
+}
+.close{
+    margin-left: auto;
+    font-size: 0.7rem;
+}
+img{
+    width: 3.5rem;
+}
+.back-to-shop{
+    margin-top: 4.5rem;
+}
+h5{
+    margin-top: 4vh;
+}
+hr{
+    margin-top: 1.25rem;
+}
+form{
+    padding: 2vh 0;
+}
+select{
+    border: 1px solid rgba(0, 0, 0, 0.137);
+    padding: 1.5vh 1vh;
+    margin-bottom: 4vh;
+    outline: none;
+    width: 100%;
+    background-color: rgb(247, 247, 247);
+}
+input{
+    border: 1px solid rgba(0, 0, 0, 0.137);
+    padding: 1vh;
+    margin-bottom: 4vh;
+    outline: none;
+    width: 100%;
+    background-color: rgb(247, 247, 247);
+}
+input:focus::-webkit-input-placeholder
+{
+      color:transparent;
+}
+.btn{
     background-color: #000;
-  }
-
-  @media (min-width: 992px) {
-    .card-registration-2 .bg-grey {
-      border-top-right-radius: 16px;
-      border-bottom-right-radius: 16px;
-    }
-  }
-
-  @media (max-width: 991px) {
-    .card-registration-2 .bg-grey {
-      border-bottom-left-radius: 16px;
-      border-bottom-right-radius: 16px;
-    }
-  }
-
-  /* Apply black and white theme to the cart section */
-  .cart-section {
-    background-color: #f8f9fa;
-    /* Change background color to light grey */
-  }
-
-  .cart-section .card-registration-2 {
-    background-color: #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 100%;
-  }
-
-  .cart-section h1,
-  .cart-section h5,
-  .cart-section h6 {
-    color: #000;
-  }
-
-  .cart-section .btn-primary {
-    background-color: #fff;
-    color: #000;
-    transition: transform 0.5s;
-    /* Slower transition for zoom effect */
-  }
-
-  .cart-section .btn-primary:hover {
-    background-color: #ffbf00;
-    /* Changed to gold color on hover */
-    color: #fff;
-    /* Changed text color to white on hover */
-    transform: scale(1.1);
-    /* Added zoom in effect on hover */
-  }
-
-  /* Apply zoom in effect on product list on hover */
-  .cart-section .mb-4:hover {
-    transform: scale(1.05);
-    /* Adjust the scale value for desired zoom in effect */
-    transition: transform 0.3s ease-in-out;
-    background-color: #f8f9fa;
-    /* Light grey background color on hover */
-  }
-
-  .cart-section .text-muted {
-    color: #777;
-  }
-
-  .cart-section .text-black {
-    color: #000;
-  }
-
-  .cart-section .img-fluid {
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
-
-  /* Apply black gradient background and white text to the right side */
-  .cart-section .summary-section {
-    background: linear-gradient(to bottom, #000, #111);
-    /* Modified to gradient black background */
-    color: #fff;
-  }
-
-  /* Set the summary text to white */
-  .summary-section h1,
-  .summary-section h5,
-  .summary-section h6 {
-    color: #fff;
-  }
-
-  /* Set all text on the right side to white */
-  .cart-section .bg-grey {
-    color: #fff;
-  }
-
-  /* Remove blue border and blue color */
-  .cart-section .form-control,
-  .cart-section .btn-primary {
     border-color: #000;
-    color: #000;
-  }
-
-  .cart-section .form-control:focus,
-  .cart-section .btn-primary:focus {
+    color: white;
+    width: 100%;
+    font-size: 0.7rem;
+    margin-top: 4vh;
+    padding: 1vh;
+    border-radius: 0;
+}
+.btn:focus{
     box-shadow: none;
-    border-color: #000;
-    color: #000;
-  }
-
-  .cart-section .form-control::placeholder {
-    color: #777;
-  }
-
-  .cart-section .form-control:disabled,
-  .cart-section .form-control[readonly] {
-    background-color: #fff;
-    opacity: 1;
-  }
-
-  .cart-section .form-control[disabled]::placeholder,
-  .cart-section .form-control[readonly]::placeholder {
-    color: #777;
-  }
-
-  /* Remove all borders */
-  .cart-section .card-registration-2 {
-    border: none;
-  }
-
-  .cart-section .summary-section,
-  .cart-section .summary-section button {
-    border-color: transparent;
-  }
-
-  .summary-section h1:hover {
-    background-color: transparent !important;
-    color: #fff !important;
-  }
-
-  /* Add this CSS to create space between the footer and the cart */
-  .cart-section {
-    margin-bottom: 100px;
-    /* Adjust the value as needed */
-  }
-
-  /* Add animation to the empty cart message */
-  .empty-cart-animation {
-    animation: empty-cart-animation 1s ease-in-out infinite;
-    text-align: center;
-  }
-
-  @keyframes empty-cart-animation {
-    0% {
-      transform: scale(1);
-    }
-
-    50% {
-      transform: scale(1.1);
-    }
-
-    100% {
-      transform: scale(1);
-    }
-  }
-
-  .empty-cart-animation h3 {
-    font-size: 24px;
-    margin-bottom: 10px;
-  }
-
-  .empty-cart-animation p {
-    font-size: 16px;
-    color: #777;
-  }
-
-  .cart-section .delete-product-btn i {
+    outline: none;
+    box-shadow: none;
+    color: white;
+    -webkit-box-shadow: none;
+    -webkit-user-select: none;
+    transition: none; 
+}
+.btn:hover{
+    color: white;
+}
+a{
+    color: black; 
+}
+a:hover{
     color: black;
-    transition: color 0.3s;
-  }
-
-  /* Add this CSS to change the color to red and apply zoom effect on hover */
-  .cart-section .delete-product-btn:hover i {
-    color: red;
-    transform: scale(1.2);
-  }
-
-  /* Adjust the size of the decrement and increment buttons */
-  .cart-section .decrement-btn,
-  .cart-section .increment-btn {
-    font-size: 12px;
-    padding: 5px 10px;
-  }
-
-  /* Increase the width of the cart template */
-  .cart-section .card-registration-2 {
-    width: 100%;
-  }
-   /* Add this CSS to make all product list heights the same */
-  .product-list {
-    display: flex;
-    align-items: stretch;
-  }
-
-  .product-item {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-
-  .product-image {
-    flex: 0 0 auto;
-  }
-
-  .product-details {
-    flex: 1 1 auto;
-  }
+    text-decoration: none;
+}
+ #code{
+    background-image: linear-gradient(to left, #717fe0 , #717fe0), url("https://img.icons8.com/small/16/000000/long-arrow-right.png");
+    background-repeat: no-repeat;
+    background-position-x: 95%;
+    background-position-y: center;
+}
 </style>
-</style>
+
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 {{#if products}}
-<section class="cart-section">
-  <section class="h-100 h-custom" style="background-color: #d2c9ff;">
-    <div class="container-fluid py-5 h-100">
-      <div class="row d-flex justify-content-center align-items-center h-100">
-        <div class="col-12">
-          <div class="card card-registration card-registration-2" style="border-radius: 15px;">
-            <div class="card-body p-0">
-              <div class="row g-0">
-                <div class="col-lg-8">
-                  <div class="p-5">
-                    <div class="d-flex justify-content-between align-items-center mb-5">
-                      <h1 class="fw-bold mb-0 text-black">Cart</h1>
-                      <h6 class="mb-0 text-muted">{{this.totalCount}} Items</h6>
-                    </div>
-                    <div>
-                      {{#each products}}
-                      <div class="row d-flex align-items-center mb-4">
-                        <div class="col-md-2 col-lg-2 col-xl-2">
-                          <img src="/productImages/{{this.image}}" class="img-fluid" alt="Product Image" />
-                        </div>
-                        <div class="col-md-4 col-lg-4 col-xl-4">
-                          <h5 class="mb-0">{{this.name}}</h5>
-                          <span class="text-muted">Category: {{this.category}}</span>
-                        </div>
-                        <div class="col-md-2 col-lg-2 col-xl-2">
-                          <div class="input-group">
-                            <button class="btn btn-outline-secondary decrement-btn" type="button" onclick="changeQuantity('{{this._id}}', -1, '{{this.user_id}}', {{this.quantity}})">-</button>
-                            <input id="quantityInput_{{this._id}}" type="number" class="form-control text-center quantity-input" value="{{this.quantity}}" min="1" readonly />
-                            <button class="btn btn-outline-secondary increment-btn" type="button" onclick="changeQuantity('{{this._id}}', 1, '{{this.user_id}}', {{this.quantity}})">+</button>
-                          </div>
-                        </div>
-                        <div class="col-md-2 col-lg-2 col-xl-2">
-                          <div class="text-black">₹{{this.price}}</div>
-                        </div>
-                        <div class="col-md-1 col-lg-1 col-xl-1">
-                       <button type="button" class="btn btn-link delete-product-btn" onclick="showDeleteConfirmation('{{this._id}}','{{this.user_id}}','{{this.name}}')">
-                            <i class="fas fa-trash"></i>
-                          </button>
-                        </div>
-                      </div>
-                      {{/each}}
+<section class="p-t-100 p-b-50 mt-5 mb-5" >
 
-                      <!-- Add more rows for additional items -->
+    <div class="card">
+        <div class="row">
+            <div class="col-md-9 cart">
+
+                <div class="title">
+                    <div class="row">
+                        <div class="col"><h4><b>Shopping Cart</b></h4></div>
+                        <div class="col align-self-center text-right text-muted">{{this.totalCount}} items</div>
                     </div>
-                  </div>
-                </div>
-                <div class="col-lg-4 bg-grey">
-                  <div class="p-5 summary-section">
-                    <div>
-                      <h1 class="fw-bold mb-4">Summary</h1>
+                </div>    
+
+                {{!-- ================================== CART ITEM ================================== --}}
+                 {{#each products}}
+
+                    <div class="row border-top border-bottom">
+
+                        <div class="row main align-items-center">
+
+                            <div class="col-2"><img class="img-fluid" style="height: 70px; width:80px " src="/productImages/{{this.image}}"></div>
+
+                            <div class="col">
+
+                                <div class="row text-muted"><i>{{this.description}}</i></div>
+
+                                <div class="row"><b>{{this.name}}</b></div>
+                                
+                            </div>
+
+                            <div class="col">
+
+                                <button class="quantity-btn minus"  onclick="changeQuantity('{{this._id}}', -1, '{{this.user_id}}', {{this.quantity}})"> - </button>
+
+                                <a id="quantityInput_{{this._id}}" class="border quantity">{{this.quantity}}</a> 
+
+                                <button class="quantity-btn plus" onclick="changeQuantity('{{this._id}}', 1, '{{this.user_id}}', {{this.quantity}})">+</button>
+
+                            </div>
+
+                            <div class="col"> <b>Price:</b><br>₹{{this.price}}</div>
+                            <div class="col" id="totalInput_{{this._id}}"> <b>Total:</b><br>{{this.total}}</div>
+                            {{#if (gt this.productOffer 0)}}
+                            <div class="col" > <b>Product Discount:</b><br><span style="color: rgb(37, 245, 19);"><b>{{this.productOffer}}%</b></span></div>
+                            {{/if}}
+                             {{#if (gt this.categoryOffer 0)}}
+                            <div class="col"> <b>Category Discount:</b><br><span style="color: rgb(37, 245, 19);"><b>{{this.categoryOffer}}%</b></span></div>
+                            {{/if}}
+                            <div class="col" id="discountInput_{{this._id}}"> <b>Discounted Total:</b><br>₹ {{this.finalAmount}} </div>
+                            <div class="col"><span class="close" onclick="showDeleteConfirmation('{{this._id}}','{{this.user_id}}','{{this.name}}')" >&#10005;</span></div>
+
+                        </div>
+
                     </div>
-                    <hr class="my-4">
-                    <div class="d-flex justify-content-between">
-                      <h6 class="text-white">Subtotal:</h6>
-                     <h6 id="summary" class="fw-bold">₹{{this.subtotal}}</h6>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                      <h6 class="text-white">Shipping:</h6>
-                      <h6 class="text-white">Free</h6>
-                    </div>
-                    <hr class="my-4">
-                    <div class="d-flex justify-content-between">
-                      <h5 class="fw-bold">Total:</h5>
-                     <h6 id="summary-subtotal" class="fw-bold">₹{{this.subtotal}}</h6>
-                    </div>
-                    <a href="/checkout" type="button" class="btn btn-primary btn-block mt-4" style="background-color: #ffbf00; color: #fff;">Checkout</a>
-                  </div>
-                </div>
-              </div>
+
+                {{/each}}
+
+
+                <div class="back-to-shop"><a href="/">&leftarrow;</a><span class="text-muted">Back to shop</span></div>
+
             </div>
-          </div>
+
+
+            <div class="col-md-3 summary" style="background-color: rgb(25, 25, 25);">
+
+                <div style="color: white;"><h5><b>Cart Summary</b></h5></div>
+
+                <hr>
+
+                <div class="row">
+                    <div class="col" style="padding-left:5; color: white">Cart Items: <b>{{this.totalCount}}</b></div>
+                </div>
+
+                <br>
+            
+                <div class="row" style="border-top: 1px solid rgba(0,0,0,.1); padding: 2vh 0;">
+                    <div class="col" style="color: white;">Total Cart amount:</div>
+                    <div class="col text-right" id="summary-subtotal" style="color: white;"> ₹ <span id="cart-total">{{this.TotalAmount}}</span></div>
+                </div>
+
+                <a class="btn btn-warning" style="color: white;" href="/checkout">CHECKOUT</a>
+
+
+            </div>
+
+
         </div>
-      </div>
+            
     </div>
-  </section>
+
 </section>
 {{else}}
 <section class="cart-section">
@@ -354,6 +265,9 @@
 {{>user-footer}}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
 <!-- Add this modal code at the end of your HTML body -->
 <div class="modal" id="deleteConfirmationModal" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
@@ -376,7 +290,6 @@
 </div>
 
 
-
 <script>
   function changeQuantity(proId, count, userId, quantity) {
    
@@ -396,13 +309,10 @@
        }else{
              console.log(response,'ajax response')
         const quantityInput = document.getElementById(`quantityInput_${proId}`);
-        quantityInput.value = response.quantity;
-
-        const subtotal = document.getElementById(`summary`);
-        subtotal.textContent = response.subtotal;
+        quantityInput.textContent = response.quantity;
 
         const summarySubtotal = document.getElementById(`summary-subtotal`);
-        summarySubtotal.textContent = response.subtotal
+        summarySubtotal.textContent = response.TotalAmount
         
        }
      
@@ -450,3 +360,23 @@
   $('#confirmDeleteBtn').click(deleteproduct);
  
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

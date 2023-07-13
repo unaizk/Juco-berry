@@ -40,7 +40,45 @@ const removeProductOfferPOST = async(req,res)=>{
     }
 }
 
+const setCategoryOfferPOST = async(req,res)=>{
+    try {
+        const categoryId = req.body.categoryId;
+
+        const categoryOfferPercentage = parseInt(req.body.categoryOfferPercentage);
+
+        const updateProductOffer = offerHelpers.setCategoryOffer( categoryId, categoryOfferPercentage );
+
+        res.redirect("/admin/category")
+
+    } catch (error) {
+
+        console.log("Error from setCategoryOfferPOST offerController: ", error);
+    
+        res.redirect('/admin/admin-error');
+    }
+}
+
+const removeCategoryOfferPOST = async(req,res)=>{
+    try {
+
+        const categoryId = req.body.categoryId;
+
+        const categoryOfferPercentage = 0;
+
+        const updateCategoryOffer = offerHelpers.setCategoryOffer( categoryId, categoryOfferPercentage );
+
+        res.redirect("/admin/category")
+
+    } catch (error) {
+          console.log("Error from removeCategoryOfferPOST offerController: ", error);
+    
+        res.redirect('/admin/admin-error');
+    }
+}
+
 module.exports = {
     setProductOfferPOST,
-    removeProductOfferPOST
+    removeProductOfferPOST,
+    setCategoryOfferPOST,
+    removeCategoryOfferPOST
 }

@@ -330,11 +330,11 @@ module.exports = {
                 
             };
 
-
-
-            const total = order.orderValue+order.couponDiscount
-            const discountAmount = order.couponDiscount
             const subtotal = order.orderValue;
+            const total = order.actualOrderValue
+            const discountAmount = order.couponDiscount
+            const productDiscount = order.productOfferDiscount
+            const categoryDiscount = order.categoryOfferDiscount
             const cancellationStatus = order.cancellationStatus
             
             console.log(cancellationStatus,'cancellationStatus');
@@ -355,7 +355,9 @@ module.exports = {
                 discountAmount:discountAmount,
                 orderId: orderId,
                 orderDate: createdOnIST,
-                 cancellationStatus:cancellationStatus,
+                cancellationStatus:cancellationStatus,
+                productDiscount:productDiscount,
+                categoryDiscount:categoryDiscount
             });
         } catch (error) {
             console.log(error.message)

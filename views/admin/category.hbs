@@ -17,7 +17,9 @@
 
             <div class="bg-light rounded p-4">
                 <div class="d-flex justify-content-between align-items-center">
-                    <h6 class="mb-4" style="font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 1.2em; margin-bottom: 0;">Category List</h6>
+                    <h6 class="mb-4"
+                        style="font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 1.2em; margin-bottom: 0;">
+                        Category List</h6>
                     <a href="/admin/unlisted-category" class="btn btn-outline-danger m-2">Unlisted Category</a>
                 </div>
                 <div class="table-responsive">
@@ -27,8 +29,8 @@
                                 <th scope="col">SL NO</th>
                                 <th scope="col">ID</th>
                                 <th scope="col">CATEGORY</th>
+                                <th scope="col">OFFERS</th>
                                 <th scope="col">ACTION</th>
-                                 <th scope="col">ACTION</th>
 
                             </tr>
                         </thead>
@@ -38,13 +40,67 @@
                                 <th class="align-middle" scope="row">{{serialNumber}}</th>
                                 <td class="align-middle">{{_id}}</td>
                                 <td class="align-middle">{{category}}</td>
-                                 <td class="align-middle">
-                                    <a href="/admin/edit-category?id={{_id}}" class="btn btn-primary m-2">Edit</a>
+                                <td class="align-middle">
+                                    <button class="btn  btn-primary m-2" data-bs-toggle="modal"
+                                        data-bs-target="#set-category-offer-{{this._id}}">Add</button>
+
+                                    <form action="/admin/remove-category-offer" method="post">
+                                        <input type="hidden" name="categoryId" value="{{this._id}}">
+                                        <button type="submit" class="btn btn-danger"
+                                            onclick="return confirm('Are you sure that you want to remove {{category}} offer ?')">Remove</button>
+                                    </form>
                                 </td>
-                                 <td class="align-middle">
-                                    <a href="/admin/unlist-category?id={{this._id}}" class="btn btn-danger" onclick="return confirm('Are you sure you want to Unlist {{this.name}}?')">Unlist</a>
+                                <td class="align-middle">
+                                    <a href="/admin/edit-category?id={{_id}}" class="btn btn-primary m-2">Edit</a><br>
+                                    <a href="/admin/unlist-category?id={{this._id}}" class="btn btn-danger"
+                                        onclick="return confirm('Are you sure you want to Unlist {{this.category}}?')">Unlist</a>
                                 </td>
                             </tr>
+
+                            {{!-- ========================== Modal for Adding Category offer ==========================
+                            --}}
+
+
+                            <div class="modal fade" id="set-category-offer-{{this._id}}" tabindex="-1" role="dialog"
+                                aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+
+                                        <div class="modal-header">
+
+                                            <h5 class="modal-title" id="exampleModalCenterTitle">Set {{category}} Offer
+                                            </h5>
+                                            <button type="button" class="close" data-bs-dismiss="modal"
+                                                aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+
+                                        </div>
+
+                                        <form action="/admin/set-category-offer" method="POST">
+
+                                            <div class="modal-body">
+                                                <label for="offer">OFFER PERCENTAGE %:</label>
+                                                <input type="number" id="categoryOfferPercentage"
+                                                    name="categoryOfferPercentage" required min="1" max="99">
+
+                                                <input type="hidden" class="form-control" id="categoryId"
+                                                    name="categoryId" value="{{this._id}}" required>
+
+                                                <br><br>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-primary">Save changes</button>
+                                            </div>
+
+                                        </form>
+
+                                    </div>
+                                </div>
+                            </div>
                             {{/each}}
                         </tbody>
                     </table>
@@ -67,24 +123,24 @@
             </div>
             <form action="/admin/category" method="post">
                 <div class="modal-body">
-                   {{#if error}}
-                  <div class="alert alert-danger" role="alert">
-                    {{error}}
-                  </div>
-                  <script>
-                    // Show the error message in an alert box
-                    window.onload = function() {
-                      setTimeout(function() {
-                        alert("{{error}}");
-                      }, 100);
-                    }
-                  </script>
-                {{/if}}
+                    {{#if error}}
+                    <div class="alert alert-danger" role="alert">
+                        {{error}}
+                    </div>
+                    <script>
+                        // Show the error message in an alert box
+                        window.onload = function () {
+                            setTimeout(function () {
+                                alert("{{error}}");
+                            }, 100);
+                        }
+                    </script>
+                    {{/if}}
                     <div class="mb-3">
                         <input type="text" name="category" class="form-control">
                     </div>
                 </div>
-                
+
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

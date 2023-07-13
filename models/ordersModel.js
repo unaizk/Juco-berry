@@ -21,6 +21,18 @@ const ordersSchema = new mongoose.Schema({
     type:Number,
     default:0
   },
+  productOfferDiscount:{
+    type:Number,
+    default:0
+  },
+  categoryOfferDiscount:{
+    type:Number,
+    default:0
+  },
+  actualOrderValue:{
+    type:Number,
+    require:true
+  },
   orderStatus:{
     type:String,
     require:true

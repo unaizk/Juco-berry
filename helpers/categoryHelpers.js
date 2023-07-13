@@ -49,7 +49,8 @@ module.exports = {
             }
 
             const newCategory = new Category({
-                category: category
+                category: category,
+                categoryOffer:0
             });
             const categories = await newCategory.save();
 

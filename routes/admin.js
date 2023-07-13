@@ -3,7 +3,7 @@ var router = express.Router();
 const adminController = require('../controllers/adminController')
 const adminAuth = require('../middleware/adminAuth')
 const multer = require('multer')
-const sharp = require('sharp');
+
 const path = require('path');
 const categoryHelpers = require('../helpers/categoryHelpers');
 const couponController = require('../controllers/couponController')
@@ -79,6 +79,8 @@ router.post('/change-coupon-status',couponController.changeCouponStatusPOST)
 router.get('/admin-error',adminAuth.isLogin,adminController.errorPageLoad)
 router.post('/set-product-offer', offerController.setProductOfferPOST);
 router.post('/remove-product-offer',offerController.removeProductOfferPOST);
+router.post('/set-category-offer',offerController.setCategoryOfferPOST)
+router.post('/remove-category-offer',offerController.removeCategoryOfferPOST)
 
 
 router.get('*', (req, res) => {

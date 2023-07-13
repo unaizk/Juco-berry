@@ -52,6 +52,8 @@ module.exports = {
         category: req.body.category,
         description: req.body.description,
         price: req.body.price,
+        productOffer:0
+
       });
 
       const addProduct = await product.save();
