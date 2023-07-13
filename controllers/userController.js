@@ -389,7 +389,7 @@ const placeOrder = async (req, res) => {
                     if (error) {
                         res.json({ checkoutStatus: false });
                     } else {
-                        userHelpers.generateRazorpayOrder(orderId, totalOrderValue).then(async (razorpayOrderDetails, err) => {
+                        userHelpers.generateRazorpayOrder(orderId, total).then(async (razorpayOrderDetails, err) => {
                             const user = await User.findById({ _id: userId }).lean()
                             res.json(
                                 {

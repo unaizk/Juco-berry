@@ -19,7 +19,7 @@ module.exports = {
             const hashPassword = await bcrypt.hash(password, 10);
             return hashPassword;
         } catch (error) {
-            console.log(error.message,'password hash problem')
+            console.log(error.message, 'password hash problem')
             res.redirect('/admin/admin-error')
         }
     },
@@ -51,8 +51,8 @@ module.exports = {
                 }
             })
         } catch (error) {
-            console.log(error.message,'Failed to send verification email')
-            
+            console.log(error.message, 'Failed to send verification email')
+
             res.redirect('/admin/admin-error')
         }
     },
@@ -85,7 +85,7 @@ module.exports = {
                     } else {
                         req.session.user_id = userData._id;
                         req.session.is_admin = userData.is_admin
-                        
+
 
                         res.redirect('admin/admin-home')
                     }
@@ -96,19 +96,157 @@ module.exports = {
                 res.render('admin/admin-login', { message: "Your email is incorrect", layout: 'admin-layout' })
             }
         } catch (error) {
-            console.log(error.message,'failed to verify login')
-            
+            console.log(error.message, 'failed to verify login')
+
             res.redirect('/admin/admin-error')
         }
     },
 
     loadingDashboard: async (req, res) => {
-        try {
-            res.render('admin/admin-home', { layout: 'admin-layout' })
-        } catch (error) {
-            console.log(error.message)
-            res.redirect('/admin/admin-error')
-        }
+        return new Promise(async (resolve, reject) => {
+            try {
+                const users = await User.find({}).lean().exec();
+                const totaluser = users.length;
+
+                const totalSales = await Order.aggregate([
+                    {
+                        $match: {
+                            orderStatus: { $nin: ["cancelled"] },
+
+                        },
+                    },
+                    {
+                        $group: {
+                            _id: null,
+                            totalSum: { $sum: "$orderValue" },
+                        },
+                    },
+                ]);
+
+                const salesbymonth = await Order.aggregate([
+                    {
+                        $match: {
+                            orderStatus: { $nin: ["cancelled"] },
+                        },
+                    },
+                    {
+                        $group: {
+                            _id: { $month: "$date" },
+                            totalSales: { $sum: "$orderValue" },
+                        },
+                    },
+                    {
+                        $sort: {
+                            _id: 1,
+                        },
+                    },
+                ]);
+
+                const paymentMethod = await Order.aggregate([
+                    {
+                      $match: {
+                        orderStatus: { $in: ["Placed", "Delivered","Preparing food"] }, // Exclude "cancelled" status
+                      },
+                    },
+                    {
+                      $group: {
+                        _id: "$paymentMethod", // Group by paymentMethod only
+                        totalOrderValue: { $sum: "$orderValue" },
+                        count: { $sum: 1 },
+                      },
+                    },
+                  ]);
+
+                const currentYear = new Date().getFullYear();
+                const previousYear = currentYear - 1;
+
+                const yearSales = await Order.aggregate([
+                    // Match orders within the current year or previous year
+                    {
+                        $match: {
+                            orderStatus: { $nin: ["cancelled"] },
+                            date: {
+                                $gte: new Date(`${previousYear}-01-01`),
+                                $lt: new Date(`${currentYear + 1}-01-01`),
+                            },
+                        },
+                    },
+                    // Group orders by year and calculate total sales
+                    {
+                        $group: {
+                            _id: {
+                                $year: "$date",
+                            },
+                            totalSales: {
+                                $sum: "$orderValue",
+                            },
+                        },
+                    },
+                ])
+                    .exec();
+
+
+                // to get today sales
+
+                console.log(yearSales, 'yearSales');
+
+                const todaysalesDate = new Date();
+                const startOfDay = new Date(
+                    todaysalesDate.getFullYear(),
+                    todaysalesDate.getMonth(),
+                    todaysalesDate.getDate(),
+                    0,
+                    0,
+                    0,
+                    0
+                );
+                const endOfDay = new Date(
+                    todaysalesDate.getFullYear(),
+                    todaysalesDate.getMonth(),
+                    todaysalesDate.getDate(),
+                    23,
+                    59,
+                    59,
+                    999
+                );
+
+                const todaySales = await Order.aggregate([
+                    {
+                        $match: {
+                            orderStatus: { $in: ["pending", "Delivered", "Placed","Preparing food"] },
+
+                            date: {
+                                $gte: startOfDay, // Set the current date's start time
+                                $lt: endOfDay,
+                            },
+                        },
+                    },
+                    {
+                        $group: {
+                            _id: null,
+                            totalAmount: { $sum: "$orderValue" },
+                        },
+                    },
+                ]);
+
+                const dashBoardDetails = {
+                    totaluser,
+                    totalSales,
+                    salesbymonth,
+                    paymentMethod,
+                    yearSales,
+                    todaySales
+                }
+
+                resolve(dashBoardDetails)
+
+
+
+            } catch (error) {
+                reject(error)
+            }
+        })
+
     },
 
     loggingOut: async (req, res) => {
@@ -269,31 +407,31 @@ module.exports = {
 
     loadingOrdersList: async (req, res) => {
         try {
-          let orderDetails = await Order.find().populate('userId').lean();
-          console.log(orderDetails, 'orderDetails');
+            let orderDetails = await Order.find().populate('userId').lean();
+            console.log(orderDetails, 'orderDetails');
 
-           // Reverse the order of transactions
+            // Reverse the order of transactions
             orderDetails = orderDetails.reverse();
-      
-          const orderHistory = orderDetails.map(history => {
-            let createdOnIST = moment(history.date)
-              .tz('Asia/Kolkata')
-              .format('DD-MM-YYYY h:mm A');
-      
-            return { ...history, date: createdOnIST, userName: history.userId.name };
-          });
-      
-          res.render('admin/ordersList', { layout: 'admin-layout', orderDetails: orderHistory });
+
+            const orderHistory = orderDetails.map(history => {
+                let createdOnIST = moment(history.date)
+                    .tz('Asia/Kolkata')
+                    .format('DD-MM-YYYY h:mm A');
+
+                return { ...history, date: createdOnIST, userName: history.userId.name };
+            });
+
+            res.render('admin/ordersList', { layout: 'admin-layout', orderDetails: orderHistory });
         } catch (error) {
             console.log(error.message)
             res.redirect('/admin/admin-error')
         }
-      },
+    },
 
-      loadingOrdersViews:async(req,res)=>{
+    loadingOrdersViews: async (req, res) => {
         try {
             const orderId = req.query.id;
-           
+
 
             console.log(orderId, 'orderId');
             const order = await Order.findOne({ _id: orderId })
@@ -309,16 +447,16 @@ module.exports = {
                 const images = product.productId.image || [];
                 const image = images.length > 0 ? images[0] : "";
                 return {
-                  name: product.productId.name,
-                  image: image,
-                  
-                  price: product.productId.price,
-                  quantity: product.quantity,
-                  status: order.orderStatus,
-                  total:product.total
+                    name: product.productId.name,
+                    image: image,
+
+                    price: product.productId.price,
+                    quantity: product.quantity,
+                    status: order.orderStatus,
+                    total: product.total
                 };
-              });
-          
+            });
+
 
 
             const deliveryAddress = {
@@ -327,7 +465,7 @@ module.exports = {
                 city: order.addressDetails.city,
                 street: order.addressDetails.street,
                 postalCode: order.addressDetails.postalCode,
-                
+
             };
 
             const subtotal = order.orderValue;
@@ -336,12 +474,12 @@ module.exports = {
             const productDiscount = order.productOfferDiscount
             const categoryDiscount = order.categoryOfferDiscount
             const cancellationStatus = order.cancellationStatus
-            
-            console.log(cancellationStatus,'cancellationStatus');
+
+            console.log(cancellationStatus, 'cancellationStatus');
 
 
             console.log(subtotal, 'subtotal');
-          
+
 
             console.log(orderdetails, 'orderDetails');
             console.log(deliveryAddress, 'deliveryAddress');
@@ -351,124 +489,124 @@ module.exports = {
                 orderDetails: orderdetails,
                 deliveryAddress: deliveryAddress,
                 subtotal: subtotal,
-                total:total,
-                discountAmount:discountAmount,
+                total: total,
+                discountAmount: discountAmount,
                 orderId: orderId,
                 orderDate: createdOnIST,
-                cancellationStatus:cancellationStatus,
-                productDiscount:productDiscount,
-                categoryDiscount:categoryDiscount
+                cancellationStatus: cancellationStatus,
+                productDiscount: productDiscount,
+                categoryDiscount: categoryDiscount
             });
         } catch (error) {
             console.log(error.message)
             res.redirect('/admin/admin-error')
         }
-      },
+    },
 
-      cancellingOrderByAdmin: async (requestData) => {
+    cancellingOrderByAdmin: async (requestData) => {
         try {
-          const orderId = requestData;
-          console.log(orderId, 'orderidddddddddddddd');
-          const updateOrder = await Order.findByIdAndUpdate(
-            { _id: new ObjectId(orderId) },
-            { $set: { orderStatus: "cancelled", cancellationStatus: "cancelled" } },
-            { new: true } // This ensures that the updated document is returned
-          ).exec();
-      
-          console.log(updateOrder, 'updateOrderrrrrrrrrrrrrrrrrrrrrrrrrrrrrr');
-      
-          // Check if the payment method is online and the order value is greater than 0
-          if ((updateOrder.paymentMethod === "ONLINE" || updateOrder.paymentMethod === "WALLET") && updateOrder.orderValue > 0) {
-            // Check if a wallet exists for the user
-            const wallet = await Wallet.findOne({ userId: updateOrder.userId }).exec();
-      
-            if (wallet) {
-              // Wallet exists, increment the wallet amount
-              const updatedWallet = await Wallet.findOneAndUpdate(
-                {userId:updateOrder.userId},
-                { $inc: { walletAmount: updateOrder.orderValue } },
-                { new: true }
-              ).exec();
-      
-              console.log(updatedWallet, 'updated wallet with order value');
-            } else {
-              // Wallet doesn't exist, create a new wallet with the order value as the initial amount
-              const newWallet = new Wallet({
-                userId: updateOrder.userId,
-                walletAmount: updateOrder.orderValue
-              });
-      
-              const createdWallet = await newWallet.save();
-              console.log(createdWallet, 'created new wallet with order value');
+            const orderId = requestData;
+            console.log(orderId, 'orderidddddddddddddd');
+            const updateOrder = await Order.findByIdAndUpdate(
+                { _id: new ObjectId(orderId) },
+                { $set: { orderStatus: "cancelled", cancellationStatus: "cancelled" } },
+                { new: true } // This ensures that the updated document is returned
+            ).exec();
+
+            console.log(updateOrder, 'updateOrderrrrrrrrrrrrrrrrrrrrrrrrrrrrrr');
+
+            // Check if the payment method is online and the order value is greater than 0
+            if ((updateOrder.paymentMethod === "ONLINE" || updateOrder.paymentMethod === "WALLET") && updateOrder.orderValue > 0) {
+                // Check if a wallet exists for the user
+                const wallet = await Wallet.findOne({ userId: updateOrder.userId }).exec();
+
+                if (wallet) {
+                    // Wallet exists, increment the wallet amount
+                    const updatedWallet = await Wallet.findOneAndUpdate(
+                        { userId: updateOrder.userId },
+                        { $inc: { walletAmount: updateOrder.orderValue } },
+                        { new: true }
+                    ).exec();
+
+                    console.log(updatedWallet, 'updated wallet with order value');
+                } else {
+                    // Wallet doesn't exist, create a new wallet with the order value as the initial amount
+                    const newWallet = new Wallet({
+                        userId: updateOrder.userId,
+                        walletAmount: updateOrder.orderValue
+                    });
+
+                    const createdWallet = await newWallet.save();
+                    console.log(createdWallet, 'created new wallet with order value');
+                }
             }
-          }
-      
-          return updateOrder;
-        } catch (error) {
-            console.log(error.message)
-            res.redirect('/admin/admin-error')
-        }
-      },
-      
-      rejectingCancelOrderByAdmin:async(requestData)=>{
-        try {
-            const orderId = requestData
-            console.log(orderId,'orderidddddddddddddd');
-            const updateOrder = await Order.findByIdAndUpdate(
-                { _id:new ObjectId(orderId) },
-                { $set: { orderStatus: "Placed",cancellationStatus:"Not requested" } },
-                { new: true } // This ensures that the updated document is returned
-              ).exec();
-              
-            console.log(updateOrder,'updateOrderrrrrrrrrrrrrrrrrrrrrrrrrrrrrr');
 
             return updateOrder;
         } catch (error) {
             console.log(error.message)
             res.redirect('/admin/admin-error')
         }
-      },
+    },
 
-      preparingOrderByAdmin:async(requestData)=>{
+    rejectingCancelOrderByAdmin: async (requestData) => {
         try {
             const orderId = requestData
-            console.log(orderId,'orderidddddddddddddd');
+            console.log(orderId, 'orderidddddddddddddd');
             const updateOrder = await Order.findByIdAndUpdate(
-                { _id:new ObjectId(orderId) },
-                { $set: { orderStatus: "Preparing food",cancellationStatus:"Preparing food" } },
+                { _id: new ObjectId(orderId) },
+                { $set: { orderStatus: "Placed", cancellationStatus: "Not requested" } },
                 { new: true } // This ensures that the updated document is returned
-              ).exec();
-              
-            console.log(updateOrder,'updateOrderrrrrrrrrrrrrrrrrrrrrrrrrrrrrr');
+            ).exec();
+
+            console.log(updateOrder, 'updateOrderrrrrrrrrrrrrrrrrrrrrrrrrrrrrr');
 
             return updateOrder;
         } catch (error) {
             console.log(error.message)
             res.redirect('/admin/admin-error')
         }
-      },
+    },
 
-      deliveredOrderByAdmin:async(requestData)=>{
+    preparingOrderByAdmin: async (requestData) => {
         try {
             const orderId = requestData
-            console.log(orderId,'orderidddddddddddddd');
+            console.log(orderId, 'orderidddddddddddddd');
             const updateOrder = await Order.findByIdAndUpdate(
-                { _id:new ObjectId(orderId) },
-                { $set: { orderStatus: "Delivered",cancellationStatus:"Delivered" } },
+                { _id: new ObjectId(orderId) },
+                { $set: { orderStatus: "Preparing food", cancellationStatus: "Preparing food" } },
                 { new: true } // This ensures that the updated document is returned
-              ).exec();
-              
-            console.log(updateOrder,'updateOrderrrrrrrrrrrrrrrrrrrrrrrrrrrrrr');
+            ).exec();
+
+            console.log(updateOrder, 'updateOrderrrrrrrrrrrrrrrrrrrrrrrrrrrrrr');
 
             return updateOrder;
         } catch (error) {
             console.log(error.message)
             res.redirect('/admin/admin-error')
         }
-      },
+    },
 
-      
-      
+    deliveredOrderByAdmin: async (requestData) => {
+        try {
+            const orderId = requestData
+            console.log(orderId, 'orderidddddddddddddd');
+            const updateOrder = await Order.findByIdAndUpdate(
+                { _id: new ObjectId(orderId) },
+                { $set: { orderStatus: "Delivered", cancellationStatus: "Delivered" } },
+                { new: true } // This ensures that the updated document is returned
+            ).exec();
+
+            console.log(updateOrder, 'updateOrderrrrrrrrrrrrrrrrrrrrrrrrrrrrrr');
+
+            return updateOrder;
+        } catch (error) {
+            console.log(error.message)
+            res.redirect('/admin/admin-error')
+        }
+    },
+
+
+
 
 
 }

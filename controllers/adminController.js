@@ -36,7 +36,25 @@ const verifyLogin = async (req, res) => {
 const loadDashboard = async (req, res) => {
   try {
 
-    adminHelpers.loadingDashboard(req, res)
+    const dashBoardDetails = await adminHelpers.loadingDashboard(req, res)
+
+    const totalUser = dashBoardDetails.totaluser;
+    const totalSales = dashBoardDetails.totalSales;
+    const salesbymonth = dashBoardDetails.salesbymonth
+    const paymentMethod = dashBoardDetails.paymentMethod;
+    const yearSales = dashBoardDetails.yearSales
+    const todaySales = dashBoardDetails.todaySales
+    // console.log(todaySales,'todaySales');
+    // console.log(totalUser,'totalUser');
+    // console.log(totalSales,'totalSales');
+   
+    console.log(paymentMethod,'paymentMethod');
+    // console.log(yearSales,'yearSales');
+   let sales=encodeURIComponent(JSON.stringify(salesbymonth))
+
+   console.log(sales,'sales');
+
+    res.render('admin/admin-home', { layout: 'admin-layout',totalUser,todaySales:todaySales[0] ,totalSales:totalSales[0], salesbymonth:encodeURIComponent(JSON.stringify(salesbymonth)) ,paymentMethod:encodeURIComponent(JSON.stringify(paymentMethod)),yearSales:yearSales[0] })
   } catch (error) {
     console.log(error.message)
     res.redirect('/admin/admin-error')
