@@ -81,6 +81,13 @@ router.post('/set-product-offer', offerController.setProductOfferPOST);
 router.post('/remove-product-offer',offerController.removeProductOfferPOST);
 router.post('/set-category-offer',offerController.setCategoryOfferPOST)
 router.post('/remove-category-offer',offerController.removeCategoryOfferPOST)
+router.get('/salesPage',adminAuth.isLogin,adminController.loadSalesPage)
+router.get('/getTodaySales',adminAuth.isLogin,adminController.getSalesToday)
+router.get('/getWeekSales',adminAuth.isLogin,adminController.getWeekSales)
+router.get('/getMonthlySales',adminAuth.isLogin,adminController.getMonthSales)
+router.get('/getYearlySales',adminAuth.isLogin,adminController.getYearlySales)
+router.post('/salesWithDate',adminController.salesWithDate)
+router.get('/salesReport',adminAuth.isLogin,adminController.downloadSalesReport)
 
 
 router.get('*', (req, res) => {

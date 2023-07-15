@@ -38,6 +38,8 @@ const loadDashboard = async (req, res) => {
 
     const dashBoardDetails = await adminHelpers.loadingDashboard(req, res)
 
+    const orderDetails = await adminHelpers.OrdersList(req,res)
+
     const totalUser = dashBoardDetails.totaluser;
     const totalSales = dashBoardDetails.totalSales;
     const salesbymonth = dashBoardDetails.salesbymonth
@@ -48,13 +50,13 @@ const loadDashboard = async (req, res) => {
     // console.log(totalUser,'totalUser');
     // console.log(totalSales,'totalSales');
    
-    console.log(paymentMethod,'paymentMethod');
+    // console.log(paymentMethod,'paymentMethod');
     // console.log(yearSales,'yearSales');
    let sales=encodeURIComponent(JSON.stringify(salesbymonth))
 
-   console.log(sales,'sales');
+  //  console.log(sales,'sales');
 
-    res.render('admin/admin-home', { layout: 'admin-layout',totalUser,todaySales:todaySales[0] ,totalSales:totalSales[0], salesbymonth:encodeURIComponent(JSON.stringify(salesbymonth)) ,paymentMethod:encodeURIComponent(JSON.stringify(paymentMethod)),yearSales:yearSales[0] })
+    res.render('admin/admin-home', { layout: 'admin-layout',totalUser,todaySales:todaySales[0] ,totalSales:totalSales[0], salesbymonth:encodeURIComponent(JSON.stringify(salesbymonth)) ,paymentMethod:encodeURIComponent(JSON.stringify(paymentMethod)),yearSales:yearSales[0],orderDetails:orderDetails })
   } catch (error) {
     console.log(error.message)
     res.redirect('/admin/admin-error')
@@ -288,7 +290,12 @@ const updateProduct = async(req,res)=>{
 
 const loadOrdersList = async(req,res)=>{
   try {
-    await adminHelpers.loadingOrdersList(req,res);
+    const orderDetails = await adminHelpers.OrdersList(req,res);
+
+   
+
+    res.render('admin/ordersList', { layout: 'admin-layout', orderDetails: orderDetails });
+    
   } catch (error) {
     console.log(error.message)
     res.redirect('/admin/admin-error')
@@ -380,6 +387,79 @@ const errorPageLoad = async(req,res)=>{
   }
 }
 
+const loadSalesPage = async(req,res)=>{
+  try {
+
+    const orderSuccessDetails = await adminHelpers.orderSuccess()
+    // console.log(orderSuccessDetails,'order');
+  
+    res.render("admin/admin-sales", {layout:'admin-layout', order:orderSuccessDetails.orderHistory, total:orderSuccessDetails.total });
+  } catch (error) {
+     console.log(error.message)
+    res.redirect('/admin/admin-error')
+  }
+}
+
+const getSalesToday = async(req,res)=>{
+  try {
+    const todaySales = await adminHelpers.salesToday()
+    // console.log(todaySales,'todaySales');
+    res.render("admin/admin-sales", {layout:'admin-layout', order:todaySales.orderHistory, total:todaySales.total });
+  } catch (error) {
+    console.log(error.message)
+    res.redirect('/admin/admin-error')
+  }
+}
+
+const getWeekSales = async(req,res)=>{
+  try {
+    const weeklySales = await adminHelpers.weeklySales()
+
+     res.render("admin/admin-sales", {layout:'admin-layout', order:weeklySales.orderHistory, total:weeklySales.total });
+  } catch (error) {
+    console.log(error.message)
+    res.redirect('/admin/admin-error')
+  }
+}
+
+const getMonthSales = async(req,res)=>{
+  try {
+    const montlySales = await adminHelpers.monthlySales()
+    res.render("admin/admin-sales", {layout:'admin-layout', order:montlySales.orderHistory, total:montlySales.total });
+  } catch (error) {
+    console.log(error.message)
+    res.redirect('/admin/admin-error')
+  }
+}
+
+const getYearlySales = async(req,res)=>{
+  try {
+    const yearlySales = await adminHelpers.yearlySales()
+    res.render("admin/admin-sales", {layout:'admin-layout', order:yearlySales.orderHistory, total:yearlySales.total });
+  } catch (error) {
+    console.log(error.message)
+    res.redirect('/admin/admin-error')
+  }
+}
+
+const salesWithDate = async(req,res)=>{
+  try {
+    const salesWithDate = await adminHelpers.salesWithDate(req,res)
+    res.render("admin/admin-sales", {layout:'admin-layout', order:salesWithDate.orderHistory, total:salesWithDate.total });
+  } catch (error) {
+    console.log(error.message,'salesWithDate controller error')
+    res.redirect('/admin/admin-error')
+  }
+}
+
+const downloadSalesReport = async(req,res)=>{
+  try {
+    const salesPdf = await adminHelpers.salesPdf(req,res)
+  } catch (error) {
+    console.log(error.message,'pdfSales controller error')
+    res.redirect('/admin/admin-error')
+  }
+}
 
 
 
@@ -419,6 +499,13 @@ module.exports = {
   rejectCancellation,
   preparingFood,
   deliveredFood,
-  errorPageLoad
+  errorPageLoad,
+  loadSalesPage,
+  getSalesToday,
+  getWeekSales,
+  getMonthSales,
+  getYearlySales,
+  salesWithDate,
+  downloadSalesReport
 
 }

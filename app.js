@@ -26,6 +26,12 @@ var app = express();
 //   return a === b ? options.fn(this) : options.inverse(this);
 // });
 
+handlebars.registerHelper("inc", function(value, options)
+{
+    return parseInt(value) + 1;
+});
+
+
 
 
 app.set('views',path.join(__dirname, 'views'));

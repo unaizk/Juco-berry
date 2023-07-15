@@ -1892,7 +1892,62 @@ textarea[resize='horizontal'] {
   border-color: rgba(255, 255, 255, .9);
 }
 
-@media (min-width: 768px) {
+
+
+.progress {
+  overflow: hidden;
+  height: 8px;
+  margin-bottom: 1rem;
+  border-radius: .25rem;
+  background-color: #e9ecef;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1);
+}
+
+p {
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.7;
+}
+
+.description {
+  font-size: .875rem;
+}
+
+.heading {
+  font-size: .95rem;
+  font-weight: 600;
+  letter-spacing: .025em;
+  text-transform: uppercase;
+}
+
+.heading-small {
+  font-size: .75rem;
+  padding-top: .25rem;
+  padding-bottom: .25rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.display-2 span {
+  font-weight: 300;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .btn {
+    margin-bottom: 10px;
+  }
+}
+
+#navbar .navbar {
+  margin-bottom: 20px;
+}
+
+ 
+
+
+</style>
+{{!-- @media (min-width: 768px) {
   .navbar .dropdown-menu {
     margin: 0;
     pointer-events: none;
@@ -1919,7 +1974,7 @@ textarea[resize='horizontal'] {
     left: auto;
   }
 
-  @ keyframes show-navbar-dropdown {
+  @keyframes show-navbar-dropdown {
     0% {
       transition: visibility .25s, opacity .25s, transform .25s;
       transform: translate(0, 10px) perspective(200px) rotateX(-2deg);
@@ -1980,61 +2035,7 @@ textarea[resize='horizontal'] {
     transform: scale(.95);
     opacity: 0;
   }
-}
-
-.progress {
-  overflow: hidden;
-  height: 8px;
-  margin-bottom: 1rem;
-  border-radius: .25rem;
-  background-color: #e9ecef;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1);
-}
-
-p {
-  font-size: 1rem;
-  font-weight: 300;
-  line-height: 1.7;
-}
-
-.description {
-  font-size: .875rem;
-}
-
-.heading {
-  font-size: .95rem;
-  font-weight: 600;
-  letter-spacing: .025em;
-  text-transform: uppercase;
-}
-
-.heading-small {
-  font-size: .75rem;
-  padding-top: .25rem;
-  padding-bottom: .25rem;
-  letter-spacing: .04em;
-  text-transform: uppercase;
-}
-
-.display-2 span {
-  font-weight: 300;
-  display: block;
-}
-
-@media (max-width: 768px) {
-  .btn {
-    margin-bottom: 10px;
-  }
-}
-
-#navbar .navbar {
-  margin-bottom: 20px;
-}
-
- 
-
-
-</style>
+} --}}
 
 <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
 
