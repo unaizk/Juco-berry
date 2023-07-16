@@ -408,7 +408,19 @@ module.exports = {
 
     OrdersList: async (req, res) => {
         try {
-            let orderDetails = await Order.find().populate('userId').lean();
+            const userId = req.session.user_id;
+            const { paymentMethod, orderStatus } = req.query;
+            let query = { userId };
+    
+            // Apply filters if provided
+            if (paymentMethod) {
+                query.paymentMethod = paymentMethod;
+            }
+            if (orderStatus) {
+                query.orderStatus = orderStatus;
+            }
+
+            let orderDetails = await Order.find(query).populate('userId').lean();
             // console.log(orderDetails, 'orderDetails');
 
             // Reverse the order of transactions

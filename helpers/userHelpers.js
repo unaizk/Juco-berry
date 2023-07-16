@@ -1427,31 +1427,40 @@ module.exports = {
 
     loadOrderDetails: async (req, res) => {
         try {
-            const userId = req.session.user_id
-            let orderDetails = await Order.find({ userId: userId }).lean()
-
-            // Reverse the order of transactions
-            orderDetails = orderDetails.reverse();
-
+            const userId = req.session.user_id;
+            const { paymentMethod, orderStatus } = req.query;
+            let query = { userId };
+    
+            // Apply filters if provided
+            if (paymentMethod) {
+                query.paymentMethod = paymentMethod;
+            }
+            if (orderStatus) {
+                query.orderStatus = orderStatus;
+            }
+    
+            let orderDetails = await Order.find(query).lean().sort({ date: 1 });
+    
+        
+    
             orderHistory = orderDetails.map(history => {
                 let createdOnIST = moment(history.date)
                     .tz('Asia/kolkata')
                     .format('DD-MM-YYYY h:mm A');
-
+    
                 return { ...history, date: createdOnIST };
-            })
-
+            });
+    
             console.log(orderDetails, 'orderDetails');
-
+    
             res.render('users/ordersList', { layout: 'user-layout', orderDetails: orderHistory });
-
-
+    
         } catch (error) {
             console.log(error.message);
-            
-            res.redirect('/user-error')
+            res.redirect('/user-error');
         }
     },
+    
 
     loadingOrdersViews: async (req, res) => {
         try {

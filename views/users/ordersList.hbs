@@ -77,6 +77,35 @@
 {{#if orderDetails.length}}
 <div class="container tableheader">
     <div class="row justify-content-center mt-4">
+         <form action="/order-details" method="GET">
+            <div class="form-row align-items-center">
+                <div class="col-auto">
+                    <label class="sr-only" for="paymentMethod">Payment Method</label>
+                    <select class="form-control mb-2" id="paymentMethod" name="paymentMethod">
+                        <option value="">All Payment Methods</option>
+                        <option value="COD">Cash on Delivery</option>
+                        <option value="ONLINE">Online Payment</option>
+                        <option value="WALLET">Wallet Payment</option>
+                        <!-- Add more options for different payment methods -->
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <label class="sr-only" for="orderStatus">Order Status</label>
+                    <select class="form-control mb-2" id="orderStatus" name="orderStatus">
+                        <option value="">All Order Statuses</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Placed">Placed</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Preparing food">Preparing food</option>
+                        <option value="cancelled">Cancelled</option>
+                        <!-- Add more options for different order statuses -->
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-warning mb-2" style="color: white;">Apply Filters</button>
+                </div>
+            </div>
+        </form>
         <div class="card custom-card">
             <div class="card-body">
                 <h3 class="card-title" style="color: rgb(65, 65, 64);">ORDER DETAILS</h3>
@@ -117,6 +146,35 @@
 </div>
 {{else}}
 <!-- No order history message -->
+ <form action="/order-details" method="GET">
+            <div class="form-row align-items-center">
+                <div class="col-auto">
+                    <label class="sr-only" for="paymentMethod">Payment Method</label>
+                    <select class="form-control mb-2" id="paymentMethod" name="paymentMethod">
+                        <option value="">All Payment Methods</option>
+                        <option value="COD">Cash on Delivery</option>
+                        <option value="ONLINE">Online Payment</option>
+                        <option value="WALLET">Wallet Payment</option>
+                        <!-- Add more options for different payment methods -->
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <label class="sr-only" for="orderStatus">Order Status</label>
+                    <select class="form-control mb-2" id="orderStatus" name="orderStatus">
+                        <option value="">All Order Statuses</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Placed">Placed</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Preparing food">Preparing food</option>
+                        <option value="cancelled">Cancelled</option>
+                        <!-- Add more options for different order statuses -->
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-warning mb-2" style="color: white;">Apply Filters</button>
+                </div>
+            </div>
+        </form>
 <div class="card card-1 mt-5 mb-5">
     <div class="card-body text-center">
         <h4 class="mb-4">No Order History</h4>
