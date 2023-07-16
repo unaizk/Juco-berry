@@ -3,32 +3,36 @@ const User = require('../models/userModel');
 const Order = require('../models/ordersModel')
 const Coupon = require('../models/couponModel')
 const UsedCoupon = require('../models/usedCouponModel')
+const moment = require('moment-timezone');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 
 
 module.exports = {
     getActiveCoupons: () => {
-
         return new Promise(async (resolve, reject) => {
-
-            try {
-
-                const activeCoupons = await Coupon.find({ activeCoupon: true }).lean()
-
-                resolve(activeCoupons);
-
-            } catch (error) {
-
-                console.log("Error from getActiveCoupons couponHelper :", error);
-
-                reject(error);
-
-            }
-
-        })
-
-    },
+          try {
+            const activeCoupons = await Coupon.find({ activeCoupon: true }).lean();
+      
+            const couponsWithExpiry = activeCoupons.map((coupon) => {
+              const expiryDate = new Date(coupon.createdOn);
+              expiryDate.setDate(expiryDate.getDate() + coupon.validFor);
+      
+              const formattedExpiryDate = moment(expiryDate).tz('Asia/Kolkata').format('DD-MM-YYYY');
+      
+              return {
+                ...coupon,
+                expiryDate: formattedExpiryDate,
+              };
+            });
+      
+            resolve(couponsWithExpiry);
+          } catch (error) {
+            console.log("Error from getActiveCoupons couponHelper:", error);
+            reject(error);
+          }
+        });
+      },
 
     getInActiveCoupons: () => {
 
@@ -38,7 +42,19 @@ module.exports = {
 
                 const inActiveCoupons = await Coupon.find({ activeCoupon: false }).lean();
 
-                resolve(inActiveCoupons);
+                const couponsWithExpiry = inActiveCoupons.map((coupon) => {
+                    const expiryDate = new Date(coupon.createdOn);
+                    expiryDate.setDate(expiryDate.getDate() + coupon.validFor);
+            
+                    const formattedExpiryDate = moment(expiryDate).tz('Asia/Kolkata').format('DD-MM-YYYY');
+            
+                    return {
+                      ...coupon,
+                      expiryDate: formattedExpiryDate,
+                    };
+                  });
+            
+                  resolve(couponsWithExpiry);
 
             } catch (error) {
 
@@ -52,6 +68,7 @@ module.exports = {
 
     },
 
+      
     verifyCouponExist: (newCouponData) => {
 
         return new Promise(async (resolve, reject) => {
@@ -132,6 +149,7 @@ module.exports = {
 
     },
 
+
     getInActiveCoupons: () => {
 
         return new Promise(async (resolve, reject) => {
@@ -140,7 +158,19 @@ module.exports = {
 
                 const inActiveCoupons = await Coupon.find({ activeCoupon: false }).lean();
 
-                resolve(inActiveCoupons);
+                const couponsWithExpiry = inActiveCoupons.map((coupon) => {
+                    const expiryDate = new Date(coupon.createdOn);
+                    expiryDate.setDate(expiryDate.getDate() + coupon.validFor);
+            
+                    const formattedExpiryDate = moment(expiryDate).tz('Asia/Kolkata').format('DD-MM-YYYY');
+            
+                    return {
+                      ...coupon,
+                      expiryDate: formattedExpiryDate,
+                    };
+                  });
+            
+                  resolve(couponsWithExpiry);
 
             } catch (error) {
 

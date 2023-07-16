@@ -45,9 +45,11 @@ module.exports = {
 
     sendingMailToVerify: async (name, email, user_id) => {
         try {
+            console.log(config.emailUser,'config.emailUser');
+            console.log(config.emailPassword,'config.emailPassword');
             const verificationId = await bcrypt.hash(email, 10);
             const transporter = nodemailer.createTransport({
-                host: 'smtp.ethereal.email',
+                host: 'smtp.gmail.com',
                 port: 587,
                 secure: false,
                 requireTLS: true,
@@ -57,9 +59,9 @@ module.exports = {
                 }
             });
             const mailOption = {
-                from: 'unais5676@gmail.com',
+                from: 'smtp.gmail.com',
                 to: email,
-                subject: 'To verify mail',
+                subject: 'To verify Mail',
                 html: `<p> Hi ${name}, please click here to <a href="http://localhost:3000/verify?id=${verificationId}&email=${email}">verify</a> your mail.</p>`
             };
             await transporter.sendMail(mailOption);
@@ -75,7 +77,7 @@ module.exports = {
     sendResetPasswordMail: async (name, email, token) => {
         try {
             const transporter = nodemailer.createTransport({
-                host: 'smtp.ethereal.email',
+                host: 'smtp.gmail.com',
                 port: 587,
                 secure: false,
                 requireTLS: true,
@@ -85,9 +87,9 @@ module.exports = {
                 }
             });
             const mailOption = {
-                from: 'unais5676@gmail.com',
+                from: 'smtp.gmail.com',
                 to: email,
-                subject: 'To Reset password',
+                subject: 'To Reset Password',
                 html: `<p> Hi ${name}, please click here to <a href="http://localhost:3000/forget-password?token=${token}">Reset</a> your password.</p>`
             };
             await transporter.sendMail(mailOption);

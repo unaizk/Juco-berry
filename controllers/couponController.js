@@ -19,13 +19,14 @@ const manageCoupon = async(req,res)=>{
         console.log(adminData,'adminDatacccccccccccccc');
         const activeCoupons = await couponHelpers.getActiveCoupons();
         const inActiveCoupons = await couponHelpers.getInActiveCoupons();
-
+     
         const dataToRender = {
 
             layout: 'admin-layout',
             adminData,
             activeCoupons,
-            inActiveCoupons
+            inActiveCoupons,
+           
     
         }
       
