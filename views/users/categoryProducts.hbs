@@ -1,4 +1,15 @@
 {{>user-header}}
+<style>
+  .black-page-link {
+    color: rgb(0, 0, 0) !important;
+    
+  }
+   .black-page-link.current-page {
+    color: white !important;
+    background-color: rgb(216, 164, 32) !important;
+    border-color: rgb(216, 164, 32);
+   }
+</style>
 
 <section style="margin-top: 10vh;">
   <div class="container">
@@ -25,9 +36,7 @@
           <div class="detail-box">
             <h5>{{name}}</h5>
              <span class="stext-107 cl4" style="color: #00ad5f;">
-                  {{#if (gt productOffer 0)}}
-                    Purchase NOW with {{productOffer}} % Discount.
-                  {{/if}}
+                 
               </span>
             <p>{{description}}</p>
             <div class="options">
@@ -65,6 +74,32 @@
     </div>
     </div>
 </section>
+
+{{#if showPagination}}
+            <nav aria-label="Transaction Pagination">
+              <ul class="pagination justify-content-center">
+                {{#if hasPrev}}
+                  <li class="page-item">
+                    <a class="page-link black-page-link" href="?page={{prevPage}}" aria-label="Previous">
+                      <span aria-hidden="true">&laquo;</span>
+                    </a>
+                  </li>
+                {{/if}}
+                {{#each pages}}
+                  <li class="page-item{{#if current}} active{{/if}}">
+                    <a class="page-link black-page-link{{#if current}} current-page{{/if}}" href="?page={{number}}">{{number}}</a>
+                  </li>
+                {{/each}}
+                {{#if hasNext}}
+                  <li class="page-item">
+                    <a class="page-link black-page-link" href="?page={{nextPage}}" aria-label="Next">
+                      <span aria-hidden="true">&raquo;</span>
+                    </a>
+                  </li>
+                {{/if}}
+              </ul>
+            </nav>
+          {{/if}}
 
 
 

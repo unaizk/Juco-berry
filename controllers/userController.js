@@ -526,7 +526,34 @@ const categoryProducts = async (req, res) => {
     try {
         const categories = await userHelpers.getCategory()
         const products = await productHelpers.getAllProducts();
-        res.render('users/categoryProducts', { layout: 'user-layout', categories, products });
+
+         // Pagination logic
+         const currentPage = parseInt(req.query.page) || 1;
+         const PAGE_SIZE = 6;
+ 
+         const totalItems = products.length;
+         const totalPages = Math.ceil(totalItems / PAGE_SIZE);
+ 
+         const startIndex = (currentPage - 1) * PAGE_SIZE;
+         const endIndex = startIndex + PAGE_SIZE;
+         const paginatedOrderDetails = products.slice(startIndex, endIndex);
+ 
+         const hasPrev = currentPage > 1;
+         const hasNext = currentPage < totalPages;
+ 
+         const pages = [];
+         for (let i = 1; i <= totalPages; i++) {
+             pages.push({
+                 number: i,
+                 current: i === currentPage,
+             });
+         }
+        res.render('users/categoryProducts', { layout: 'user-layout', categories, products:paginatedOrderDetails, showPagination: totalItems > PAGE_SIZE,
+        hasPrev,
+        prevPage: currentPage - 1,
+        hasNext,
+        nextPage: currentPage + 1,
+        pages, });
     } catch (error) {
         console.log(error.message);
         res.redirect('/user-error')
