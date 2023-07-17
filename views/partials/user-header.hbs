@@ -88,11 +88,17 @@
                 </svg>
               </a>
              
-             <a href="/logout" class="logout">
-                
-                  Logout
-                  
-              </a>
+             {{#if isLogin}}
+            <a href="/logout" class="logout">
+
+              Logout
+
+            </a>
+            {{else}}
+            <a href="/login" class="logout">
+            Login
+            </a>
+            {{/if}}
 
             </div>
           </div>

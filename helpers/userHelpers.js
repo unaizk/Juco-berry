@@ -219,9 +219,10 @@ module.exports = {
         try {
             const productData = await Product.find({ unlist: false }).lean();
             const categories = await Category.find({ unlist: false }).lean()
+            const isLogin = req.session.user_id ? true : false;
             res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
             console.log(categories, 'categoriessssss');
-            res.render('users/home', { layout: 'user-layout', products: productData, categories: categories })
+            res.render('users/home', { layout: 'user-layout', products: productData, categories: categories,isLogin:isLogin })
         } catch (error) {
             
             console.log(error.message);
@@ -388,9 +389,10 @@ module.exports = {
         try {
             const id = new mongoose.Types.ObjectId(req.query.id);
             const product = await Product.findById(id).lean()
+            const isLogin = req.session.user_id ? true : false;
             console.log(id);
             console.log(product);
-            res.render('users/view-product', { layout: 'user-layout', products: product });
+            res.render('users/view-product', { layout: 'user-layout', products: product,isLogin:isLogin });
         } catch (error) {
             console.log(error.message);
             res.redirect('/user-error')
@@ -401,6 +403,7 @@ module.exports = {
         try {
             const proId = req.body.productId;
             console.log(proId, "id is coming");
+            const isLogin = req.session.user_id ? true : false;
 
             let cart = await Cart.findOne({ user_id: req.session.user_id });
 
@@ -450,6 +453,7 @@ module.exports = {
     loadingCartPage: async (req, res) => {
         try {
             const check = await Cart.findOne({ user_id: req.session.user_id });
+            const isLogin = req.session.user_id ? true : false;
             if (check) {
                 const cart = await Cart.findOne({ user_id: req.session.user_id })
                     .populate({
@@ -544,6 +548,7 @@ module.exports = {
                     totalCount,
                     subtotal: total,
                     TotalAmount,
+                    isLogin:isLogin
                 });
             } else {
                 res.render('users/cart', {
@@ -685,6 +690,7 @@ module.exports = {
         try {
             const userId = new mongoose.Types.ObjectId(req.session.user_id);
             console.log(userId, 'userId');
+            const isLogin = req.session.user_id ? true : false;
 
             // Find the user data
             const userData = await User.findOne({ _id: userId }).lean();
@@ -696,11 +702,12 @@ module.exports = {
                 res.render('users/user-profile', {
                     layout: 'user-layout',
                     userData,
-                    defaultAddress: defaultAddress.address[0]
+                    defaultAddress: defaultAddress.address[0],
+                    isLogin:isLogin
                 });
             } else {
                 // Handle the case when there is no default address
-                res.render('users/user-profile', { layout: 'user-layout', userData });
+                res.render('users/user-profile', { layout: 'user-layout', userData,isLogin:isLogin });
                 // Or you can redirect the user to a different page or display an error message
             }
 
@@ -744,6 +751,8 @@ module.exports = {
         try {
             const userId = req.session.user_id;
             const userAddress = await Address.findOne({ user_id: userId }).lean().exec();
+            const isLogin = req.session.user_id ? true : false;
+
 
             if (userAddress) {
                 // Check if there is only one address in the array
@@ -766,9 +775,9 @@ module.exports = {
                 });
 
                 console.log(addressDetails, 'addressdetails');
-                res.render('users/address', { layout: 'user-layout', addressDetails });
+                res.render('users/address', { layout: 'user-layout', addressDetails,isLogin:isLogin });
             } else {
-                res.render('users/address', { layout: 'user-layout', addressDetails: [] });
+                res.render('users/address', { layout: 'user-layout', addressDetails: [],isLogin:isLogin });
             }
         } catch (error) {
             console.log(error.message);
@@ -1012,6 +1021,7 @@ module.exports = {
         try {
             const userId = req.session.user_id;
             console.log(userId, 'id');
+            const isLogin = req.session.user_id ? true : false;
 
             // Find the default address for the user
             const defaultAddress = await Address.findOne(
@@ -1162,7 +1172,8 @@ module.exports = {
                     couponError,
                     couponDiscount,
                     TotalAmount: TotalAmount,
-                    walletDetails
+                    walletDetails,
+                    isLogin:isLogin
     
                 });
                 delete req.session.couponApplied;
@@ -1428,6 +1439,7 @@ module.exports = {
     loadOrderDetails: async (req, res) => {
         try {
             const userId = req.session.user_id;
+            const isLogin = req.session.user_id ? true : false;
             const { paymentMethod, orderStatus } = req.query;
             let query = { userId };
     
@@ -1453,7 +1465,7 @@ module.exports = {
     
             console.log(orderDetails, 'orderDetails');
     
-            res.render('users/ordersList', { layout: 'user-layout', orderDetails: orderHistory });
+            res.render('users/ordersList', { layout: 'user-layout', orderDetails: orderHistory ,isLogin:isLogin});
     
         } catch (error) {
             console.log(error.message);
@@ -1465,6 +1477,7 @@ module.exports = {
     loadingOrdersViews: async (req, res) => {
         try {
             const orderId = req.query.id;
+            const isLogin = req.session.user_id ? true : false;
 
             const userId = req.session.user_id
 
@@ -1532,7 +1545,8 @@ module.exports = {
                 orderDate: createdOnIST,
                 cancellationStatus: cancellationStatus,
                 productDiscount:productDiscount,
-                categoryDiscount:categoryDiscount
+                categoryDiscount:categoryDiscount,
+                isLogin:isLogin
 
             });
         } catch (error) {

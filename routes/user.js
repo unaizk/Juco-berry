@@ -18,7 +18,7 @@ const storage = multer.diskStorage({
 
   const userUpload = multer({ storage: storage })
 /*Get login page */
-router.get('/',auth.isLogout,userController.loadLogin);
+router.get('/',userController.loadHome);
 router.get('/login',auth.isLogout,userController.loadLogin);
 router.post('/login',userController.verifyLogin);
 
@@ -26,7 +26,7 @@ router.post('/login',userController.verifyLogin);
 router.get('/signup',auth.isLogout,userController.loadSignup);
 router.post('/signup',userController.insertUser);
 router.get('/verify', userController.verifyEmail);
-router.get('/home',auth.isLogin, userController.loadHome);
+router.get('/home', userController.loadHome);
 router.get('/logout',auth.isLogin,userController.userLogout);
 router.get('/forget',auth.isLogout,userController.forgetLoad);
 router.post('/forget',userController.forgetVerify);
@@ -59,7 +59,7 @@ router.get('/order-details',auth.isLogin,userController.orderDetails)
 router.get('/ordersView',auth.isLogin,userController.loadOrdersView)
 router.post('/cancel-order',userController.cancellOrder)
 router.post('/verify-payment',userController.verifyPayment)
-router.get('/categoryProducts',auth.isLogin,userController.categoryProducts);
+router.get('/categoryProducts',userController.categoryProducts);
 router.post('/list-category',userController.listCategory)
 router.post('/apply-coupon-request', couponController.applyCouponPOST);
 router.get('/wallet-details',auth.isLogin,userController.loadWallet)

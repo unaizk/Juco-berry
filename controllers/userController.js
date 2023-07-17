@@ -526,6 +526,8 @@ const categoryProducts = async (req, res) => {
     try {
         const categories = await userHelpers.getCategory()
         const products = await productHelpers.getAllProducts();
+        const isLogin = req.session.user_id ? true : false;
+        
 
          // Pagination logic
          const currentPage = parseInt(req.query.page) || 1;
@@ -553,7 +555,8 @@ const categoryProducts = async (req, res) => {
         prevPage: currentPage - 1,
         hasNext,
         nextPage: currentPage + 1,
-        pages, });
+        pages,
+        isLogin:isLogin });
     } catch (error) {
         console.log(error.message);
         res.redirect('/user-error')
@@ -579,6 +582,8 @@ const loadWallet = async (req, res) => {
         const walletDetails = await userHelpers.getWalletDetails(userId);
         const creditOrderDetails = await userHelpers.creditOrderDetails(userId);
         const debitOrderDetails = await userHelpers.debitOrderDetails(userId);
+        const isLogin = req.session.user_id ? true : false;
+
 
         // Merge credit and debit order details into a single array
         const orderDetails = [...creditOrderDetails, ...debitOrderDetails];
@@ -618,6 +623,7 @@ const loadWallet = async (req, res) => {
             hasNext,
             nextPage: currentPage + 1,
             pages,
+            isLogin:isLogin
         });
     } catch (error) {
         console.log(error.message);
