@@ -1359,6 +1359,31 @@ module.exports = {
         });
     },
 
+    rechargeUpdateWallet:(userId, referalAmount)=>{
+        return new Promise(async(resolve,reject)=>{
+            try {
+                
+                const wallet  = await Wallet.findOne({userId:new ObjectId(userId)}).lean().exec()
+                
+                if(wallet){
+                    const currentAmount = wallet.walletAmount
+                    const updatedAmount = currentAmount + referalAmount;
+
+                   
+                    
+                   const walletUpdate = await Wallet.updateOne({userId:new ObjectId(userId)},{ $set: { walletAmount: updatedAmount } })
+
+
+                    resolve()
+                }else{
+                    reject(new Error('Wallet not found'));
+                }
+            } catch (error) {
+                reject(error);
+            }
+        })
+    },
+
 
     // placingOrder: async (req, res) => {
     //     try {
@@ -1607,7 +1632,7 @@ module.exports = {
     verifyOnlinePayment: (paymentData) => {
 
         // console.log(paymentData);
-
+        
         return new Promise((resolve, reject) => {
             try {
                 const crypto = require('crypto'); // Requiring crypto Module here for generating server signature for payments verification
@@ -1627,13 +1652,13 @@ module.exports = {
                 if (serverGeneratedSignature === razorpayServerGeneratedSignatureFromClient) {
                     // Checking that is the signature generated in our server using the secret key we obtained by hashing secretkey,orderId & paymentId is same as the signature sent by the server 
     
-                    // console.log("Payment Signature Verified");
+                    console.log("Payment Signature Verified");
     
                     resolve()
     
                 } else {
     
-                    // console.log("Payment Signature Verification Failed");
+                    console.log("Payment Signature Verification Failed");
     
                     reject()
     
@@ -1766,6 +1791,44 @@ module.exports = {
             }
         });
     },
+
+    generateRazorpayForWallet:(userId,total)=>{
+        total = parseInt(total);
+        return new Promise(async(resolve,reject)=>{
+            try {
+                var options = {
+
+                    amount: total * 100,  // amount in the smallest currency unit
+          
+                    currency: "INR",
+          
+                    receipt: "" + userId
+          
+                  };
+
+                  console.log('it resacged here ',options);
+
+                  instance.orders.create(options, function (err, order) {
+
+                    if (err) {
+          
+                      console.log(err);
+          
+                      reject(err);
+          
+                    } else {
+          
+                      resolve(order);
+          
+                    }
+          
+                  });
+
+            } catch (error) {
+                reject(error);
+            }
+        })
+    }
 
 
 

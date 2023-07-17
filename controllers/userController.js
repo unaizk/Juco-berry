@@ -582,6 +582,7 @@ const loadWallet = async (req, res) => {
         const walletDetails = await userHelpers.getWalletDetails(userId);
         const creditOrderDetails = await userHelpers.creditOrderDetails(userId);
         const debitOrderDetails = await userHelpers.debitOrderDetails(userId);
+        
         const isLogin = req.session.user_id ? true : false;
 
 
@@ -642,6 +643,56 @@ const errorPageLoad = async (req, res) => {
     }
 }
 
+const generateWalletRechargeOrder = async(req,res)=>{
+    try {
+        const userId=req.session.user_id
+
+        const total=req.body.total
+        console.log(total,'totalvvvvvvvvvvvvv');
+      
+        const razorpayResponse = await userHelpers.generateRazorpayForWallet(userId,total);
+        const user = await User.findById({ _id: userId }).lean()
+        console.log(razorpayResponse,'razorpayResponse');
+        console.log(process.env.KEY_ID,'razorpayKeyId');
+
+        res.json({
+            razorpayResponse:razorpayResponse,
+            userDetails: user,
+            razorpayKeyId: process.env.KEY_ID,
+        });
+
+    } catch (error) {
+        console.log(error.message);
+        res.redirect('/user-error')
+    }
+}
+
+
+const verifyWalletRecharge = async(req,res)=>{
+    try {
+        userHelpers.verifyOnlinePayment(req.body).then(()=>{
+            
+            const razorpayAmount=parseInt(req.body['serverOrderDetails[razorpayResponse][amount]'])
+            const amount=parseInt(razorpayAmount/100)
+            userHelpers. rechargeUpdateWallet(req.body['serverOrderDetails[razorpayResponse][receipt]'],amount).then(()=>{
+                res.json({ status: true });
+            })
+            
+
+        })
+        .catch((err) => {
+
+            console.log(err);
+    
+            res.json({ status: false });
+    
+        });
+    } catch (error) {
+        console.log(error.message);
+        res.redirect('/user-error')
+    }
+}
+
 
 
 
@@ -687,5 +738,7 @@ module.exports = {
     listCategory,
     loadWallet,
     walletOrder,
-    errorPageLoad
+    errorPageLoad,
+    generateWalletRechargeOrder,
+    verifyWalletRecharge
 }

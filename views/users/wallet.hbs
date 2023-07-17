@@ -1,82 +1,87 @@
 {{>user-header}}
 <style>
-    body {
-      background-color: #f5f5f5;
-    }
-    
-    .wallet-container {
-      max-width: 600px;
-      margin: 0 auto;
-    }
-    
-    .wallet-card {
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      margin-top: 50px;
-      margin-bottom: 50px;
-      position: relative; /* Position the card container */
-    }
-    
-    .wallet-header {
-      background-color: #fff;
-      padding: 20px;
-      border-top-left-radius: 10px;
-      border-top-right-radius: 10px;
-      font-family: "Arial", sans-serif; /* Change the font to a professional font */
-      position: relative; /* Position the header container */
-    }
-    
-    .wallet-body {
-      background-color: #fff;
-      padding: 20px;
-      border-bottom-left-radius: 10px;
-      border-bottom-right-radius: 10px;
-    }
-    
-    .balance {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    
-    .transaction-list li {
-      border-bottom: 1px solid #eee;
-      padding: 10px 0;
-    }
-    
-    .transaction-list li:last-child {
-      border-bottom: none;
-    }
+  body {
+    background-color: #f5f5f5;
+  }
 
-    /* Additional styles for wallet GIF and text */
-    .wallet-gif {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      width: 60px;
-    }
-    
-    .wallet-text {
-      position: absolute;
-      top: 50%;
-      left: 20px;
-      transform: translateY(-50%);
-      font-size: 24px;
-      font-weight: bold;
-    }
-    
+  .wallet-container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .wallet-card {
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 50px;
+    margin-bottom: 50px;
+    position: relative;
+    /* Position the card container */
+  }
+
+  .wallet-header {
+    background-color: #fff;
+    padding: 20px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    font-family: "Arial", sans-serif;
+    /* Change the font to a professional font */
+    position: relative;
+    /* Position the header container */
+  }
+
+  .wallet-body {
+    background-color: #fff;
+    padding: 20px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
+
+  .balance {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .transaction-list li {
+    border-bottom: 1px solid #eee;
+    padding: 10px 0;
+  }
+
+  .transaction-list li:last-child {
+    border-bottom: none;
+  }
+
+  /* Additional styles for wallet GIF and text */
+  .wallet-gif {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 60px;
+  }
+
+  .wallet-text {
+    position: absolute;
+    top: 50%;
+    left: 20px;
+    transform: translateY(-50%);
+    font-size: 24px;
+    font-weight: bold;
+  }
+
   .black-page-link {
     color: rgb(0, 0, 0) !important;
-    
+
   }
-   .black-page-link.current-page {
+
+  .black-page-link.current-page {
     color: white !important;
     background-color: black !important;
     border-color: black;
-   }
-
-  </style>
-
- <div class="container">
+  }
+</style>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<!-- Include the SweetAlert CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.2/dist/sweetalert2.min.css">
+<div class="container">
   <div class="row justify-content-center">
     <div class="col-md-8">
       <div class="card wallet-card">
@@ -87,48 +92,86 @@
         <div class="card-body wallet-body">
           <div class="balance">
             {{#if walletDetails}}
-              <h2 class="display-2">₹{{walletDetails.walletAmount}}</h2>
+            <h2 class="display-2">₹{{walletDetails.walletAmount}}</h2>
             {{/if}}
           </div>
+          <div>
+            <a href="" class="btn btn-warning " style="color: white;" id="walletRechargeBtn"> Recharge your
+              Wallet....</a>
+          </div>
+
           <ul class="list-unstyled transaction-list">
             {{#each orderDetails}}
-              <li class="d-flex justify-content-between align-items-center">
-                {{#if (or (eq this.orderStatus "Preparing food") (eq this.orderStatus "Placed") (eq this.orderStatus "Delivered"))}}
-                  <span class="font-weight-bold">Debit Transaction on {{this.date}}</span>
-                  <span class="text-danger">-₹{{this.orderValue}}</span>
-                {{else if (eq this.orderStatus "cancelled")}}
-                  <span class="font-weight-bold">Credit Transaction on {{this.date}}</span>
-                  <span class="text-success">₹{{this.orderValue}}</span>
-                {{/if}}
-              </li>
+            <li class="d-flex justify-content-between align-items-center">
+              {{#if (or (eq this.orderStatus "Preparing food") (eq this.orderStatus "Placed") (eq this.orderStatus
+              "Delivered"))}}
+              <span class="font-weight-bold">Debit Transaction on {{this.date}}</span>
+              <span class="text-danger">-₹{{this.orderValue}}</span>
+              {{else if (eq this.orderStatus "cancelled")}}
+              <span class="font-weight-bold">Credit Transaction on {{this.date}}</span>
+              <span class="text-success">₹{{this.orderValue}}</span>
+              {{/if}}
+            </li>
             {{/each}}
           </ul>
           {{#if showPagination}}
-            <nav aria-label="Transaction Pagination">
-              <ul class="pagination justify-content-center">
-                {{#if hasPrev}}
-                  <li class="page-item">
-                    <a class="page-link black-page-link" href="?page={{prevPage}}" aria-label="Previous">
-                      <span aria-hidden="true">&laquo;</span>
-                    </a>
-                  </li>
-                {{/if}}
-                {{#each pages}}
-                  <li class="page-item{{#if current}} active{{/if}}">
-                    <a class="page-link black-page-link{{#if current}} current-page{{/if}}" href="?page={{number}}">{{number}}</a>
-                  </li>
-                {{/each}}
-                {{#if hasNext}}
-                  <li class="page-item">
-                    <a class="page-link black-page-link" href="?page={{nextPage}}" aria-label="Next">
-                      <span aria-hidden="true">&raquo;</span>
-                    </a>
-                  </li>
-                {{/if}}
-              </ul>
-            </nav>
+          <nav aria-label="Transaction Pagination">
+            <ul class="pagination justify-content-center">
+              {{#if hasPrev}}
+              <li class="page-item">
+                <a class="page-link black-page-link" href="?page={{prevPage}}" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+              </li>
+              {{/if}}
+              {{#each pages}}
+              <li class="page-item{{#if current}} active{{/if}}">
+                <a class="page-link black-page-link{{#if current}} current-page{{/if}}"
+                  href="?page={{number}}">{{number}}</a>
+              </li>
+              {{/each}}
+              {{#if hasNext}}
+              <li class="page-item">
+                <a class="page-link black-page-link" href="?page={{nextPage}}" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                </a>
+              </li>
+              {{/if}}
+            </ul>
+          </nav>
           {{/if}}
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{!------------------------------------------------------ Modal for recharge wallet
+--------------------------------------------------------------}}
+
+<div class="modal fade" id="rechargeModal" tabindex="-1" role="dialog" aria-labelledby="rechargeModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="rechargeModalLabel">Recharge Wallet</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="rechargeModalForm">
+          <div class="form-group">
+            <label for="rechargeAmount">Recharge Amount</label>
+            <input type="text" class="form-control" id="rechargeAmount" name="rechargeAmount" placeholder="Enter amount"
+              required>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-warning" style="color: #fff;"
+              id="rechargeModalSubmit">Recharge</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
@@ -138,5 +181,143 @@
 
 {{>user-footer}}
 <!-- Bootstrap JS (Optional) -->
+<!-- Include jQuery and Bootstrap JavaScript files -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<!-- Include jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Script for using Razorpay Payment gateway functions -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<!-- Include the SweetAlert library -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.2/dist/sweetalert2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+<script>
+  $(document).ready(function () {
+    // Attach event listener to the wallet recharge button
+    $('#walletRechargeBtn').click((e) => {
+      e.preventDefault(); // Prevent default form submission behavior
+      $('#rechargeModal').modal('show'); // Show the recharge modal
+    });
+
+    // Handle modal submission
+    $('#rechargeModalForm').submit((e) => {
+      e.preventDefault(); // Prevent default form submission behavior
+
+      // Get the recharge amount entered by the user
+      const rechargeAmount = $('#rechargeAmount').val();
+
+      // Make an AJAX request to the server
+      $.ajax({
+        url: '/generate-wallet-recharge-order',
+        method: 'post',
+        data: { total: rechargeAmount },
+        success: (response) => {
+          console.log(response, "hi response")
+          if (response) {
+            razorpayPayment(response);
+            $('#rechargeModal').modal('hide'); // Hide the recharge modal after initiating payment
+          } else {
+            alert('Error generating wallet recharge order.');
+          }
+        },
+        error: (error) => {
+          console.error('Error generating wallet recharge order:', error);
+          alert('Error generating wallet recharge order.');
+        }
+      });
+    });
+
+    function razorpayPayment(order) {
+      let razorpayKeyId = order.razorpayKeyId;
+      let razorpayResponse = order.razorpayResponse;
+      let userDetails = order.userDetails;
+      console.log(order, "hi order")
+      var options = {
+        "key": razorpayKeyId, // Enter the Key ID generated from the Dashboard
+        "amount": razorpayResponse.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+        "currency": "INR",
+        "name": "Juco berry",
+        "description": "Test Transaction",
+
+        "order_id": razorpayResponse.id, // This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+        "handler": function (response) {
+          verifypayment(response, order);
+        },
+        "prefill": {
+          "name": userDetails.name,
+          "email": userDetails.email,
+          "contact": userDetails.mobile
+        },
+        "notes": {
+          "address": "Razorpay Corporate Office"
+        },
+
+      };
+
+      console.log(options, 'options')
+      var rzp1 = new Razorpay(options);
+      rzp1.open();
+    }
+
+
+    function verifypayment(razorpayServerPaymentResponse, serverOrderDetails) {
+      $.ajax({
+        url: '/verify-wallet-recharge-payment',
+        data: {
+          razorpayServerPaymentResponse,
+          serverOrderDetails
+        },
+        method: 'post',
+        success: (response) => {
+          if (response.status) {
+
+            // Display SweetAlert success notification
+            Swal.fire({
+              icon: 'success',
+              title: 'Wallet Recharged Successfully',
+              text: 'Your wallet has been successfully recharged.',
+              confirmButtonText: 'OK',
+              confirmButtonColor: "#ffbf00",
+              customClass: {
+                confirmButton: 'btn btn-warning', container: "swal-container",
+                title: "swal-title",
+                content: "swal-text",
+                confirmButton: "swal-button"
+              }
+            }).then(() => {
+              // Redirect to wallet-details page
+              location.href = 'wallet-details';
+            });
+
+
+          } else {
+            // Display SweetAlert error notification
+            Swal.fire({
+              icon: 'error',
+              title: 'Payment Failed',
+              text: 'Failed to recharge wallet. Please try again.',
+              confirmButtonText: 'OK',
+              confirmButtonColor: "#ffbf00",
+             customClass: {
+                confirmButton: 'btn btn-warning', container: "swal-container",
+                title: "swal-title",
+                content: "swal-text",
+                confirmButton: "swal-button"
+              }
+            }).then(()=>{
+               // Redirect to wallet-details page
+              location.href = 'wallet-details';
+            })
+          }
+        },
+        error: (error) => {
+          console.error('Error verifying wallet recharge payment:', error);
+          alert('Error verifying wallet recharge payment.');
+        }
+      });
+    }
+
+
+  });
+</script>
