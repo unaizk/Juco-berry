@@ -139,6 +139,15 @@ module.exports = {
                 is_admin: 0
             });
             const userData = await user.save();
+            req.session.user_id = userData._id;
+            //creating address collection
+            const address = new Address({
+                user_id: req.session.user_id ,
+                address:[]
+
+            })
+
+            const addresses = await address.save()
             
             await module.exports.sendingMailToVerify(req.body.name, req.body.email, userData._id);
             res.render('users/signup&login', { message: "Your registration has been successful. Please verify your email.", layout: 'user-layout' });
@@ -193,7 +202,7 @@ module.exports = {
                                 userId: userData._id,
                                 walletAmount: 0
                             });
-
+                            
                             const createdWallet = await newWallet.save();
                             res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
                             res.redirect('/home');
@@ -1030,7 +1039,7 @@ module.exports = {
                 { user_id: userId, 'address.isDefault': true },
                 { 'address.$': 1 }
             ).lean();
-            console.log(defaultAddress, 'default address');
+           
 
             const  defaultAddressNotFound = "Default address not found. Please add an address before proceeding to checkout."
 
