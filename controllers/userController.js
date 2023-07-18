@@ -368,7 +368,7 @@ const placeOrder = async (req, res) => {
 
             console.log(total, 'totalvvvvvvvvvvvvvvv');
             // =============================================== Proceeding for order Creation ===============================================
-            
+
             if (req.body['paymentMethod'] === 'COD') {
                 userHelpers.placingOrder(userId, orderDetails, orderedProducts, total).then(async (orderId, error) => {
                     res.json({ COD_CHECKOUT: true });
@@ -426,7 +426,8 @@ const placeOrder = async (req, res) => {
 
 const orderPlaced = async (req, res) => {
     try {
-        res.render('users/orderPlaced', { layout: 'user-layout' })
+        const isLogin = req.session.user_id ? true : false;
+        res.render('users/orderPlaced', { layout: 'user-layout',isLogin: isLogin})
     } catch (error) {
         console.log(error.message);
         res.redirect('/user-error')
@@ -448,7 +449,8 @@ const walletOrder = async (req, res) => {
 
 const orderFailed = async (req, res) => {
     try {
-        res.render('users/orderFailed', { layout: 'user-layout' })
+        const isLogin = req.session.user_id ? true : false;
+        res.render('users/orderFailed', { layout: 'user-layout',isLogin:isLogin })
     } catch (error) {
         console.log(error.message);
         res.redirect('/user-error')
