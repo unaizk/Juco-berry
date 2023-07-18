@@ -211,16 +211,21 @@
                                 <label class="custom-control-label" for="wallet">WALLET <span
                                         class="wallet-balance">(Wallet Balance:
                                         ₹{{walletDetails.walletAmount}})</span></label>
-                                         <p id="error-message" class="text-danger"></p>
+                                <p id="error-message" class="text-danger"></p>
                             </div>
                             <input type="hidden" name="walletBalance" value="{{walletDetails.walletAmount}}">
                         </div>
 
 
                         <hr class="mb-4">
+                        {{#if defaultAddress.defaultAddressNotFound}}
+                        <p style="color: red;">{{defaultAddress.defaultAddressNotFound}}</p>
+                        {{else}}
                         <button class="btn btn-primary btn-lg btn-block btn-checkout" id="checkout-button"
-                            type="submit">Continue to
-                            checkout</button>
+                            type="submit">
+                            Continue to checkout
+                        </button>
+                        {{/if}}
                     </form>
                 </div>
 
@@ -378,11 +383,11 @@
 
                     if (response.COD_CHECKOUT) {
                         location.href = '/orderPlaced'
-                        
-                    }else if(response.WALLET_CHECKOUT){
-                        location.href = '/wallet-placed?id='+response.orderId
-                    }else if(response.error){
-                         $('#error-message').text(response.error);
+
+                    } else if (response.WALLET_CHECKOUT) {
+                        location.href = '/wallet-placed?id=' + response.orderId
+                    } else if (response.error) {
+                        $('#error-message').text(response.error);
                     } else if (response.ONLINE_CHECKOUT) {
                         makeRazorpayPayment(response);
                     } else {

@@ -1023,13 +1023,16 @@ module.exports = {
             console.log(userId, 'id');
             const isLogin = req.session.user_id ? true : false;
 
+          
+
             // Find the default address for the user
             const defaultAddress = await Address.findOne(
                 { user_id: userId, 'address.isDefault': true },
                 { 'address.$': 1 }
             ).lean();
-
             console.log(defaultAddress, 'default address');
+
+            const  defaultAddressNotFound = "Default address not found. Please add an address before proceeding to checkout."
 
             // Find the user document and extract the address array
             const userDocument = await Address.findOne({ user_id: userId }).lean();
@@ -1163,7 +1166,7 @@ module.exports = {
     
                 res.render('users/checkout', {
                     layout: 'user-layout',
-                    defaultAddress: defaultAddress ? defaultAddress.address[0] : null, // Add a conditional check for defaultAddress
+                    defaultAddress: defaultAddress ? defaultAddress.address[0] : { defaultAddressNotFound },
                     filteredAddresses,
                     products,
                     total,
@@ -1271,46 +1274,48 @@ module.exports = {
                 if (!defaultAddress) {
                     console.log('Default address not found');
                     return res.redirect('/address');
+                }else{
+                    const defaultAddressDetails = defaultAddress.address[0];
+                    const address = {
+                        name: defaultAddressDetails.name,
+                        mobile: defaultAddressDetails.mobile,
+                        homeAddress: defaultAddressDetails.homeAddress,
+                        city: defaultAddressDetails.city,
+                        street: defaultAddressDetails.street,
+                        postalCode: defaultAddressDetails.postalCode
+                    };
+                    console.log(address, 'address');
+            
+            
+                    const orderDetails = new Order({
+                        userId: userId,
+                        date: Date(),
+                        orderValue: totalOrderValue,
+                        couponDiscount: orderData.couponDiscount,
+                        paymentMethod: orderData['paymentMethod'],
+                        orderStatus: orderStatus,
+                        products: orderedProducts,
+                        addressDetails: address,
+                        actualOrderValue:orderData.actualOrderValue,
+                        productOfferDiscount:orderData.productOfferDiscount,
+                        categoryOfferDiscount:orderData.categoryOfferDiscount
+    
+                    });
+            
+                    const placedOrder = await orderDetails.save();
+            
+                    console.log(placedOrder, 'placedOrder');
+            
+                    // Remove the products from the cart
+                    await Cart.deleteMany({ user_id: userId });
+            
+                    let dbOrderId = placedOrder._id.toString();
+                    console.log(dbOrderId, 'order id in stringggggggggggggggggggggggggggg');
+                    
+                    resolve(dbOrderId)
                 }
         
-                const defaultAddressDetails = defaultAddress.address[0];
-                const address = {
-                    name: defaultAddressDetails.name,
-                    mobile: defaultAddressDetails.mobile,
-                    homeAddress: defaultAddressDetails.homeAddress,
-                    city: defaultAddressDetails.city,
-                    street: defaultAddressDetails.street,
-                    postalCode: defaultAddressDetails.postalCode
-                };
-                console.log(address, 'address');
-        
-        
-                const orderDetails = new Order({
-                    userId: userId,
-                    date: Date(),
-                    orderValue: totalOrderValue,
-                    couponDiscount: orderData.couponDiscount,
-                    paymentMethod: orderData['paymentMethod'],
-                    orderStatus: orderStatus,
-                    products: orderedProducts,
-                    addressDetails: address,
-                    actualOrderValue:orderData.actualOrderValue,
-                    productOfferDiscount:orderData.productOfferDiscount,
-                    categoryOfferDiscount:orderData.categoryOfferDiscount
-
-                });
-        
-                const placedOrder = await orderDetails.save();
-        
-                console.log(placedOrder, 'placedOrder');
-        
-                // Remove the products from the cart
-                await Cart.deleteMany({ user_id: userId });
-        
-                let dbOrderId = placedOrder._id.toString();
-                console.log(dbOrderId, 'order id in stringggggggggggggggggggggggggggg');
-                
-                resolve(dbOrderId)
+               
             } catch (error) {
                 reject(error)
             }

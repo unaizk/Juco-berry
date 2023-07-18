@@ -312,7 +312,7 @@ const placeOrder = async (req, res) => {
     try {
         let userId = req.session.user_id// Used for storing user details for further use in this route
         let orderDetails = req.body;
-
+        
         // console.log(req.body,'vvvvvvvvvvvvvvvvvvvvvvvv');
 
         let orderedProducts = await userHelpers.getProductListForOrders(userId);
@@ -368,6 +368,7 @@ const placeOrder = async (req, res) => {
 
             console.log(total, 'totalvvvvvvvvvvvvvvv');
             // =============================================== Proceeding for order Creation ===============================================
+            
             if (req.body['paymentMethod'] === 'COD') {
                 userHelpers.placingOrder(userId, orderDetails, orderedProducts, total).then(async (orderId, error) => {
                     res.json({ COD_CHECKOUT: true });
