@@ -35,7 +35,8 @@ const verifyLogin = async (req, res) => {
 
 const loadDashboard = async (req, res) => {
   try {
-
+    const adminUser = await User.findOne({is_admin:req.session.is_admin}).lean()
+    // console.log(adminUser,'adminUser');
     const dashBoardDetails = await adminHelpers.loadingDashboard(req, res)
 
     const orderDetails = await adminHelpers.OrdersList(req,res)
@@ -56,7 +57,7 @@ const loadDashboard = async (req, res) => {
 
   //  console.log(sales,'sales');
 
-    res.render('admin/admin-home', { layout: 'admin-layout',totalUser,todaySales:todaySales[0] ,totalSales:totalSales[0], salesbymonth:encodeURIComponent(JSON.stringify(salesbymonth)) ,paymentMethod:encodeURIComponent(JSON.stringify(paymentMethod)),yearSales:yearSales[0],orderDetails:orderDetails })
+    res.render('admin/admin-home', { layout: 'admin-layout',totalUser,todaySales:todaySales[0] ,totalSales:totalSales[0], salesbymonth:encodeURIComponent(JSON.stringify(salesbymonth)) ,paymentMethod:encodeURIComponent(JSON.stringify(paymentMethod)),yearSales:yearSales[0],orderDetails:orderDetails,admin:adminUser })
   } catch (error) {
     console.log(error.message)
     res.redirect('/admin/admin-error')
@@ -291,10 +292,10 @@ const updateProduct = async(req,res)=>{
 const loadOrdersList = async(req,res)=>{
   try {
     const orderDetails = await adminHelpers.OrdersList(req,res);
-
+    const adminUser = await User.findOne({is_admin:req.session.is_admin}).lean()
    
 
-    res.render('admin/ordersList', { layout: 'admin-layout', orderDetails: orderDetails });
+    res.render('admin/ordersList', { layout: 'admin-layout', orderDetails: orderDetails ,admin:adminUser});
     
   } catch (error) {
     console.log(error.message)
@@ -389,11 +390,11 @@ const errorPageLoad = async(req,res)=>{
 
 const loadSalesPage = async(req,res)=>{
   try {
-
+    const adminUser = await User.findOne({is_admin:req.session.is_admin}).lean()
     const orderSuccessDetails = await adminHelpers.orderSuccess()
     // console.log(orderSuccessDetails,'order');
   
-    res.render("admin/admin-sales", {layout:'admin-layout', order:orderSuccessDetails.orderHistory, total:orderSuccessDetails.total });
+    res.render("admin/admin-sales", {layout:'admin-layout', order:orderSuccessDetails.orderHistory, total:orderSuccessDetails.total,admin:adminUser });
   } catch (error) {
      console.log(error.message)
     res.redirect('/admin/admin-error')
@@ -403,8 +404,9 @@ const loadSalesPage = async(req,res)=>{
 const getSalesToday = async(req,res)=>{
   try {
     const todaySales = await adminHelpers.salesToday()
+    const adminUser = await User.findOne({is_admin:req.session.is_admin}).lean()
     // console.log(todaySales,'todaySales');
-    res.render("admin/admin-sales", {layout:'admin-layout', order:todaySales.orderHistory, total:todaySales.total });
+    res.render("admin/admin-sales", {layout:'admin-layout', order:todaySales.orderHistory, total:todaySales.total,admin:adminUser });
   } catch (error) {
     console.log(error.message)
     res.redirect('/admin/admin-error')
@@ -414,8 +416,9 @@ const getSalesToday = async(req,res)=>{
 const getWeekSales = async(req,res)=>{
   try {
     const weeklySales = await adminHelpers.weeklySales()
+    const adminUser = await User.findOne({is_admin:req.session.is_admin}).lean()
 
-     res.render("admin/admin-sales", {layout:'admin-layout', order:weeklySales.orderHistory, total:weeklySales.total });
+     res.render("admin/admin-sales", {layout:'admin-layout', order:weeklySales.orderHistory, total:weeklySales.total ,admin:adminUser});
   } catch (error) {
     console.log(error.message)
     res.redirect('/admin/admin-error')
@@ -425,7 +428,8 @@ const getWeekSales = async(req,res)=>{
 const getMonthSales = async(req,res)=>{
   try {
     const montlySales = await adminHelpers.monthlySales()
-    res.render("admin/admin-sales", {layout:'admin-layout', order:montlySales.orderHistory, total:montlySales.total });
+    const adminUser = await User.findOne({is_admin:req.session.is_admin}).lean()
+    res.render("admin/admin-sales", {layout:'admin-layout', order:montlySales.orderHistory, total:montlySales.total,admin:adminUser});
   } catch (error) {
     console.log(error.message)
     res.redirect('/admin/admin-error')
@@ -435,7 +439,8 @@ const getMonthSales = async(req,res)=>{
 const getYearlySales = async(req,res)=>{
   try {
     const yearlySales = await adminHelpers.yearlySales()
-    res.render("admin/admin-sales", {layout:'admin-layout', order:yearlySales.orderHistory, total:yearlySales.total });
+    const adminUser = await User.findOne({is_admin:req.session.is_admin}).lean()
+    res.render("admin/admin-sales", {layout:'admin-layout', order:yearlySales.orderHistory, total:yearlySales.total ,admin:adminUser});
   } catch (error) {
     console.log(error.message)
     res.redirect('/admin/admin-error')
@@ -445,7 +450,8 @@ const getYearlySales = async(req,res)=>{
 const salesWithDate = async(req,res)=>{
   try {
     const salesWithDate = await adminHelpers.salesWithDate(req,res)
-    res.render("admin/admin-sales", {layout:'admin-layout', order:salesWithDate.orderHistory, total:salesWithDate.total });
+    const adminUser = await User.findOne({is_admin:req.session.is_admin}).lean()
+    res.render("admin/admin-sales", {layout:'admin-layout', order:salesWithDate.orderHistory, total:salesWithDate.total,admin: adminUser});
   } catch (error) {
     console.log(error.message,'salesWithDate controller error')
     res.redirect('/admin/admin-error')

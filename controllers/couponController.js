@@ -13,24 +13,19 @@ const ObjectId = mongoose.Types.ObjectId;
 
 const manageCoupon = async(req,res)=>{
     try {
-        const admin = req.session.is_admin;
-        const adminData = await User.find({is_admin:admin})
+       
+        const adminUser = await User.findOne({is_admin:req.session.is_admin}).lean()
+       
         
-        console.log(adminData,'adminDatacccccccccccccc');
+        console.log(adminUser,'adminDatacccccccccccccc');
         const activeCoupons = await couponHelpers.getActiveCoupons();
         const inActiveCoupons = await couponHelpers.getInActiveCoupons();
      
-        const dataToRender = {
-
-            layout: 'admin-layout',
-            adminData,
-            activeCoupons,
-            inActiveCoupons,
-           
-    
-        }
       
-        res.render('admin/coupon-manage', dataToRender );
+        res.render('admin/coupon-manage',{  layout: 'admin-layout',
+        admin:adminUser,
+        activeCoupons,
+        inActiveCoupons,});
     } catch (error) {
         console.log(error.message)
         res.redirect('/admin/admin-error')
@@ -39,8 +34,8 @@ const manageCoupon = async(req,res)=>{
 
 const addNewCouponGET = async(req,res)=>{
     try {
-        const admin = req.session.is_admin;
-        const adminData = await User.find({is_admin:admin})
+        
+        const adminUser = await User.findOne({is_admin:req.session.is_admin}).lean()
 
         let couponExistError = false;
 
@@ -50,7 +45,7 @@ const addNewCouponGET = async(req,res)=>{
             
         }
   
-        res.render('admin/coupon-add',{ layout: 'admin-layout', adminData, couponExistError });
+        res.render('admin/coupon-add',{ layout: 'admin-layout', admin:adminUser, couponExistError });
 
         delete req.session.couponExistError;
     } catch (error) {
@@ -62,8 +57,7 @@ const addNewCouponGET = async(req,res)=>{
 
 const addNewCouponPOST = async(req,res)=>{
     try {
-        const admin = req.session.is_admin;
-        const adminData = await User.find({is_admin:admin})
+        const adminUser = await User.findOne({is_admin:req.session.is_admin}).lean()
 
         const newCouponData = req.body;
     
@@ -90,15 +84,14 @@ const addNewCouponPOST = async(req,res)=>{
 
 const inactiveCouponsGET = async(req,res)=>{
     try {
-        const admin = req.session.is_admin;
-        const adminData = await User.find({is_admin:admin})
+        const adminUser = await User.findOne({is_admin:req.session.is_admin}).lean()
 
         const inActiveCoupons = await couponHelpers.getInActiveCoupons();
     
         const dataToRender = {
     
             layout: 'admin-layout',
-            adminData,
+            admin:adminUser,
             inActiveCoupons
     
         }
@@ -114,8 +107,7 @@ const inactiveCouponsGET = async(req,res)=>{
 
 const editCouponGET = async(req,res)=>{
     try {
-        const admin = req.session.is_admin;
-        const adminData = await User.find({is_admin:admin})
+        const adminUser = await User.findOne({is_admin:req.session.is_admin}).lean()
 
         let couponExistError = false;
 
@@ -134,7 +126,7 @@ const editCouponGET = async(req,res)=>{
         const dataToRender = {
             
             layout: 'admin-layout',
-            adminData,
+            admin:adminUser,
             couponExistError,
             couponData
 
@@ -155,7 +147,7 @@ const updateCouponPOST = async (req, res)=>{
     try{
 
         const admin = req.session.is_admin;
-        const adminData = await User.find({is_admin:admin})
+        const adminData = await User.find({is_admin:admin}).lean()
 
         const couponDataForUpdate = req.body;
 
@@ -194,7 +186,7 @@ const updateCouponPOST = async (req, res)=>{
 const changeCouponStatusPOST = async(req,res)=>{
     try {
         const admin = req.session.is_admin;
-        const adminData = await User.find({is_admin:admin})
+        const adminData = await User.find({is_admin:admin}).lean()
 
         const couponId = req.body.couponId;
     

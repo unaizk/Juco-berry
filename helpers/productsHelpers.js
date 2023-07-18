@@ -1,5 +1,6 @@
 const Product = require('../models/productsModel');
 const Category = require('../models/categoryModel');
+const User = require('../models/userModel');
 const multer = require('multer')
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
@@ -15,6 +16,7 @@ module.exports = {
   loadingProductPage: async (req, res) => {
     try {
       const updatedProducts = await Product.find({ unlist: false }).lean();
+      const adminUser = await User.findOne({is_admin:req.session.is_admin}).lean()
 
       // Create a lookup object for category names
       const categoryLookup = {};
@@ -31,7 +33,7 @@ module.exports = {
 
       console.log('Retrieving categories...');
       console.log('Categories:', categories);
-      res.render('admin/products', { layout: 'admin-layout', products: productWithSerialNumber, categories: categories });
+      res.render('admin/products', { layout: 'admin-layout', products: productWithSerialNumber, categories: categories,admin:adminUser });
     } catch (error) {
       console.log(error.message)
       res.redirect('/admin/admin-error')
@@ -88,7 +90,7 @@ module.exports = {
     try {
       const id = req.query.id;
 
-
+      const adminUser = await User.findOne({is_admin:req.session.is_admin}).lean()
 
 
       const userData = await Product.findByIdAndUpdate({ _id: id }, { $set: { unlist: true } });
@@ -106,7 +108,7 @@ module.exports = {
 
 
       // Pass the updated product list and categories to the view
-      res.render('admin/products', { layout: 'admin-layout', products: productWithSerialNumber, categories: categories });
+      res.render('admin/products', { layout: 'admin-layout', products: productWithSerialNumber, categories: categories,admin:adminUser });
     } catch (error) {
       console.log(error.message)
       res.redirect('/admin/admin-error')
@@ -116,13 +118,14 @@ module.exports = {
   unlistedProductsList: async (req, res) => {
     try {
       const unlistedProductsData = await Product.find({ unlist: true }).lean();
+      const adminUser = await User.findOne({is_admin:req.session.is_admin}).lean()
       const productsWithSerialNumber = unlistedProductsData.map((product, index) => ({
         ...product,
         serialNumber: index + 1
       }));
       console.log(productsWithSerialNumber);
       const categories = await Category.find().lean();
-      res.render('admin/unlisted-products', { layout: "admin-layout", product: productsWithSerialNumber, categories: categories });
+      res.render('admin/unlisted-products', { layout: "admin-layout", product: productsWithSerialNumber, categories: categories ,admin:adminUser});
     } catch (error) {
       console.log(error.message)
       res.redirect('/admin/admin-error')
@@ -164,7 +167,7 @@ module.exports = {
     try {
       const id = req.query.id;
       console.log('ID:', id);
-
+      const adminUser = await User.findOne({is_admin:req.session.is_admin}).lean()
       const categories = await Category.find({ unlist: false }).lean();
       const categoryData = {};
       categories.forEach((data) => {
@@ -188,7 +191,7 @@ module.exports = {
         };
         console.log(productWithCategoryName, 'productWithCategoryNamevvvv');
         console.log('CategoryData:', categoryData);
-        res.render('admin/edit-product', { product: productWithCategoryName, layout: 'admin-layout', categories: categoryData });
+        res.render('admin/edit-product', { product: productWithCategoryName, layout: 'admin-layout', categories: categoryData ,admin:adminUser});
       } else {
         console.log('Product not found');
         res.redirect('/admin/products');

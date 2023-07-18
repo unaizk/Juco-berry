@@ -321,13 +321,14 @@ module.exports = {
 
     userListing: async (req, res) => {
         try {
+            const adminUser = await User.findOne({is_admin:req.session.is_admin}).lean()
             const userData = await User.find({ is_admin: false, blocked: false }).lean();
             const usersWithSerialNumber = userData.map((user, index) => ({
                 ...user,
                 serialNumber: index + 1
             }));
             console.log(usersWithSerialNumber);
-            res.render('admin/admin-users', { layout: "admin-layout", users: usersWithSerialNumber });
+            res.render('admin/admin-users', { layout: "admin-layout", users: usersWithSerialNumber,admin:adminUser });
         } catch (error) {
             console.log(error.message)
             res.redirect('/admin/admin-error')
@@ -338,12 +339,13 @@ module.exports = {
         try {
             const id = req.query.id;
             console.log('ID:', id);
+            const adminUser = await User.findOne({is_admin:req.session.is_admin}).lean()
 
             const userData = await User.findById({ _id: id }).lean();
             console.log('User Data:', userData);
 
             if (userData) {
-                res.render('admin/edit-user', { users: userData, layout: 'admin-layout' });
+                res.render('admin/edit-user', { users: userData, layout: 'admin-layout',admin:adminUser });
             } else {
                 console.log('User not found');
                 res.redirect('/admin/admin-users');
@@ -380,13 +382,14 @@ module.exports = {
 
     blockedUsers: async (req, res) => {
         try {
+            const adminUser = await User.findOne({is_admin:req.session.is_admin}).lean()
             const blockedUserData = await User.find({ is_admin: false, blocked: true }).lean();
             const usersWithSerialNumber = blockedUserData.map((user, index) => ({
                 ...user,
                 serialNumber: index + 1
             }));
             console.log(usersWithSerialNumber);
-            res.render('admin/blocked-users', { layout: "admin-layout", users: usersWithSerialNumber });
+            res.render('admin/blocked-users', { layout: "admin-layout", users: usersWithSerialNumber,admin:adminUser });
         } catch (error) {
             console.log(error.message)
             res.redirect('/admin/admin-error')
@@ -446,7 +449,7 @@ module.exports = {
     loadingOrdersViews: async (req, res) => {
         try {
             const orderId = req.query.id;
-
+            const adminUser = await User.findOne({is_admin:req.session.is_admin}).lean()
 
             console.log(orderId, 'orderId');
             const order = await Order.findOne({ _id: orderId })
@@ -510,7 +513,8 @@ module.exports = {
                 orderDate: createdOnIST,
                 cancellationStatus: cancellationStatus,
                 productDiscount: productDiscount,
-                categoryDiscount: categoryDiscount
+                categoryDiscount: categoryDiscount,
+                admin:adminUser
             });
         } catch (error) {
             console.log(error.message)
