@@ -1,99 +1,99 @@
- 
-
 {{!-- {{>user-layout}} --}}
- <link href="/stylesheets/signup.css" rel="stylesheet" />
- 
- <div class="wrapper">
+<link href="/stylesheets/signup.css" rel="stylesheet" />
+
+<div class="wrapper">
   <div class="img-container"><img class="login-logo" src="/images/download.png" alt=""></div>
-  
-      <div class="title-text">
-        <div class="title login">Login</div>
-        <div class="title signup">Signup</div>
-      </div>
-      <div class="form-container">
-        <div class="slide-controls">
-          <input type="radio" name="slide" id="login" checked>
-          <input type="radio" name="slide" id="signup">
-          <label for="login" class="slide login">Login</label>
-          <label for="signup" class="slide signup">Signup</label>
-          <div class="slider-tab"></div>
-        </div>
-         {{#if messages}}
-                <p><span id="login-message" style="font-family: Arial, sans-serif; color: rgb(255, 0, 0);">{{messages}}</span></p>
 
-          {{/if}} 
-        <div class="form-inner">
-         
-          <form action="/login" method="post" class="login">
-            <div class="field">
-              <input type="email" name="email" placeholder="Email Address" required>
-            </div>
-            <div class="field">
-              <input type="password" name="password" placeholder="Password" required>
-            </div>
-            <div class="pass-link"><a href="/forget">Forgot password?</a></div>
-            <div class="field btn">
-              <div class="btn-layer"></div>
-              <input type="submit" value="Login">
-            </div>
-            <div class="signup-link">Not a member? <a href="/signup">Signup now</a></div>
-            <div class="login-link">
-                  <a class="otp" href="/otp">Login with OTP</a>
-            </div>
-            {{#if message}}
-                <p><span style="font-family: Arial, sans-serif; color: green;">{{message}}</span></p>
-
-          {{/if}}
-          </form>
-          <form action="/signup" method="post" class="signup">
-            <div class="field">
-              <input type="text" name="name" placeholder="Enter a name" required>
-            </div>
-            <div class="field">
-              <input type="email" name="email" placeholder="Email Address" required>
-            </div>
-            <div class="field">
-              <input type="number" name="mobile" placeholder="Mobile" required>
-            </div>
-            <div class="field">
-              <input type="password" name="password" placeholder="Password" required>
-            </div>
-            <div class="field btn">
-              <div class="btn-layer"></div>
-              <input type="submit" value="Signup">
-            </div>
-            
-
-          </form>
-         
-        
-
-        </div>
-      </div>
+  <div class="title-text">
+    <div class="title login">Login</div>
+    <div class="title signup">Signup</div>
+  </div>
+  <div class="form-container">
+    <div class="slide-controls">
+      <input type="radio" name="slide" id="login" checked>
+      <input type="radio" name="slide" id="signup">
+      <label for="login" class="slide login">Login</label>
+      <label for="signup" class="slide signup">Signup</label>
+      <div class="slider-tab"></div>
     </div>
-    
-    
-     <!-- Google Map -->
-  <script>
-    const loginText = document.querySelector(".title-text .login");
-const loginForm = document.querySelector("form.login");
-const loginBtn = document.querySelector("label.login");
-const signupBtn = document.querySelector("label.signup");
-const signupLink = document.querySelector("form .signup-link a");
-signupBtn.onclick = (()=>{
-  loginForm.style.marginLeft = "-50%";
-  loginText.style.marginLeft = "-50%";
-});
-loginBtn.onclick = (()=>{
-  loginForm.style.marginLeft = "0%";
-  loginText.style.marginLeft = "0%";
-});
-signupLink.onclick = (()=>{
-  signupBtn.click();
-  return false;
-});
+    {{#if messages}}
+    <p><span id="login-message" style="font-family: Arial, sans-serif; color: rgb(255, 0, 0);">{{messages}}</span></p>
 
-  
+    {{/if}}
+    <div class="form-inner">
+
+      <form action="/login" method="post" class="login">
+        <div class="field">
+          <input type="email" name="email" placeholder="Email Address" required>
+        </div>
+        <div class="field">
+          <input type="password" name="password" placeholder="Password" required>
+        </div>
+        <div class="pass-link"><a href="/forget">Forgot password?</a></div>
+        <div class="field btn">
+          <div class="btn-layer"></div>
+          <input type="submit" value="Login">
+        </div>
+        <div class="signup-link">Not a member? <a href="/signup">Signup now</a></div>
+        <div class="login-link">
+          <a class="otp" href="/otp">Login with OTP</a>
+        </div>
+        {{#if message}}
+        <p><span style="font-family: Arial, sans-serif; color: green;">{{message}}</span></p>
+
+        {{/if}}
+      </form>
+      <form action="/signup" method="post" class="signup">
+        <div class="field">
+          <input type="text" name="name" placeholder="Enter a name" required>
+        </div>
+        <div class="field">
+          <input type="email" name="email" placeholder="Email Address" id="email" required>
+        </div>
+        <div class="field">
+          <input type="number" name="mobile" placeholder="Mobile" id="mobile" required>
+        </div>
+        <span id="mobile-message" style="color: red;"></span>
+        <div class="field">
+          <input type="password" name="password" placeholder="Password" id="password" required>
+        </div>
+        <p id="password-message" class="text-danger">{{message}}</p>
+        <div class="field btn">
+          <div class="btn-layer"></div>
+          <input type="submit" value="Signup">
+        </div>
+
+
+      </form>
+
+
+
+    </div>
+  </div>
+</div>
+
+
+<!-- Google Map -->
+<script>
+  const loginText = document.querySelector(".title-text .login");
+  const loginForm = document.querySelector("form.login");
+  const loginBtn = document.querySelector("label.login");
+  const signupBtn = document.querySelector("label.signup");
+  const signupLink = document.querySelector("form .signup-link a");
+  signupBtn.onclick = (() => {
+    loginForm.style.marginLeft = "-50%";
+    loginText.style.marginLeft = "-50%";
+  });
+  loginBtn.onclick = (() => {
+    loginForm.style.marginLeft = "0%";
+    loginText.style.marginLeft = "0%";
+  });
+  signupLink.onclick = (() => {
+    signupBtn.click();
+    return false;
+  });
+
+
   function hideMessage() {
     var messageElement = document.getElementById("login-message");
     if (messageElement) {
@@ -102,10 +102,41 @@ signupLink.onclick = (()=>{
   }
 
   // Set a timeout of 3000 milliseconds (3 seconds)
-    setTimeout(hideMessage, 8000);
+  setTimeout(hideMessage, 8000);
 
 
-  </script>
+</script>
+
+<script>
+  const passwordInput = document.getElementById("password");
+  const mobileInput = document.getElementById("mobile")
+  const passwordMessage = document.getElementById("password-message");
+  const email = document.getElementById('email')
+
+  function validatePassword() {
+    if (passwordInput.value.length < 6) {
+      document.getElementById("password-message").innerHTML = "Password must be at least 6 characters long";
+    } else {
+      passwordMessage.textContent = "";
+    }
+  }
+
+  function validateNumber() {
+    const mobileValue = mobileInput.value.trim();
+    const mobileMessage = document.getElementById("mobile-message");
+
+    if (mobileValue.length !== 10 || isNaN(mobileValue)) {
+      mobileMessage.textContent = "Please enter a 10-digit number";
+    } else {
+      mobileMessage.textContent = "";
+    }
+  }
+
+
+
+
+  passwordInput.addEventListener("input", validatePassword);
+  mobileInput.addEventListener("input", validateNumber);
+
+</script>
 {{!-- {{>footer}} --}}
-
- 

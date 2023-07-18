@@ -70,9 +70,12 @@
    
    
     <script>
-        $(document).ready(function () {
-            $('#myTable').DataTable();
-        });
+      $(document).ready(function() {
+  $('#mytable').DataTable({
+    "order": [[0, "desc"]] // Sort the first column (index 0) in descending order
+  });
+});
+
     </script>
 
  
