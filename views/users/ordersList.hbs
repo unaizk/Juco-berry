@@ -73,6 +73,7 @@
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
 
+
 {{>user-header}}
 {{#if orderDetails.length}}
 <div class="container tableheader">
@@ -110,7 +111,7 @@
             <div class="card-body">
                 <h3 class="card-title" style="color: rgb(65, 65, 64);">ORDER DETAILS</h3>
                 <div class="table-responsive">
-                    <table class="table table-bordered table-striped" id="myTable">
+                    <table class="table table-bordered table-striped" id="orderTable">
                         <thead>
                             <tr>
                                 <th scope="col">DATE</th>
@@ -191,4 +192,10 @@
 {{>user-footer}}
 
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+ $(document).ready(function() {
+    $('#orderTable').DataTable();
+});
+</script>

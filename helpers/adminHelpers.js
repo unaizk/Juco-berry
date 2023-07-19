@@ -142,6 +142,7 @@ module.exports = {
                         },
                     },
                 ]);
+                console.log(salesbymonth,'salesbymonthnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn');
 
                 const paymentMethod = await Order.aggregate([
                     {
