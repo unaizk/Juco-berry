@@ -191,6 +191,7 @@ module.exports = {
                         res.render('users/signup&login', { messages: "User has been blocked", layout: 'user-layout' });
                     } else {
                         req.session.user_id = userData._id;
+                        req.session.blocked = userData.blocked
                         // Check if a wallet exists for the user
                         const wallet = await Wallet.findOne({ userId: userData._id }).exec();
                         if (wallet) {
