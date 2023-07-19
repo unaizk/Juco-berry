@@ -36,7 +36,7 @@ const verifyLogin = async (req, res) => {
 const loadDashboard = async (req, res) => {
   try {
     const adminUser = await User.findOne({is_admin:req.session.is_admin}).lean()
-    // console.log(adminUser,'adminUser');
+    
     const dashBoardDetails = await adminHelpers.loadingDashboard(req, res)
 
     const orderDetails = await adminHelpers.OrdersList(req,res)
@@ -47,15 +47,9 @@ const loadDashboard = async (req, res) => {
     const paymentMethod = dashBoardDetails.paymentMethod;
     const yearSales = dashBoardDetails.yearSales
     const todaySales = dashBoardDetails.todaySales
-    // console.log(todaySales,'todaySales');
-    // console.log(totalUser,'totalUser');
-    // console.log(totalSales,'totalSales');
    
-    // console.log(paymentMethod,'paymentMethod');
-    // console.log(yearSales,'yearSales');
    let sales=encodeURIComponent(JSON.stringify(salesbymonth))
 
-  //  console.log(sales,'sales');
 
     res.render('admin/admin-home', { layout: 'admin-layout',totalUser,todaySales:todaySales[0] ,totalSales:totalSales[0], salesbymonth:encodeURIComponent(JSON.stringify(salesbymonth)) ,paymentMethod:encodeURIComponent(JSON.stringify(paymentMethod)),yearSales:yearSales[0],orderDetails:orderDetails,admin:adminUser })
   } catch (error) {

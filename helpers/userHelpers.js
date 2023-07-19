@@ -241,7 +241,7 @@ module.exports = {
 
     userLoggedOut: async (req, res) => {
         try {
-            req.session.destroy();
+           delete req.session.user_id;
             res.redirect('/')
         } catch (error) {
             console.log(error.message);

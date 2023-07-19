@@ -84,8 +84,8 @@ module.exports = {
                     if (userData.is_admin === false) {
                         res.render('admin/admin-login', { layout: 'admin-layout', message: 'You are not admin' })
                     } else {
-                        req.session.user_id = userData._id;
-                        req.session.is_admin = userData.is_admin
+                        req.session.adminId = userData._id;
+                        req.session.is_admin = userData.is_admin;
 
 
                         res.redirect('admin/admin-home')
@@ -252,7 +252,8 @@ module.exports = {
 
     loggingOut: async (req, res) => {
         try {
-            req.session.destroy();
+            delete req.session.is_admin;
+            delete  req.session.adminId
             res.redirect('admin/admin-login')
         } catch (error) {
             console.log(error.message)
@@ -411,10 +412,10 @@ module.exports = {
 
     OrdersList: async (req, res) => {
         try {
-            const userId = req.session.user_id;
             const { paymentMethod, orderStatus } = req.query;
-            let query = { userId };
-    
+            console.log(req.query, "req.query");
+            let query = {};
+            
             // Apply filters if provided
             if (paymentMethod) {
                 query.paymentMethod = paymentMethod;
@@ -422,24 +423,21 @@ module.exports = {
             if (orderStatus) {
                 query.orderStatus = orderStatus;
             }
-
+            
             let orderDetails = await Order.find(query).populate('userId').lean();
-            // console.log(orderDetails, 'orderDetails');
-
+            
             // Reverse the order of transactions
             orderDetails = orderDetails.reverse();
-
+            
             const orderHistory = orderDetails.map(history => {
                 let createdOnIST = moment(history.date)
                     .tz('Asia/Kolkata')
                     .format('DD-MM-YYYY h:mm A');
-
+            
                 return { ...history, date: createdOnIST, userName: history.userId.name };
             });
-
-            // console.log(orderHistory, 'orderHistoryyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy');
-
-            return orderHistory
+            
+            return orderHistory;
         } catch (error) {
             console.log(error.message)
             res.redirect('/admin/admin-error')
