@@ -62,7 +62,7 @@ module.exports = {
                 from: 'smtp.gmail.com',
                 to: email,
                 subject: 'To verify Mail',
-                html: `<p> Hi ${name}, please click here to <a href="http://localhost:3000/verify?id=${verificationId}&email=${email}">verify</a> your mail.</p>`
+                html: `<p> Hi ${name}, please click here to <a href="http://unaizk.com/verify?id=${verificationId}&email=${email}">verify</a> your mail.</p>`
             };
             await transporter.sendMail(mailOption);
             console.log("Your email has been sent successfully");
@@ -90,7 +90,7 @@ module.exports = {
                 from: 'smtp.gmail.com',
                 to: email,
                 subject: 'To Reset Password',
-                html: `<p> Hi ${name}, please click here to <a href="http://localhost:3000/forget-password?token=${token}">Reset</a> your password.</p>`
+                html: `<p> Hi ${name}, please click here to <a href="http://unaizk.com/forget-password?token=${token}">Reset</a> your password.</p>`
             };
             await transporter.sendMail(mailOption);
             console.log("Your email has been sent successfully");

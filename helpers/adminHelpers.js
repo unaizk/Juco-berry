@@ -42,7 +42,7 @@ module.exports = {
                 to: email,
                 subject: 'To Reset password',
 
-                html: '<p> Hi ' + name + ', please click here to <a href="http://localhost:3000/admin/admin-forget-password?token=' + token + '">Reset </a>your password.</p>'
+                html: '<p> Hi ' + name + ', please click here to <a href="http://unaizk.com/admin/admin-forget-password?token=' + token + '">Reset </a>your password.</p>'
             }
             transporter.sendMail(mailOption, function (error, info) {
                 if (error) {
