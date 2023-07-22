@@ -434,6 +434,7 @@ const getYearlySales = async(req,res)=>{
   try {
     const yearlySales = await adminHelpers.yearlySales()
     const adminUser = await User.findOne({is_admin:req.session.is_admin}).lean()
+    console.log(adminUser)
     res.render("admin/admin-sales", {layout:'admin-layout', order:yearlySales.orderHistory, total:yearlySales.total ,admin:adminUser});
   } catch (error) {
     console.log(error.message)
