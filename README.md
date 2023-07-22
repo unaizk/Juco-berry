@@ -64,3 +64,6 @@ Welcome to Juco Berry, an innovative e-commerce platform built using the MVC (Mo
 ## Conclusion:
 
 Juco Berry is a feature-rich e-commerce platform that caters to both users and administrators with its wide array of functionalities. The seamless user experience, coupled with efficient management tools, makes Juco Berry an excellent choice for any e-commerce venture. We are committed to continually improving and expanding the platform, providing the best possible shopping experience for our users.
+
+
+ 
