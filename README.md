@@ -19,8 +19,8 @@ Screenshots
 
 ![Juco berry - Google Chrome 22-07-2023 22_30_02](https://github.com/unaizk/Juco-berry/assets/126644119/c4352928-af80-438c-8770-954e966c357d)
 
-Getting Started
 
+Getting Started
 
 ## User Side Features:
 
