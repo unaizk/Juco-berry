@@ -103,46 +103,82 @@
 </script>
 
 <script>
-function addToCart(productId, event) {
-  event.preventDefault(); // Prevent the default behavior of the <a> tag
+  // Function to show the login alert
+  function showLoginAlert() {
+    Swal.fire({
+      title: "Login Required",
+      text: "You need to login to add products to the cart.",
+      icon: "warning",
+      showCancelButton: false,
+      confirmButtonColor: "#ffbf00",
+      confirmButtonText: "OK",
+      customClass: {
+        container: "swal-container",
+        title: "swal-title",
+        content: "swal-text",
+        confirmButton: "swal-button"
+      },
+      onOpen: () => {
+        // Set the text color to white
+        const swalContainer = document.querySelector(".swal-container");
+        swalContainer.style.color = "white";
 
-  // Send an AJAX request to the server
-  const xhr = new XMLHttpRequest();
-  xhr.open('POST', '/addtocart', true);
-  xhr.setRequestHeader('Content-Type', 'application/json');
-  xhr.onreadystatechange = function () {
-    if (xhr.readyState === 4 && xhr.status === 200) {
-      // Handle the server response here (if needed)
-      swal("Success", "Product added to cart!", "success");
-    }
-  };
-  xhr.send(JSON.stringify({ productId: productId }));
-}
-</script>
-<script>
-function showSweetAlert() {
-  Swal.fire({
-    title: "Success",
-    text: "Product added to cart!",
-    icon: "success",
-    showCancelButton: false,
-    confirmButtonColor: "#ffbf00",
-    confirmButtonText: "OK",
-    customClass: {
-      container: "swal-container",
-      title: "swal-title",
-      content: "swal-text",
-      confirmButton: "swal-button"
-    },
-    onOpen: () => {
-      // Set the text color to white
-      const swalContainer = document.querySelector(".swal-container");
-      swalContainer.style.color = "white";
+        // Remove the border from the OK button
+        const okButton = document.querySelector(".swal-button");
+        okButton.style.border = "none";
+      }
+    });
+  }
 
-      // Remove the border from the OK button
-      const okButton = document.querySelector(".swal-button");
-      okButton.style.border = "none";
+  // Function to show the success alert
+  function showSuccessAlert() {
+    Swal.fire({
+      title: "Success",
+      text: "Product added to cart!",
+      icon: "success",
+      showCancelButton: false,
+      confirmButtonColor: "#ffbf00",
+      confirmButtonText: "OK",
+      customClass: {
+        container: "swal-container",
+        title: "swal-title",
+        content: "swal-text",
+        confirmButton: "swal-button"
+      },
+      onOpen: () => {
+        // Set the text color to white
+        const swalContainer = document.querySelector(".swal-container");
+        swalContainer.style.color = "white";
+
+        // Remove the border from the OK button
+        const okButton = document.querySelector(".swal-button");
+        okButton.style.border = "none";
+      }
+    });
+  }
+
+  function addToCart(productId, event) {
+    event.preventDefault(); // Prevent the default behavior of the <a> tag
+
+    // Check if the user is logged in (assuming you have a variable isLogin that represents this)
+    const isLogin = {{isLogin}}; // Replace this with your logic to check if the user is logged in
+
+    if (!isLogin) {
+      // User is not logged in, show the login alert
+      showLoginAlert();
+    } else {
+      // User is logged in, proceed with adding the product to the cart
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", "/addtocart", true);
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          // Handle the server response here (if needed)
+          showSuccessAlert();
+        }
+      };
+      xhr.send(JSON.stringify({ productId: productId }));
     }
-  });
-}
+  }
 </script>
+
