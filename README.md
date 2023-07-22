@@ -3,19 +3,33 @@
 Welcome to Juco Berry, an innovative e-commerce platform built using the MVC (Model-View-Controller) architectural pattern. This project is designed to provide a seamless shopping experience for users and efficient management tools for administrators. Below, we'll outline the key features and functionalities that have been successfully implemented in Juco Berry.
 
 Screenshots
-![Juco berry - Google Chrome 15-06-2023 15_21_29](https://github.com/unaizk/Juco-berry/assets/126644119/df681294-37f6-4907-b96d-d1d201687f88)
+
+![Juco berry - Google Chrome 22-07-2023 22_27_38](https://github.com/unaizk/Juco-berry/assets/126644119/3cec6d6b-e4a0-4591-92f6-232fe6d7ec13)
+
 
 ![Juco berry - Google Chrome 22-07-2023 22_27_51](https://github.com/unaizk/Juco-berry/assets/126644119/80ec9cde-5804-4b92-8c33-b82a98a944d9)
 
+
+
 ![Juco berry - Google Chrome 22-07-2023 22_27_57](https://github.com/unaizk/Juco-berry/assets/126644119/7c6fba10-3020-462c-a04b-a7d2656dfa38)
+
+
 
 ![Juco berry - Google Chrome 22-07-2023 22_29_27](https://github.com/unaizk/Juco-berry/assets/126644119/547a7870-0381-4b72-a419-1eb01510f5a0)
 
+
+
 ![Juco berry - Google Chrome 22-07-2023 22_28_31](https://github.com/unaizk/Juco-berry/assets/126644119/d66ad4e3-5e85-4e2d-87ce-e5a2896a250c)
+
+
 
 ![Juco berry - Google Chrome 22-07-2023 22_29_39](https://github.com/unaizk/Juco-berry/assets/126644119/1b06fd1e-130e-4500-83fb-c481938e353b)
 
+
+
 ![Juco berry - Google Chrome 22-07-2023 22_33_11](https://github.com/unaizk/Juco-berry/assets/126644119/d2eb21c0-11e0-4bb2-8a30-e81d6a98f7d1)
+
+
 
 ![Juco berry - Google Chrome 22-07-2023 22_30_02](https://github.com/unaizk/Juco-berry/assets/126644119/c4352928-af80-438c-8770-954e966c357d)
 
