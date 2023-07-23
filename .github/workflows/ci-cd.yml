@@ -28,7 +28,9 @@ jobs:
         echo "${{ secrets.ENV_FILE }}" >> .env
         cat .env
     - run: npm install
-    - run: npm start
+    - run: npm i pm2 -g
+    - run: pm2 start app.js
+    - run: pm2 status
 
   deploy:
     runs-on: ubuntu-latest
