@@ -57,10 +57,7 @@ jobs:
     # Installation of Node packaging Manager (npm)
     - name: Installing project dependencies
       run: npm install
-      run: npm i pm2 -g
-      run: pm2 start app.js
-      run: pm2 status
-
+     
     # Checking if node modules were installed (Done by simply checking if the node_modules directory exists or not)
     - name: Checking if node_modules directory was created after installing NPM
       run: |
