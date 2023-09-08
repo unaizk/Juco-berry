@@ -1,0 +1,11 @@
+ACCOUNT_SID = "Give an account sid of twilio"
+AUTH_TOCKEN = "Give Authentication Tocken twilio"
+VERIFY_SID = "Give verifying sid of twilio" 
+
+KEY_ID ='Razorpay key id'
+KEY_SECRET = 'Razorpay secret key' 
+
+EMAIL_PASSWORD = 'smtp gmail passord'
+EMAIL = 'smtp gmail email'
+
+SESSION_SECRET = "Give a session secret"
