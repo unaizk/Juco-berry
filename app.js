@@ -10,7 +10,7 @@ const session = require('express-session')
 const multer = require('multer')
 const handlebars = require('handlebars');
 const handlebarsHelpers = require('handlebars-helpers')
-
+require('dotenv').config()
 
 mongoose.connect(process.env.MONGO_DB_URI)
 // view engine setup
