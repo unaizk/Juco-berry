@@ -12,7 +12,7 @@ const handlebars = require('handlebars');
 const handlebarsHelpers = require('handlebars-helpers')
 
 
-mongoose.connect('mongodb+srv://unais5676:AMfY6UQE1zZkf2EH@jucoberry.crlson3.mongodb.net/')
+mongoose.connect(process.env.MONGO_DB_URI)
 // view engine setup
 
 
